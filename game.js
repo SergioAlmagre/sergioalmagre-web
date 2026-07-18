@@ -1148,6 +1148,7 @@ class DevGame {
   }
 
   handleTouchEnd(e) {
+    if (!this.gameState.running) return;
     if (this.isIgnoredTarget(e.target)) return;
     e.preventDefault();
     this.gameState.isPressingRight = false;

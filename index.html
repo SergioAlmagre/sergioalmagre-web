@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sergio Almagre — Backend Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <span class="nav-logo">sergioalmagre<span class="accent">.</span>com</span>
+    <ul class="nav-links">
+      <li><a href="#about">about</a></li>
+      <li><a href="#stack">stack</a></li>
+      <li><a href="#projects">projects</a></li>
+      <li><a href="#experience">experience</a></li>
+      <li><a href="#contact">contact</a></li>
+      <li><a href="#play" id="nav-play-trigger" class="nav-play-btn">play</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="about">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">// hello world</p>
+      <h1 class="hero-name">Sergio<br><span class="accent">Almagre</span></h1>
+      <p class="hero-role">Backend Developer <span class="dim">·</span> Cloud <span class="dim">·</span> Automation</p>
+
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="terminal-title">~/sergio — zsh</span>
+        </div>
+        <div class="terminal-body">
+          <div class="terminal-line">
+            <span class="prompt">sergio@dev <span class="accent-p">~</span> $</span>
+            <span class="cmd" id="typed-cmd"></span><span class="cursor">▋</span>
+          </div>
+          <div class="terminal-output" id="terminal-output"></div>
+        </div>
+      </div>
+
+      <p class="hero-summary">
+        I build and operate backend services, automate processes and improve observability.<br>
+        Comfortable in hybrid environments — on-premise, Azure, AWS — across multi-language stacks.<br>
+        Actively integrating AI agent workflows and LLM tooling into day-to-day development.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#experience" class="btn-primary">View Experience</a>
+        <a href="https://github.com/SergioAlmagre" target="_blank" class="btn-ghost">GitHub ↗</a>
+      </div>
+    </div>
+
+    <div class="hero-grid-bg" aria-hidden="true"></div>
+  </section>
+
+  <!-- STACK -->
+  <section class="section" id="stack">
+    <p class="section-label">// core_tech_stack</p>
+    <h2 class="section-title">What I work with</h2>
+
+    <div class="stack-grid">
+      <div class="stack-card">
+        <span class="stack-icon">⬡</span>
+        <h3>Languages</h3>
+        <ul>
+          <li>C#</li>
+          <li>Python</li>
+          <li>PowerShell</li>
+          <li>Java / Kotlin</li>
+        </ul>
+      </div>
+      <div class="stack-card">
+        <span class="stack-icon">⬡</span>
+        <h3>Backend</h3>
+        <ul>
+          <li>.NET / ASP.NET Core</li>
+          <li>REST API / Web API</li>
+          <li>Clean Architecture</li>
+          <li>Microservices</li>
+        </ul>
+      </div>
+      <div class="stack-card">
+        <span class="stack-icon">⬡</span>
+        <h3>Cloud & DevOps</h3>
+        <ul>
+          <li>Azure</li>
+          <li>AWS / Google Cloud</li>
+          <li>Azure DevOps / CI-CD</li>
+          <li>Terraform (IaC)</li>
+        </ul>
+      </div>
+      <div class="stack-card">
+        <span class="stack-icon">⬡</span>
+        <h3>Data & Observability</h3>
+        <ul>
+          <li>SQL Server</li>
+          <li>MongoDB</li>
+          <li>Log Analytics</li>
+          <li>KPI Monitoring</li>
+        </ul>
+      </div>
+      <div class="stack-card stack-card-ai">
+        <span class="stack-icon ai-icon">◈</span>
+        <h3>AI & Agents</h3>
+        <ul>
+          <li>LLM integration <span class="tag ai-tag">active</span></li>
+          <li>AI agent workflows</li>
+          <li>OpenAI / Claude API</li>
+          <li>Prompt engineering</li>
+        </ul>
+      </div>
+    </div>
+    <div class="certs-row">
+      <a href="https://learn.microsoft.com/en-us/users/sergioalmagre-4834/credentials/3828c3a0db013be1?ref=https%3A%2F%2Fwww.linkedin.com%2F" target="_blank" rel="noopener" class="cert-badge">Microsoft DP-900 ↗</a>
+      <a href="https://www.credly.com/badges/c6795bce-af9d-4812-838c-bcec3765442d/public_url" target="_blank" rel="noopener" class="cert-badge">Microsoft AZ-900 ↗</a>
+      <span class="cert-badge">Advanced Git</span>
+      <span class="cert-badge">Solidity Blockchain</span>
+      <span class="cert-badge">Master Ciberseguridad</span>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="section" id="projects">
+    <p class="section-label">// projects</p>
+    <h2 class="section-title">What I've built</h2>
+
+    <article class="project-card featured">
+      <div class="project-header">
+        <div class="project-logo-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48"
+            aria-label="Auladex logo">
+            <defs>
+              <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#7c5cff" />
+                <stop offset="100%" stop-color="#6ee7ff" />
+              </linearGradient>
+            </defs>
+            <rect x="64" y="64" width="384" height="384" rx="89" ry="89" fill="url(#pg)"
+              transform="rotate(45 256 256)" />
+            <rect x="160" y="160" width="192" height="192" rx="21" ry="21" fill="#11182d"
+              transform="rotate(45 256 256)" />
+            <rect x="96" y="215" width="320" height="73" rx="36" ry="36" fill="#ffffff" fill-opacity="0.95"
+              transform="rotate(-28 256 251)" />
+            <circle cx="388" cy="388" r="54" fill="#ffffff" />
+          </svg>
+        </div>
+        <div class="project-title-block">
+          <div class="project-badges">
+            <span class="proj-badge commercial">commercial product</span>
+            <span class="proj-badge solo">solo dev</span>
+          </div>
+          <h3 class="project-name">Auladex</h3>
+          <p class="project-domain">auladex.com — multi-certification exam platform</p>
+        </div>
+        <a href="https://www.auladex.com" target="_blank" rel="noopener" class="project-live-btn">Live &#8599;</a>
+      </div>
+
+      <p class="project-tagline">
+        Full-stack certification platform with a tokenized economy, AI-driven content pipeline, and real-time community
+        &mdash; designed, built, and operated by one developer.
+      </p>
+
+      <div class="project-metrics">
+        <div class="metric">
+          <span class="metric-value">255</span>
+          <span class="metric-label">API route handlers</span>
+        </div>
+        <div class="metric">
+          <span class="metric-value">1,825</span>
+          <span class="metric-label">automated tests</span>
+        </div>
+        <div class="metric">
+          <span class="metric-value">126</span>
+          <span class="metric-label">automation scripts</span>
+        </div>
+        <div class="metric">
+          <span class="metric-value">60</span>
+          <span class="metric-label">shared contracts</span>
+        </div>
+        <div class="metric">
+          <span class="metric-value">32</span>
+          <span class="metric-label">lazy-loaded views</span>
+        </div>
+        <div class="metric">
+          <span class="metric-value">308</span>
+          <span class="metric-label">frontend modules</span>
+        </div>
+      </div>
+
+      <div class="project-highlights">
+        <div class="highlight-item">
+          <span class="highlight-dot"></span>
+          <div><strong>AI content pipeline</strong> &mdash; demand-driven course generation via OpenAI in waves of 30
+            questions. Users vote; when demand crosses threshold, jobs are created and executed automatically through a
+            full lifecycle: <code>draft &rarr; validation &rarr; active</code>.</div>
+        </div>
+        <div class="highlight-item">
+          <span class="highlight-dot"></span>
+          <div><strong>Tokenized economy (off-chain)</strong> &mdash; token ALX earned by completing simulations and
+            streaks. Multi-path acquisition via Stripe EUR, Bitcoin Lightning (OpenNode) and Web3 Polygon. P2P transfers
+            with 1% automatic social scholarship donation and 3% APY staking.</div>
+        </div>
+        <div class="highlight-item">
+          <span class="highlight-dot"></span>
+          <div><strong>Algorithmic mastery per question</strong> &mdash; state machine per question
+            (<code>not_seen &rarr; in_progress &rarr; mastered/weak</code>) computed from accuracy, consistency, and
+            attempt history. Real adaptive logic, not a simple percentage.</div>
+        </div>
+        <div class="highlight-item">
+          <span class="highlight-dot"></span>
+          <div><strong>Multi-provider, multi-exam</strong> &mdash; Microsoft (AZ-900 through AZ-400), Docker, HashiCorp,
+            Cambridge English. Provider-agnostic: adding a new certification requires only a catalog entry and a
+            question bank.</div>
+        </div>
+        <div class="highlight-item">
+          <span class="highlight-dot"></span>
+          <div><strong>RBAC with numeric priority inheritance</strong> &mdash;
+            <code>admin(400) &gt; operator(350) &gt; business(300) &gt; student(100)</code>. Role enforcement at the
+            route layer; every write sealed with SHA-256 payload hashing for cryptographic idempotency.</div>
+        </div>
+      </div>
+
+      <div class="project-arch">
+        <p class="arch-label">// architecture</p>
+        <pre class="arch-code">Browser &#9472;&#9472; React SPA &#9472;&#9472; Express API &#9472;&#9472; Firestore &#9472;&#9472; OpenAI
+    &#9474;           &#9474;             &#9474;             &#9474;
+    &#9474;      localStorage   11 domains    RTDB (chat)
+    &#9474;      (offline)    feature-flagged  presence
+    &#9492;&#9472;&#9472; Stripe / Lightning / Web3 payments</pre>
+      </div>
+
+      <div class="project-stack-row">
+        <span>React 19</span><span>Vite 6</span><span>Node.js 22</span><span>Express.js</span>
+        <span>Firebase / Firestore</span><span>OpenAI API</span><span>Stripe</span>
+        <span>OpenNode (Lightning)</span><span>Web3 / Polygon</span>
+        <span>AWS / Google Cloud</span><span>Ubuntu Server</span><span>PM2</span>
+        <span>GitHub Actions</span><span>Vitest</span><span>Playwright</span>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section class="section" id="experience">
+    <p class="section-label">// experience</p>
+    <h2 class="section-title">Where I've worked</h2>
+
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-meta">
+          <span class="timeline-date">2024 — present</span>
+          <span class="timeline-status active">active</span>
+        </div>
+        <div class="timeline-content">
+          <h3>Backend Developer <span class="dim">@</span> <span class="accent">Altia</span></h3>
+          <p class="timeline-sub">Data &amp; Cloud</p>
+          <p class="timeline-desc">
+            Building backend services and APIs following Clean Architecture. Automating operational tasks with
+            PowerShell, maintaining CI/CD pipelines in Azure DevOps, and deploying infrastructure as code via Terraform.
+            Developed monitoring systems and KPI dashboards for cloud and on-premise environments.
+          </p>
+          <div class="timeline-tags">
+            <span>C# / .NET</span><span>ASP.NET Core</span><span>Azure DevOps</span><span>Terraform</span><span>SQL
+              Server</span><span>PowerShell</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-meta">
+          <span class="timeline-date">2024</span>
+        </div>
+        <div class="timeline-content">
+          <h3>Backend Developer Intern <span class="dim">@</span> <span class="accent">Gamereactor</span></h3>
+          <p class="timeline-sub">Denmark</p>
+          <p class="timeline-desc">
+            Migrated a relational MySQL database to a document model in MongoDB. Implemented adaptive streaming with
+            Nginx + MPEG-DASH and built an automatic VTT subtitle system to improve platform accessibility.
+          </p>
+          <div class="timeline-tags">
+            <span>MongoDB</span><span>Nginx</span><span>MPEG-DASH</span><span>MySQL</span><span>VTT</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PLAY (ARCADE SIMULATOR) -->
+  <section class="section animate-on-scroll" id="play">
+    <p class="section-label">// interactive_terminal</p>
+    <h2 class="section-title">Dev Arcade Simulator</h2>
+    <div class="arcade-card">
+      <div class="arcade-scanner"></div>
+      <div class="arcade-card-body">
+        <h3 class="arcade-card-title">DEV ENTERPRISE <span class="dim">NCC-1701</span></h3>
+        <p class="arcade-card-text">
+          Un minijuego arcade táctico e inercial de naves espaciales integrado directamente en el portfolio. Pilota la nave, destruye meteoros con disparos y cañones de partículas, y restaura tus escudos recolectando reliquias retro.
+        </p>
+        <div class="arcade-card-actions">
+          <button type="button" class="st-btn-launch-game">🕹️ INICIAR SIMULACIÓN</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact">
+    <p class="section-label">// contact</p>
+    <h2 class="section-title">Let's talk</h2>
+    <p class="contact-sub">Open to backend, cloud and automation roles. Based in Ciudad Real, Spain.</p>
+
+    <div class="contact-links">
+      <a href="mailto:info@sergioalmagre.com" class="contact-card">
+        <span class="contact-icon">✉</span>
+        <span class="contact-label">info@sergioalmagre.com</span>
+      </a>
+      <a href="https://linkedin.com/in/sergioalmagre" target="_blank" class="contact-card">
+        <span class="contact-icon">in</span>
+        <span class="contact-label">linkedin.com/in/sergioalmagre</span>
+      </a>
+      <a href="https://github.com/SergioAlmagre" target="_blank" class="contact-card">
+        <span class="contact-icon">⌥</span>
+        <span class="contact-label">github.com/SergioAlmagre</span>
+      </a>
+      <a href="https://www.sergioalmagre.com" target="_blank" class="contact-card">
+        <span class="contact-icon">↗</span>
+        <span class="contact-label">www.sergioalmagre.com</span>
+      </a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>Sergio Almagre · Ciudad Real, España</span>
+    <span class="dim">Built with intent, not templates.</span>
+  </footer>
+
+  <!-- RETRO ARCADE MODAL (EASTER EGG) -->
+  <div class="st-modal st-hidden" id="st-arcade-modal">
+    <div class="st-scanline"></div>
+    <button class="st-modal-close" id="st-modal-close-btn" title="Volver al portfolio">⬅ VOLVER</button>
+    
+    <div class="st-root">
+      <canvas class="st-canvas"></canvas>
+      
+      <!-- HUD de juego -->
+      <div class="st-hud st-hidden st-ignore-canvas">
+        <div class="st-hud-row">
+          <div class="st-hud-left">
+            <h1 class="st-title">DEV ENTERPRISE</h1>
+            <p class="st-hud-mini">Registro: NCC-1701</p>
+            <p class="st-hud-mini st-hud-status">Estado: Patrulla inercial activa</p>
+            <div class="st-shield-row">
+              <span class="st-hud-mini">Escudos:</span>
+              <div class="st-shield-track">
+                <div class="st-shield-fill st-shield-full" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="st-hud-right">
+            <div class="st-hud-controls">
+              <button type="button" class="st-icon-btn st-btn-mute" title="Silenciar todo">🔊</button>
+              <button type="button" class="st-icon-btn st-btn-pause" title="Pausar partida (P / Esc)">⏸</button>
+              <span class="st-alert-led"></span>
+              <span class="st-alert-text">CONDICIÓN VERDE</span>
+            </div>
+            <p class="st-hud-mini">Inercia: gravedad cero</p>
+            <p class="st-score">Puntos: 0</p>
+            <p class="st-threat-label">Amenaza: baja</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menú principal -->
+      <div class="st-intro-overlay st-intro-overlay-menu st-hidden">
+        <div class="st-instructions-card st-ignore-canvas">
+          <h1 class="st-title">DEV ENTERPRISE</h1>
+          <p class="st-hud-mini" style="margin-bottom: 18px;">Tactical Patrol & Salvage</p>
+
+          <div class="st-menu-actions">
+            <button type="button" class="st-btn st-btn-primary st-btn-new">Nueva partida</button>
+            <button type="button" class="st-btn st-btn-secondary st-btn-scores">Puntuaciones</button>
+          </div>
+
+          <ul class="st-instructions-list">
+            <li>🖱️ <b>Clic derecho (mantener):</b> propulsar hacia el cursor (deriva inercial con fricción casi nula).</li>
+            <li>🔥 <b>Clic izquierdo (pulsación):</b> disparar fáseres tácticos de 360º en dirección de tu puntero.</li>
+            <li>⚡ <b>Mantener pulsado (1s a 9s):</b> carga el súper cañón de 360°. ¡Escala proyectiles progresivos de N1 a N5 y multiplica el daño x2, x3, x4 y x5 de N6 a N9!</li>
+            <li>☄️ <b>Mantener pulsado (10s):</b> carga la ¡bomba atómica cuántica! Arrasa con todo en la pantalla.</li>
+            <li>💾 <b>Rescata reliquias retro (halo verde):</b> flotan desde el exterior. ¡Restablecen escudos al 100%!</li>
+            <li>⏸️ <b>Pausa la partida:</b> pulsa [P], [Esc] o el panel superior.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Puntuaciones -->
+      <div class="st-intro-overlay st-intro-overlay-scores st-hidden">
+        <div class="st-instructions-card st-ignore-canvas">
+          <h1 class="st-title">Puntuaciones</h1>
+          <div class="st-history-container"></div>
+          <button type="button" class="st-btn st-btn-secondary st-btn-back" style="margin-top: 16px;">Volver al menú</button>
+        </div>
+      </div>
+
+      <!-- Fin de partida -->
+      <div class="st-gameover-overlay st-hidden">
+        <div class="st-instructions-card st-ignore-canvas" style="max-width: 520px; text-align: center;">
+          <h2 class="st-gameover-title">Sistemas colapsados</h2>
+          <p class="st-hud-mini" style="margin-bottom: 15px;">La Dev Enterprise ha sufrido daños estructurales críticos.</p>
+
+          <div class="st-trophy-card">
+            <p class="st-trophy-label">Trofeo de la misión</p>
+            <p class="st-trophy-score">0 puntos</p>
+            <div class="st-trophy-details">
+              <span class="st-trophy-date">📅 --</span>
+              <span class="st-trophy-time">⏱️ --</span>
+              <span class="st-trophy-threat">🚨 CONDICIÓN VERDE</span>
+            </div>
+            <p class="st-hud-mini" style="margin-top: 10px;">
+              Haz una captura de pantalla de este trofeo para compartirlo con tus compañeros.
+            </p>
+          </div>
+
+          <div class="st-menu-actions" style="margin-top: 20px;">
+            <button type="button" class="st-btn st-btn-primary st-btn-restart">Reiniciar patrulla</button>
+            <button type="button" class="st-btn st-btn-secondary st-btn-menu-back">Volver al menú</button>
+          </div>
+
+          <div class="st-history-container" style="margin-top: 20px; text-align: left;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+  <script src="main.js"></script>
+</body>
+
+</html>

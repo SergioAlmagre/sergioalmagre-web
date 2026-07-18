@@ -1,0 +1,19 @@
+# OS junk files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs and editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local test servers / CLI logs
+node_modules/
+.npm/
+package-lock.json
+*.log

@@ -1099,6 +1099,7 @@ class DevGame {
 
   handleTouchStart(e) {
     if (!this.gameState.running || this.gameState.paused) return;
+    if (this.isIgnoredTarget(e.target)) return;
     e.preventDefault();
     const rect = this.canvas.getBoundingClientRect();
     const touch = e.touches[0];
@@ -1111,6 +1112,7 @@ class DevGame {
 
   handleTouchMove(e) {
     if (!this.gameState.running || this.gameState.paused) return;
+    if (this.isIgnoredTarget(e.target)) return;
     e.preventDefault();
     const rect = this.canvas.getBoundingClientRect();
     const touch = e.touches[0];
@@ -1119,6 +1121,7 @@ class DevGame {
   }
 
   handleTouchEnd(e) {
+    if (this.isIgnoredTarget(e.target)) return;
     e.preventDefault();
     this.gameState.isPressingRight = false;
     this.isTouchPlaying = false;
@@ -1146,38 +1149,54 @@ class DevGame {
 
   // --- Audio ---
   initAudio() {
-    if (this.audioCtx) return;
-    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (this.audioCtx) {
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume().catch(() => {});
+      }
+      return;
+    }
+    try {
+      this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    this.musicGain = this.audioCtx.createGain();
-    this.musicGain.gain.setValueAtTime(0.06, this.audioCtx.currentTime);
-    this.musicGain.connect(this.audioCtx.destination);
+      this.musicGain = this.audioCtx.createGain();
+      this.musicGain.gain.setValueAtTime(0.06, this.audioCtx.currentTime);
+      this.musicGain.connect(this.audioCtx.destination);
 
-    this.sfxGain = this.audioCtx.createGain();
-    this.sfxGain.gain.setValueAtTime(0.3, this.audioCtx.currentTime);
-    this.sfxGain.connect(this.audioCtx.destination);
+      this.sfxGain = this.audioCtx.createGain();
+      this.sfxGain.gain.setValueAtTime(0.3, this.audioCtx.currentTime);
+      this.sfxGain.connect(this.audioCtx.destination);
 
-    this.delayNode = this.audioCtx.createDelay(2.0);
-    const delayFeedback = this.audioCtx.createGain();
-    this.delayNode.delayTime.value = 0.6;
-    delayFeedback.gain.value = 0.4;
-    this.delayNode.connect(delayFeedback);
-    delayFeedback.connect(this.delayNode);
-    this.delayNode.connect(this.musicGain);
+      this.delayNode = this.audioCtx.createDelay(2.0);
+      const delayFeedback = this.audioCtx.createGain();
+      this.delayNode.delayTime.value = 0.6;
+      delayFeedback.gain.value = 0.4;
+      this.delayNode.connect(delayFeedback);
+      delayFeedback.connect(this.delayNode);
+      this.delayNode.connect(this.musicGain);
 
-    const padOsc = this.audioCtx.createOscillator();
-    const lowpass = this.audioCtx.createBiquadFilter();
-    padOsc.type = 'triangle';
-    padOsc.frequency.setValueAtTime(65.41, this.audioCtx.currentTime);
-    lowpass.type = 'lowpass';
-    lowpass.frequency.setValueAtTime(120, this.audioCtx.currentTime);
-    padOsc.connect(lowpass);
-    lowpass.connect(this.musicGain);
-    padOsc.start();
+      const padOsc = this.audioCtx.createOscillator();
+      const lowpass = this.audioCtx.createBiquadFilter();
+      padOsc.type = 'triangle';
+      padOsc.frequency.setValueAtTime(65.41, this.audioCtx.currentTime);
+      lowpass.type = 'lowpass';
+      lowpass.frequency.setValueAtTime(120, this.audioCtx.currentTime);
+      padOsc.connect(lowpass);
+      lowpass.connect(this.musicGain);
+      padOsc.start();
 
-    this.bellIntervalId = window.setInterval(() => this.playSpaceBell(), 3200);
-    this.audioEnabled = true;
+      this.bellIntervalId = window.setInterval(() => this.playSpaceBell(), 3200);
+      this.audioEnabled = true;
+
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume().catch(() => {});
+      }
+    } catch (e) {
+      console.warn('Web Audio API not supported or blocked:', e);
+      this.audioCtx = null;
+      this.audioEnabled = false;
+    }
   }
+
 
   playSpaceBell() {
     if (!this.audioCtx || !this.audioEnabled || !this.gameState.running || this.isSoundMuted || this.gameState.paused || !this.musicGain || !this.delayNode) return;

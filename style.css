@@ -1329,3 +1329,44 @@ ul { list-style: none; }
   box-shadow: 0 0 25px rgba(0, 212, 255, 0.4);
   transform: translateY(-2px);
 }
+
+.st-mobile-shoot-btn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .st-mobile-shoot-btn {
+    display: block;
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 72px;
+    height: 72px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 2px solid rgba(239, 68, 68, 0.45);
+    border-radius: 50%;
+    color: #ef4444;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    z-index: 10002;
+    transition: all 0.1s;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+    user-select: none;
+    -webkit-user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .st-mobile-shoot-btn:active {
+    background: rgba(239, 68, 68, 0.35);
+    border-color: #ef4444;
+    color: #fff;
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+    transform: translateX(-50%) scale(0.95);
+  }
+}

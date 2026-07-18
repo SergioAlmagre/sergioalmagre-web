@@ -821,7 +821,10 @@ class DevGame {
       },
 
       fire() {
-        const shootAngle = Math.atan2(self.gameState.mouseY - this.y, self.gameState.mouseX - this.x);
+        let shootAngle = this.angle;
+        if (self.gameState.mouseX !== null && self.gameState.mouseX !== undefined && !self.isTouchShoot) {
+          shootAngle = Math.atan2(self.gameState.mouseY - this.y, self.gameState.mouseX - this.x);
+        }
         const originX = this.x + Math.cos(shootAngle) * 25;
         const originY = this.y + Math.sin(shootAngle) * 25;
         self.phasers.push(new PhaserBeam(originX, originY, shootAngle, false, 0));
@@ -969,6 +972,30 @@ class DevGame {
 
     q('.st-btn-mute')?.addEventListener('click', () => this.toggleMuteAll());
     q('.st-btn-pause')?.addEventListener('click', () => this.togglePause());
+
+    const shootBtn = q('.st-mobile-shoot-btn');
+    if (shootBtn) {
+      const handleShootStart = (e) => {
+        e.preventDefault();
+        if (!this.gameState.running || this.gameState.paused) return;
+        this.isTouchShoot = true;
+        this.gameState.isPressingLeft = true;
+        this.gameState.chargeTime = 0;
+        this.gameState.chargeLvl = 0;
+        this.startChargeSound();
+      };
+      const handleShootEnd = (e) => {
+        e.preventDefault();
+        if (this.isTouchShoot) {
+          this.releaseWeapon();
+          this.isTouchShoot = false;
+        }
+      };
+      shootBtn.addEventListener('touchstart', handleShootStart, { passive: false });
+      shootBtn.addEventListener('touchend', handleShootEnd, { passive: false });
+      shootBtn.addEventListener('mousedown', handleShootStart);
+      shootBtn.addEventListener('mouseup', handleShootEnd);
+    }
   }
 
   setPhase(newPhase) {
@@ -1892,13 +1919,6 @@ class DevGame {
 
     // Nave del jugador
     if (this.gameState.running) {
-      if (this.isTouchPlaying && !this.gameState.paused) {
-        this.touchFireCooldown = (this.touchFireCooldown || 0) + 1;
-        if (this.touchFireCooldown >= 20) {
-          this.touchFireCooldown = 0;
-          this.enterprise.fire();
-        }
-      }
       this.enterprise.update();
       this.enterprise.draw(this.ctx);
     }

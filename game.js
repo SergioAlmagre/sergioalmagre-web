@@ -682,6 +682,7 @@ class DevGame {
     this.phase = 'menu'; // 'menu' | 'playing' | 'gameover' | 'scores'
     this.score = 0;
     this.shields = GAME_CONFIG.maxShield;
+    this.flightTouchId = null;
     this.threatKey = 'VERDE';
     this.paused = false;
     this.muted = false;
@@ -1147,8 +1148,13 @@ class DevGame {
     if (!this.gameState.running || this.gameState.paused) return;
     if (this.isIgnoredTarget(e.target)) return;
     e.preventDefault();
+
+    if (this.flightTouchId !== null) return;
+
     const rect = this.canvas.getBoundingClientRect();
-    const touch = e.touches[0];
+    const touch = e.changedTouches[0];
+    this.flightTouchId = touch.identifier;
+
     this.gameState.mouseX = (touch.clientX - rect.left) * (this.width / rect.width);
     this.gameState.mouseY = (touch.clientY - rect.top) * (this.height / rect.height);
     this.gameState.isPressingRight = true; // thrust
@@ -1160,18 +1166,30 @@ class DevGame {
     if (!this.gameState.running || this.gameState.paused) return;
     if (this.isIgnoredTarget(e.target)) return;
     e.preventDefault();
+
+    if (this.flightTouchId === null) return;
+
     const rect = this.canvas.getBoundingClientRect();
-    const touch = e.touches[0];
-    this.gameState.mouseX = (touch.clientX - rect.left) * (this.width / rect.width);
-    this.gameState.mouseY = (touch.clientY - rect.top) * (this.height / rect.height);
+    const touch = Array.from(e.touches).find(t => t.identifier === this.flightTouchId);
+    if (touch) {
+      this.gameState.mouseX = (touch.clientX - rect.left) * (this.width / rect.width);
+      this.gameState.mouseY = (touch.clientY - rect.top) * (this.height / rect.height);
+    }
   }
 
   handleTouchEnd(e) {
     if (!this.gameState.running) return;
     if (this.isIgnoredTarget(e.target)) return;
-    e.preventDefault();
-    this.gameState.isPressingRight = false;
-    this.isTouchPlaying = false;
+
+    if (this.flightTouchId !== null) {
+      const touch = Array.from(e.changedTouches).find(t => t.identifier === this.flightTouchId);
+      if (touch) {
+        e.preventDefault();
+        this.gameState.isPressingRight = false;
+        this.isTouchPlaying = false;
+        this.flightTouchId = null;
+      }
+    }
   }
 
   handleKeyDown(e) {

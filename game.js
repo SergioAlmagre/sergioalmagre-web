@@ -959,8 +959,19 @@ class DevGame {
 
   // --- UI & Lifecycle ---
   resize() {
-    this.width = this.container.clientWidth;
-    this.height = this.container.clientHeight;
+    const clientW = this.container.clientWidth;
+    const clientH = this.container.clientHeight;
+    const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+    if (isMobile && clientW < 600) {
+      // Scale up the logical coordinate system to simulate a desktop space on mobile
+      this.width = 900;
+      this.height = Math.round(900 * (clientH / clientW));
+    } else {
+      this.width = clientW;
+      this.height = clientH;
+    }
+
     this.canvas.width = this.width;
     this.canvas.height = this.height;
   }
@@ -1091,8 +1102,8 @@ class DevGame {
     if (this.isIgnoredTarget(e.target)) return;
 
     const rect = this.canvas.getBoundingClientRect();
-    this.gameState.mouseX = e.clientX - rect.left;
-    this.gameState.mouseY = e.clientY - rect.top;
+    this.gameState.mouseX = (e.clientX - rect.left) * (this.width / rect.width);
+    this.gameState.mouseY = (e.clientY - rect.top) * (this.height / rect.height);
 
     if (e.button === 2) {
       this.gameState.isPressingRight = true;
@@ -1106,8 +1117,8 @@ class DevGame {
 
   handleMouseMove(e) {
     const rect = this.canvas.getBoundingClientRect();
-    this.gameState.mouseX = e.clientX - rect.left;
-    this.gameState.mouseY = e.clientY - rect.top;
+    this.gameState.mouseX = (e.clientX - rect.left) * (this.width / rect.width);
+    this.gameState.mouseY = (e.clientY - rect.top) * (this.height / rect.height);
   }
 
   releaseWeapon() {
@@ -1138,8 +1149,8 @@ class DevGame {
     e.preventDefault();
     const rect = this.canvas.getBoundingClientRect();
     const touch = e.touches[0];
-    this.gameState.mouseX = touch.clientX - rect.left;
-    this.gameState.mouseY = touch.clientY - rect.top;
+    this.gameState.mouseX = (touch.clientX - rect.left) * (this.width / rect.width);
+    this.gameState.mouseY = (touch.clientY - rect.top) * (this.height / rect.height);
     this.gameState.isPressingRight = true; // thrust
     this.isTouchPlaying = true;
     this.touchFireCooldown = 0;
@@ -1151,8 +1162,8 @@ class DevGame {
     e.preventDefault();
     const rect = this.canvas.getBoundingClientRect();
     const touch = e.touches[0];
-    this.gameState.mouseX = touch.clientX - rect.left;
-    this.gameState.mouseY = touch.clientY - rect.top;
+    this.gameState.mouseX = (touch.clientX - rect.left) * (this.width / rect.width);
+    this.gameState.mouseY = (touch.clientY - rect.top) * (this.height / rect.height);
   }
 
   handleTouchEnd(e) {

@@ -975,6 +975,10 @@ class DevGame {
 
     const shootBtn = q('.st-mobile-shoot-btn');
     if (shootBtn) {
+      const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      if (isTouch) {
+        shootBtn.style.setProperty('display', 'flex', 'important');
+      }
       const handleShootStart = (e) => {
         e.preventDefault();
         if (!this.gameState.running || this.gameState.paused) return;

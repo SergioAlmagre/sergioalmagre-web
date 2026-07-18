@@ -1335,33 +1335,35 @@ ul { list-style: none; }
 }
 
 @media (max-width: 1024px) {
+  /* Volver / Close Button */
   .st-modal-close {
-    font-size: 1.1rem !important;
-    padding: 0.85rem 1.6rem !important;
-    bottom: 2rem !important;
-    left: 2rem !important;
-    border-radius: 8px !important;
+    font-size: 0.8rem !important;
+    padding: 0.5rem 1rem !important;
+    bottom: 1.2rem !important;
+    left: 1.2rem !important;
+    border-radius: 4px !important;
     z-index: 10006 !important;
   }
 
+  /* Shoot Button */
   .st-mobile-shoot-btn {
     display: flex !important;
     position: absolute;
-    bottom: 2rem;
+    bottom: 1.2rem;
     left: 50%;
     transform: translateX(-50%);
-    width: 90px;
-    height: 90px;
+    width: 68px;
+    height: 68px;
     background: radial-gradient(circle, #ff5f5f 0%, #dc2626 100%) !important;
-    border: 4px solid #fca5a5 !important;
+    border: 3px solid #fca5a5 !important;
     border-radius: 50% !important;
     color: #ffffff !important;
     font-family: var(--font-mono);
-    font-size: 1.8rem;
+    font-size: 1.3rem;
     font-weight: 900;
     cursor: pointer;
     z-index: 10005;
-    box-shadow: 0 6px 0 #991b1b, 0 12px 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(220, 38, 38, 0.4) !important;
+    box-shadow: 0 4px 0 #991b1b, 0 8px 15px rgba(0, 0, 0, 0.5), 0 0 15px rgba(220, 38, 38, 0.4) !important;
     user-select: none;
     -webkit-user-select: none;
     align-items: center;
@@ -1372,7 +1374,59 @@ ul { list-style: none; }
   .st-mobile-shoot-btn:active {
     background: radial-gradient(circle, #dc2626 0%, #991b1b 100%) !important;
     border-color: #ef4444 !important;
-    transform: translateX(-50%) translateY(4px) !important;
-    box-shadow: 0 2px 0 #991b1b, 0 4px 10px rgba(0, 0, 0, 0.5), 0 0 30px rgba(220, 38, 38, 0.6) !important;
+    transform: translateX(-50%) translateY(3px) !important;
+    box-shadow: 0 1px 0 #991b1b, 0 2px 5px rgba(0, 0, 0, 0.5), 0 0 25px rgba(220, 38, 38, 0.6) !important;
+  }
+
+  /* HUD Layout Optimization for Mobile */
+  .st-hud {
+    padding: 0.6rem 1rem !important;
+  }
+
+  .st-hud-row {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 0.5rem !important;
+  }
+
+  .st-hud-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    width: auto !important;
+  }
+
+  .st-hud-bar-wrap {
+    max-width: 100px !important;
+    margin-bottom: 0 !important;
+  }
+
+  .st-hud-bar {
+    width: 60px !important;
+    height: 8px !important;
+  }
+
+  .st-alert-wrap {
+    margin-top: 0 !important;
+  }
+
+  .st-hud-right {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.8rem !important;
+    width: auto !important;
+    text-align: right !important;
+  }
+
+  .st-score {
+    font-size: 0.8rem !important;
+    margin-bottom: 0 !important;
+  }
+
+  .st-hud-controls {
+    margin-bottom: 0 !important;
   }
 }

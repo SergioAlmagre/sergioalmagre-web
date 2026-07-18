@@ -2,7 +2,9 @@
 function drawEnterpriseThrust(ctx, intensity) {
   if (intensity <= 0) return;
   ctx.save();
-  ctx.scale(0.85, 0.85);
+  const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  const scale = isMobile ? 0.65 : 0.85;
+  ctx.scale(scale, scale);
 
   const drawFlare = (yOffset) => {
     const cx = -92;
@@ -25,7 +27,9 @@ function drawEnterpriseThrust(ctx, intensity) {
 
 function drawEnterpriseHull(ctx) {
   ctx.save();
-  ctx.scale(0.85, 0.85);
+  const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  const scale = isMobile ? 0.65 : 0.85;
+  ctx.scale(scale, scale);
 
   const hullColor = '#e2e8f0';
   const hullShadow = '#94a3b8';
@@ -743,7 +747,7 @@ class DevGame {
       vx: 0,
       vy: 0,
       angle: 0,
-      radius: 35,
+      radius: (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) ? 25 : 35,
       damageGlow: 0,
       isThrusting: false,
 

@@ -1335,38 +1335,43 @@ ul { list-style: none; }
 }
 
 @media (max-width: 768px) {
+  .st-modal-close {
+    font-size: 0.85rem !important;
+    padding: 0.65rem 1.15rem !important;
+    bottom: 1.5rem !important;
+    left: 1.5rem !important;
+    border-radius: 6px !important;
+  }
+
   .st-mobile-shoot-btn {
-    display: block;
+    display: flex !important;
     position: absolute;
     bottom: 1.5rem;
     left: 50%;
     transform: translateX(-50%);
-    width: 72px;
-    height: 72px;
-    background: rgba(239, 68, 68, 0.12);
-    border: 2px solid rgba(239, 68, 68, 0.45);
-    border-radius: 50%;
-    color: #ef4444;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, #ff5f5f 0%, #dc2626 100%) !important;
+    border: 4px solid #fca5a5 !important;
+    border-radius: 50% !important;
+    color: #ffffff !important;
     font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
+    font-size: 1.5rem;
+    font-weight: 900;
     cursor: pointer;
-    z-index: 10002;
-    transition: all 0.1s;
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+    z-index: 10005;
+    box-shadow: 0 6px 0 #991b1b, 0 12px 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(220, 38, 38, 0.4) !important;
     user-select: none;
     -webkit-user-select: none;
-    display: flex;
     align-items: center;
     justify-content: center;
+    outline: none;
   }
 
   .st-mobile-shoot-btn:active {
-    background: rgba(239, 68, 68, 0.35);
-    border-color: #ef4444;
-    color: #fff;
-    box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
-    transform: translateX(-50%) scale(0.95);
+    background: radial-gradient(circle, #dc2626 0%, #991b1b 100%) !important;
+    border-color: #ef4444 !important;
+    transform: translateX(-50%) translateY(4px) !important;
+    box-shadow: 0 2px 0 #991b1b, 0 4px 10px rgba(0, 0, 0, 0.5), 0 0 30px rgba(220, 38, 38, 0.6) !important;
   }
 }

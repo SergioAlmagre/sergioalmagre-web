@@ -1522,11 +1522,16 @@ function drawPieChart(categoryStats) {
 
   // Layout: doughnut on the left, legend on the right
   const legendWidth = 130;
-  const chartAreaWidth = width - legendWidth;
+  const chartAreaWidth = Math.max(0, width - legendWidth);
   const cx = chartAreaWidth / 2;
   const cy = height / 2;
-  const outerR = Math.min(chartAreaWidth, height) / 2 - 16;
+  const outerR = Math.max(10, Math.min(chartAreaWidth, height) / 2 - 16);
   const innerR = outerR * 0.58;
+
+  if (outerR <= 10 || chartAreaWidth <= 20) {
+    // Canvas too small to draw the chart properly, exit silently
+    return;
+  }
 
   let startAngle = -Math.PI / 2;
 

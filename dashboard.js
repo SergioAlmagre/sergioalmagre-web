@@ -13,6 +13,38 @@ let analyzingIds = {};
 let savingIds = {};
 let currentConfigItem = null;
 
+// --- AI Model selection state persistence ---
+const MODEL_STORAGE_KEY = "dashboard_selected_ai_model_v1";
+let selectedAIModel = localStorage.getItem(MODEL_STORAGE_KEY) || "llama-3.1-8b-instant";
+
+// --- Discount range filter state ---
+const DISCOUNT_STORAGE_KEY = "dashboard_discount_filter_v1";
+let discountFilterEnabled = false;
+let discountFilterMin = 0;
+let discountFilterMax = 100;
+
+function saveDiscountFilterToStorage() {
+  try {
+    localStorage.setItem(DISCOUNT_STORAGE_KEY, JSON.stringify({
+      enabled: discountFilterEnabled,
+      min: discountFilterMin,
+      max: discountFilterMax
+    }));
+  } catch (_) {}
+}
+
+function loadDiscountFilterFromStorage() {
+  try {
+    const raw = localStorage.getItem(DISCOUNT_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      discountFilterEnabled = !!parsed.enabled;
+      discountFilterMin = typeof parsed.min === "number" ? parsed.min : 0;
+      discountFilterMax = typeof parsed.max === "number" ? parsed.max : 100;
+    }
+  } catch (_) {}
+}
+
 // --- Filter persistence via localStorage ---
 const FILTER_STORAGE_KEY = "dashboard_filterRules_v1";
 
@@ -82,6 +114,119 @@ const configModalSave = document.getElementById("config-modal-save");
 // Tabs switching
 const tabBtns = document.querySelectorAll(".tab-btn");
 const tabContents = document.querySelectorAll(".tab-content");
+
+// Configuration tab elements
+const aiModelSelect = document.getElementById("ai-model-select");
+const saveConfigBtn = document.getElementById("save-config-btn");
+
+if (aiModelSelect) {
+  aiModelSelect.value = selectedAIModel;
+}
+
+if (saveConfigBtn) {
+  saveConfigBtn.addEventListener("click", () => {
+    if (aiModelSelect) {
+      selectedAIModel = aiModelSelect.value;
+      try {
+        localStorage.setItem(MODEL_STORAGE_KEY, selectedAIModel);
+        showToast(`Configuración guardada: Modelo ${selectedAIModel} seleccionado.`, "success");
+      } catch (_) {
+        showToast("Error al guardar la configuración localmente.", "error");
+      }
+    }
+  });
+}
+
+// Discount range filter elements
+const discountToggle = document.getElementById("discount-filter-toggle");
+const discountFilterBody = document.getElementById("discount-filter-body");
+const discountMinInput = document.getElementById("discount-min");
+const discountMaxInput = document.getElementById("discount-max");
+const discountMinLabel = document.getElementById("discount-min-label");
+const discountMaxLabel = document.getElementById("discount-max-label");
+const discountRangeSummary = document.getElementById("discount-range-summary");
+const dualRangeFill = document.getElementById("dual-range-fill");
+
+function updateDiscountSliderUI() {
+  if (!discountMinInput || !discountMaxInput || !dualRangeFill) return;
+  
+  const minPercent = parseInt(discountMinInput.value, 10);
+  const maxPercent = parseInt(discountMaxInput.value, 10);
+
+  if (discountMinLabel) discountMinLabel.textContent = minPercent;
+  if (discountMaxLabel) discountMaxLabel.textContent = maxPercent;
+  if (discountRangeSummary) {
+    discountRangeSummary.textContent = `${minPercent}% – ${maxPercent}%`;
+  }
+
+  // Update visual fill track
+  dualRangeFill.style.left = minPercent + "%";
+  dualRangeFill.style.width = (maxPercent - minPercent) + "%";
+
+  discountFilterMin = minPercent;
+  discountFilterMax = maxPercent;
+}
+
+if (discountMinInput && discountMaxInput) {
+  discountMinInput.addEventListener("input", () => {
+    if (parseInt(discountMinInput.value, 10) > parseInt(discountMaxInput.value, 10)) {
+      discountMinInput.value = discountMaxInput.value;
+    }
+    discountMinInput.style.zIndex = "4";
+    discountMaxInput.style.zIndex = "3";
+    updateDiscountSliderUI();
+    saveDiscountFilterToStorage();
+    if (discountFilterEnabled) {
+      applyFilters();
+    }
+  });
+
+  discountMaxInput.addEventListener("input", () => {
+    if (parseInt(discountMaxInput.value, 10) < parseInt(discountMinInput.value, 10)) {
+      discountMaxInput.value = discountMinInput.value;
+    }
+    discountMaxInput.style.zIndex = "4";
+    discountMinInput.style.zIndex = "3";
+    updateDiscountSliderUI();
+    saveDiscountFilterToStorage();
+    if (discountFilterEnabled) {
+      applyFilters();
+    }
+  });
+}
+
+if (discountToggle) {
+  discountToggle.addEventListener("change", (e) => {
+    discountFilterEnabled = e.target.checked;
+    if (discountFilterBody) {
+      if (discountFilterEnabled) {
+        discountFilterBody.classList.remove("disabled");
+      } else {
+        discountFilterBody.classList.add("disabled");
+      }
+    }
+    saveDiscountFilterToStorage();
+    applyFilters();
+  });
+}
+
+// Initial discount loader setup
+loadDiscountFilterFromStorage();
+if (discountToggle) {
+  discountToggle.checked = discountFilterEnabled;
+  if (discountFilterBody) {
+    if (discountFilterEnabled) {
+      discountFilterBody.classList.remove("disabled");
+    } else {
+      discountFilterBody.classList.add("disabled");
+    }
+  }
+}
+if (discountMinInput && discountMaxInput) {
+  discountMinInput.value = discountFilterMin;
+  discountMaxInput.value = discountFilterMax;
+}
+updateDiscountSliderUI();
 
 let sellModalCallbacks = { onConfirm: null, onCancel: null };
 let confirmModalCallbacks = { onConfirm: null, onCancel: null };
@@ -510,6 +655,15 @@ function applyFilters() {
         if (rule.condition === "is_not" && itemStr === targetStr) return false;
       }
     }
+
+    // Apply discount range filter if enabled
+    if (discountFilterEnabled) {
+      const discount = Number(item.enriched.savingsPercentage) || 0;
+      if (discount < discountFilterMin || discount > discountFilterMax) {
+        return false;
+      }
+    }
+
     return true;
   });
 
@@ -1045,7 +1199,7 @@ async function handleAnalyze(item) {
 
   try {
     const qty = item.cantidad || 1;
-    const response = await fetch(`/api/enrich?title=${encodeURIComponent(fullName)}&cantidad=${qty}`);
+    const response = await fetch(`/api/enrich?title=${encodeURIComponent(fullName)}&cantidad=${qty}&model=${encodeURIComponent(selectedAIModel)}`);
     if (!response.ok) {
       let errMsg = "Fallo en la API RAG de tasación";
       try {
@@ -1191,7 +1345,7 @@ bulkEnrichBtn.addEventListener("click", () => {
 
         try {
           const qty = currentItem.cantidad || 1;
-          const res = await fetch(`/api/enrich?title=${encodeURIComponent(fullName)}&cantidad=${qty}`);
+          const res = await fetch(`/api/enrich?title=${encodeURIComponent(fullName)}&cantidad=${qty}&model=${encodeURIComponent(selectedAIModel)}`);
           if (res.ok) {
             const data = await res.json();
             const enriched = {

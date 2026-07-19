@@ -16,6 +16,7 @@ export async function onRequestGet(context) {
   const { searchParams } = new URL(request.url);
   const title = searchParams.get("title");
   const cantidad = parseInt(searchParams.get("cantidad") || "1", 10) || 1;
+  const clientModel = searchParams.get("model");
 
   if (!title) {
     return new Response(
@@ -56,31 +57,43 @@ export async function onRequestGet(context) {
     );
   }
 
-  // Detección automática del proveedor, modelo y credenciales a usar
+  // Detección automática o explícita del proveedor, modelo y credenciales a usar
   let llmUrl = "https://api.xai.com/v1/chat/completions";
-  let llmModel = env.LLM_MODEL || "grok-2-latest";
+  let llmModel = clientModel || env.LLM_MODEL || "grok-2-latest";
   let llmAuthKey = groqApiKey;
 
-  if (env.LLM_URL) {
-    // Configuración genérica/personalizada por variables de entorno
-    llmUrl = env.LLM_URL;
-    llmModel = env.LLM_MODEL || "llama-3.1-8b-instant"; // Default override to flash if not set
-    llmAuthKey = customLlmKey || groqApiKey || deepseekApiKey;
-  } else if (deepseekApiKey) {
-    // DeepSeek API
-    llmUrl = "https://api.deepseek.com/v1/chat/completions";
-    llmModel = env.LLM_MODEL || "deepseek-chat"; // deepseek-chat represents V3 (fast and affordable)
-    llmAuthKey = deepseekApiKey;
-  } else if (groqApiKey) {
-    // Groq / xAI fallback
-    if (groqApiKey.startsWith("gsk_")) {
+  // Si el cliente seleccionó explícitamente un modelo, determinamos el proveedor
+  if (clientModel) {
+    if (clientModel.startsWith("deepseek-")) {
+      llmUrl = "https://api.deepseek.com/chat/completions";
+      llmAuthKey = deepseekApiKey || customLlmKey || groqApiKey;
+    } else if (clientModel.includes("llama") || clientModel.includes("mixtral")) {
       llmUrl = "https://api.groq.com/openai/v1/chat/completions";
-      llmModel = env.LLM_MODEL || "llama-3.3-70b-versatile"; // Default Groq model, can override to flash (e.g. llama-3.1-8b-instant)
+      llmAuthKey = groqApiKey || customLlmKey;
     } else {
-      llmUrl = "https://api.xai.com/v1/chat/completions";
-      llmModel = env.LLM_MODEL || "grok-2-latest";
+      llmUrl = env.LLM_URL || "https://api.xai.com/v1/chat/completions";
+      llmAuthKey = customLlmKey || groqApiKey;
     }
-    llmAuthKey = groqApiKey;
+  } else {
+    // Si no hay modelo del cliente, usamos la autodetección tradicional por variables de entorno
+    if (env.LLM_URL) {
+      llmUrl = env.LLM_URL;
+      llmModel = env.LLM_MODEL || "llama-3.1-8b-instant";
+      llmAuthKey = customLlmKey || groqApiKey || deepseekApiKey;
+    } else if (deepseekApiKey) {
+      llmUrl = "https://api.deepseek.com/chat/completions";
+      llmModel = env.LLM_MODEL || "deepseek-chat";
+      llmAuthKey = deepseekApiKey;
+    } else if (groqApiKey) {
+      if (groqApiKey.startsWith("gsk_")) {
+        llmUrl = "https://api.groq.com/openai/v1/chat/completions";
+        llmModel = env.LLM_MODEL || "llama-3.3-70b-versatile";
+      } else {
+        llmUrl = "https://api.xai.com/v1/chat/completions";
+        llmModel = env.LLM_MODEL || "grok-2-latest";
+      }
+      llmAuthKey = groqApiKey;
+    }
   }
 
   try {

@@ -1495,7 +1495,177 @@
   background: rgba(239, 68, 68, 0.1);
 }
 
+/* ================================================
+   Discount Range Filter
+   ================================================ */
+
+/* Toggle switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--text-dim);
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translate(18px, -50%);
+  background: #fff;
+}
+
+/* Discount filter body */
+.discount-filter-body {
+  transition: opacity 0.2s, filter 0.2s;
+}
+
+.discount-filter-body.disabled {
+  opacity: 0.38;
+  pointer-events: none;
+  filter: grayscale(0.6);
+}
+
+.discount-range-labels {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.discount-range-track-wrap {
+  flex: 1;
+}
+
+.discount-range-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  min-width: 42px;
+  text-align: center;
+  background: rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 4px;
+  padding: 0.2rem 0.35rem;
+  white-space: nowrap;
+}
+
+/* Dual range slider */
+.dual-range-wrapper {
+  position: relative;
+  height: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.dual-range {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  pointer-events: none;
+  outline: none;
+  z-index: 3;
+}
+
+/* Background track */
+.dual-range-track {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background: var(--bg3);
+  border-radius: 2px;
+  z-index: 0;
+}
+
+.dual-range-fill {
+  position: absolute;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), #10b981);
+  border-radius: 2px;
+  z-index: 1;
+  pointer-events: none;
+  box-shadow: 0 0 6px rgba(167,139,250,0.3);
+}
+
+/* Reset native tracks to be fully transparent so they don't cover other elements */
+.dual-range::-webkit-slider-runnable-track {
+  height: 4px;
+  background: transparent;
+  border: none;
+}
+.dual-range::-moz-range-track {
+  height: 4px;
+  background: transparent;
+  border: none;
+}
+
+/* Thumb */
+.dual-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px var(--accent), 0 2px 6px rgba(0,0,0,0.5);
+  cursor: pointer;
+  pointer-events: all;
+  margin-top: -7px;
+  transition: box-shadow 0.15s;
+}
+.dual-range::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 4px rgba(167,139,250,0.25), 0 2px 8px rgba(0,0,0,0.5);
+}
+.dual-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px var(--accent);
+  cursor: pointer;
+  pointer-events: all;
+}
+
 /* Expanded layout for editable form */
+
 .expanded-container {
   display: grid;
   grid-template-columns: 1fr;

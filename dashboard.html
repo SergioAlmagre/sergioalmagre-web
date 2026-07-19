@@ -42,6 +42,7 @@
       <div class="dash-tabs">
         <button class="tab-btn active" id="tab-inventario-btn" data-tab="inventario-tab">Inventario</button>
         <button class="tab-btn" id="tab-stats-btn" data-tab="stats-tab">Estadísticas</button>
+        <button class="tab-btn" id="tab-config-btn" data-tab="config-tab">Configuración</button>
       </div>
     </header>
 
@@ -90,6 +91,43 @@
       <div id="filter-rules-list" class="filter-rules-list">
         <p class="text-xs text-dim italic py-2" id="no-filters-msg">
           No hay filtros aplicados. Haz clic en "+ Añadir filtro" para filtrar por cualquier columna de tu inventario.
+        </p>
+      </div>
+    </section>
+
+    <!-- FILTRO DE RANGO DE DESCUENTO -->
+    <section class="filter-constructor-section discount-filter-section" id="discount-filter-section" style="margin-bottom: 1.5rem;">
+      <div class="filter-constructor-header">
+        <h3>
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          </svg>
+          Filtro por Descuento (%)
+        </h3>
+        <label class="toggle-switch" title="Activar / Desactivar filtro de descuento">
+          <input type="checkbox" id="discount-filter-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div id="discount-filter-body" class="discount-filter-body disabled">
+        <div class="discount-range-labels">
+          <span class="discount-range-badge min-badge">
+            <span id="discount-min-label">0</span>%
+          </span>
+          <span class="discount-range-track-wrap">
+            <div class="dual-range-wrapper">
+              <div class="dual-range-track"></div>
+              <div class="dual-range-fill" id="dual-range-fill"></div>
+              <input type="range" id="discount-min" class="dual-range dual-range-min" min="0" max="100" value="0" step="1">
+              <input type="range" id="discount-max" class="dual-range dual-range-max" min="0" max="100" value="100" step="1">
+            </div>
+          </span>
+          <span class="discount-range-badge max-badge">
+            <span id="discount-max-label">100</span>%
+          </span>
+        </div>
+        <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.6rem; text-align: center;">
+          Mostrando artículos con descuento entre <strong id="discount-range-summary" class="accent">0% – 100%</strong>
         </p>
       </div>
     </section>
@@ -201,6 +239,43 @@
           </table>
         </div>
       </div>
+    </div>
+
+    <!-- TAB 3: CONFIGURACIÓN -->
+    <div id="config-tab" class="tab-content hidden">
+      <section style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); max-width: 600px; margin: 1.5rem auto; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+        <h3 class="accent" style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+          // configuración_inteligencia_artificial
+        </h3>
+        
+        <div style="margin-bottom: 1.75rem;">
+          <label for="ai-model-select" style="display:block; font-weight:700; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.5rem; font-size: 0.75rem; letter-spacing: 0.05em;">
+            Modelo de Lenguaje (Tasador)
+          </label>
+          <select id="ai-model-select" class="form-control-input" style="background: var(--bg3); border-color: var(--border); padding: 0.75rem; font-family: inherit; font-size: 0.9rem; cursor: pointer; color: var(--text);">
+            <optgroup label="Groq Cloud (Velocidad e Inferencia Instantánea)">
+              <option value="llama-3.1-8b-instant">Llama 3.1 8B (Flash) — Ultrarrápido, ideal para procesamiento masivo</option>
+              <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Versatile) — Muy preciso y descriptivo</option>
+              <option value="llama3-8b-8192">Llama 3 8B (Llama3 Flash)</option>
+            </optgroup>
+            <optgroup label="DeepSeek (Razonamiento y Lógica Superior)">
+              <option value="deepseek-chat">DeepSeek V3 (Chat) — Excelente relación calidad/precio</option>
+              <option value="deepseek-reasoner">DeepSeek R1 (Reasoner) — Razonamiento analítico profundo</option>
+            </optgroup>
+            <optgroup label="xAI (Grok)">
+              <option value="grok-2-latest">Grok 2 — Modelo avanzado de Twitter/xAI</option>
+            </optgroup>
+          </select>
+          <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.75rem; line-height: 1.5;">
+            Selecciona el motor de IA que se utilizará tanto para el análisis individual de cada tarjeta como para el procesamiento masivo de la tasación. Asegúrate de tener la variable de entorno correspondiente configurada (<code>GROQ_API_KEY</code>, <code>DEEPSEEK_API_KEY</code> o <code>XAI_API_KEY</code>).
+          </p>
+        </div>
+
+        <button id="save-config-btn" class="btn-primary" style="width: 100%; padding: 0.85rem; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+          <svg style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+          Guardar Configuración
+        </button>
+      </section>
     </div>
 
   </main>

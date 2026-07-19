@@ -24,10 +24,7 @@ export async function onRequestGet(context) {
     );
   }
 
-  const rawGroqKey = (env.GROQ_API_KEY || env.XAI_API_KEY || "")
-    .trim()
-    .replace(/^["']|["']$/g, "");
-  
+  const rawGroqKey = (env.GROQ_API_KEY || env.XAI_API_KEY || "").trim().replace(/^["']|["']$/g, "");
   let groqApiKey = rawGroqKey;
   if (groqApiKey.includes("gsk_")) {
     const match = groqApiKey.match(/gsk_[a-zA-Z0-9_-]+/);
@@ -36,14 +33,18 @@ export async function onRequestGet(context) {
     }
   }
 
+  const deepseekApiKey = (env.DEEPSEEK_API_KEY || "").trim().replace(/^["']|["']$/g, "");
+  const customLlmKey = (env.LLM_KEY || "").trim().replace(/^["']|["']$/g, "");
+  const hasKey = groqApiKey || deepseekApiKey || customLlmKey;
+
   const rawTavilyKey = env.TAVILY_API_KEY?.trim().replace(/^["']|["']$/g, "") || "";
   const tavilyApiKey = rawTavilyKey.startsWith("tvly-tvly-")
     ? rawTavilyKey.replace("tvly-tvly-", "tvly-")
     : rawTavilyKey;
 
-  if (!groqApiKey) {
+  if (!hasKey) {
     return new Response(
-      JSON.stringify({ error: "La variable de entorno GROQ_API_KEY/XAI_API_KEY no está configurada." }),
+      JSON.stringify({ error: "No se ha configurado ninguna API Key para el modelo de lenguaje (GROQ_API_KEY, DEEPSEEK_API_KEY, XAI_API_KEY o LLM_KEY)." }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
@@ -55,13 +56,31 @@ export async function onRequestGet(context) {
     );
   }
 
-  // Detección automática del proveedor y modelo
+  // Detección automática del proveedor, modelo y credenciales a usar
   let llmUrl = "https://api.xai.com/v1/chat/completions";
-  let llmModel = "grok-2-latest";
+  let llmModel = env.LLM_MODEL || "grok-2-latest";
+  let llmAuthKey = groqApiKey;
 
-  if (groqApiKey.startsWith("gsk_")) {
-    llmUrl = "https://api.groq.com/openai/v1/chat/completions";
-    llmModel = "llama-3.3-70b-versatile";
+  if (env.LLM_URL) {
+    // Configuración genérica/personalizada por variables de entorno
+    llmUrl = env.LLM_URL;
+    llmModel = env.LLM_MODEL || "llama-3.1-8b-instant"; // Default override to flash if not set
+    llmAuthKey = customLlmKey || groqApiKey || deepseekApiKey;
+  } else if (deepseekApiKey) {
+    // DeepSeek API
+    llmUrl = "https://api.deepseek.com/v1/chat/completions";
+    llmModel = env.LLM_MODEL || "deepseek-chat"; // deepseek-chat represents V3 (fast and affordable)
+    llmAuthKey = deepseekApiKey;
+  } else if (groqApiKey) {
+    // Groq / xAI fallback
+    if (groqApiKey.startsWith("gsk_")) {
+      llmUrl = "https://api.groq.com/openai/v1/chat/completions";
+      llmModel = env.LLM_MODEL || "llama-3.3-70b-versatile"; // Default Groq model, can override to flash (e.g. llama-3.1-8b-instant)
+    } else {
+      llmUrl = "https://api.xai.com/v1/chat/completions";
+      llmModel = env.LLM_MODEL || "grok-2-latest";
+    }
+    llmAuthKey = groqApiKey;
   }
 
   try {
@@ -136,7 +155,7 @@ export async function onRequestGet(context) {
     const grokRes = await fetch(llmUrl, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${groqApiKey}`,
+        Authorization: `Bearer ${llmAuthKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

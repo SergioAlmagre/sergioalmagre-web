@@ -644,6 +644,11 @@ function renderItemsList() {
                 ${isAnalyzing ? "..." : `<svg style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:3px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Analizar`}
               </button>
             ` : ""}
+            <button class="btn-icon" data-action="copy-original-to-purchase" title="Copiar precio original a precio de compra" style="padding: 0.35rem; color: var(--accent);">
+              <svg style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              </svg>
+            </button>
             <button class="btn-icon" data-action="open-config" title="Propiedades avanzadas" style="padding: 0.35rem;">
               <svg style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -695,12 +700,7 @@ function renderItemsList() {
             <div class="form-group-row">
               <div>
                 <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.4rem;">P. Original (€)</label>
-                <div style="display:flex; gap:0.3rem; align-items:stretch;">
-                  <input type="number" class="form-control-input edit-field-retail-price" value="${enrichedData.retailPrice || ""}" style="flex:1; min-width:0;">
-                  <button type="button" class="copy-retail-to-purchase-btn" title="Copiar precio original a precio de compra" style="padding:0 0.5rem; background:rgba(167,139,250,0.12); border:1px solid rgba(167,139,250,0.25); border-radius:var(--radius); color:var(--accent); cursor:pointer; display:flex; align-items:center; transition:background 0.2s; flex-shrink:0;">
-                    <svg style="width:13px; height:13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                  </button>
-                </div>
+                <input type="number" class="form-control-input edit-field-retail-price" value="${enrichedData.retailPrice || ""}">
               </div>
               <div>
                 <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.4rem;">P. Compra (€)</label>
@@ -761,6 +761,45 @@ function renderItemsList() {
       openConfigModal(item);
     });
 
+    // Copy original price shortcut button in card header
+    const copyOriginalBtn = card.querySelector('[data-action="copy-original-to-purchase"]');
+    if (copyOriginalBtn) {
+      copyOriginalBtn.addEventListener("click", async (e) => {
+        e.stopPropagation(); // Prevent card expansion
+        const oldPurchase = item.enriched.purchasePrice;
+        const retail = item.enriched.retailPrice || 0;
+        
+        if (!retail) {
+          showToast("El precio original está vacío o es 0", "info");
+          return;
+        }
+
+        item.enriched.purchasePrice = retail;
+        renderItemsList(); // update immediately in UI
+
+        try {
+          const response = await fetch("/api/notion/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              itemId: item.id,
+              itemIds: item.itemIds || [item.id],
+              purchasePrice: retail,
+            }),
+          });
+
+          if (!response.ok) throw new Error();
+          showToast(`Copiado original (${retail} €) a precio de compra.`, "success");
+          calculateStats();
+        } catch (err) {
+          console.error(err);
+          item.enriched.purchasePrice = oldPurchase;
+          renderItemsList();
+          showToast("Error al guardar el precio de compra.", "error");
+        }
+      });
+    }
+
     // Control switches (Publish, Sold, No Vender)
     const controlCheckboxes = card.querySelectorAll("[data-control]");
     controlCheckboxes.forEach(cb => {
@@ -819,15 +858,7 @@ function renderItemsList() {
         savingsInput.value = `${enrichedData.savingsPercentage}%`;
       };
 
-      // Copy retail price → purchase price
-      const copyBtn = card.querySelector(".copy-retail-to-purchase-btn");
-      if (copyBtn) {
-        copyBtn.addEventListener("click", () => {
-          purchaseInput.value = retailInput.value || "";
-          updateLocalFields();
-          showToast("Precio original copiado a Precio de Compra.", "success");
-        });
-      }
+
 
       [imgUrlInput, titleInput, retailInput, purchaseInput, saleInput, descInput].forEach(inp => {
         inp.addEventListener("blur", updateLocalFields);

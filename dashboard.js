@@ -695,7 +695,16 @@ function renderItemsList() {
             <div class="form-group-row">
               <div>
                 <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.4rem;">P. Original (€)</label>
-                <input type="number" class="form-control-input edit-field-retail-price" value="${enrichedData.retailPrice || ""}">
+                <div style="display:flex; gap:0.3rem; align-items:stretch;">
+                  <input type="number" class="form-control-input edit-field-retail-price" value="${enrichedData.retailPrice || ""}" style="flex:1; min-width:0;">
+                  <button type="button" class="copy-retail-to-purchase-btn" title="Copiar precio original a precio de compra" style="padding:0 0.5rem; background:rgba(167,139,250,0.12); border:1px solid rgba(167,139,250,0.25); border-radius:var(--radius); color:var(--accent); cursor:pointer; display:flex; align-items:center; transition:background 0.2s; flex-shrink:0;">
+                    <svg style="width:13px; height:13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.4rem;">P. Compra (€)</label>
+                <input type="number" class="form-control-input edit-field-purchase-price" value="${enrichedData.purchasePrice || ""}">
               </div>
               <div>
                 <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.4rem;">P. Venta (€)</label>
@@ -789,6 +798,7 @@ function renderItemsList() {
       const imgUrlInput = card.querySelector(".edit-field-image-url");
       const titleInput = card.querySelector(".edit-field-title");
       const retailInput = card.querySelector(".edit-field-retail-price");
+      const purchaseInput = card.querySelector(".edit-field-purchase-price");
       const saleInput = card.querySelector(".edit-field-secondhand-price");
       const descInput = card.querySelector(".edit-field-description");
       const savingsInput = card.querySelector(".edit-field-savings");
@@ -797,6 +807,7 @@ function renderItemsList() {
         enrichedData.imageUrl = imgUrlInput.value;
         enrichedData.title = titleInput.value;
         enrichedData.retailPrice = Number(retailInput.value) || 0;
+        enrichedData.purchasePrice = Number(purchaseInput.value) || 0;
         enrichedData.secondHandPrice = Number(saleInput.value) || 0;
         enrichedData.description = descInput.value;
         
@@ -808,7 +819,17 @@ function renderItemsList() {
         savingsInput.value = `${enrichedData.savingsPercentage}%`;
       };
 
-      [imgUrlInput, titleInput, retailInput, saleInput, descInput].forEach(inp => {
+      // Copy retail price → purchase price
+      const copyBtn = card.querySelector(".copy-retail-to-purchase-btn");
+      if (copyBtn) {
+        copyBtn.addEventListener("click", () => {
+          purchaseInput.value = retailInput.value || "";
+          updateLocalFields();
+          showToast("Precio original copiado a Precio de Compra.", "success");
+        });
+      }
+
+      [imgUrlInput, titleInput, retailInput, purchaseInput, saleInput, descInput].forEach(inp => {
         inp.addEventListener("blur", updateLocalFields);
       });
 
@@ -1064,6 +1085,7 @@ async function handleSave(item) {
         title: item.enriched.title,
         retailPrice: item.enriched.retailPrice,
         secondHandPrice: item.enriched.secondHandPrice,
+        purchasePrice: item.enriched.purchasePrice,
         description: item.enriched.description,
         imageUrl: item.enriched.imageUrl,
         publicar: item.enriched.publicar,
@@ -1379,6 +1401,8 @@ function calculateStats() {
 
   // Render Canvas horizontal bar chart
   drawStatsChart(categoryStats);
+  // Render doughnut chart
+  drawPieChart(categoryStats);
 }
 
 // Draw custom modern chart in canvas
@@ -1461,6 +1485,120 @@ function drawStatsChart(categoryStats) {
     ctx.textAlign = "left";
     ctx.fillText(`${Math.round(cat.revenue)} €`, paddingLeft + valWidth + 10, y + barHeight / 2);
   }
+}
+
+// Draw doughnut chart: units per category
+function drawPieChart(categoryStats) {
+  const canvas = document.getElementById("stats-pie-chart");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+
+  const width = rect.width;
+  const height = rect.height;
+  ctx.clearRect(0, 0, width, height);
+
+  const cats = Object.values(categoryStats).sort((a, b) => b.count - a.count);
+  const total = cats.reduce((acc, c) => acc + c.count, 0);
+
+  if (cats.length === 0 || total === 0) {
+    ctx.fillStyle = "rgba(255,255,255,0.35)";
+    ctx.font = "12px monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Sin datos para graficar.", width / 2, height / 2);
+    return;
+  }
+
+  const COLORS = [
+    "#a78bfa", "#10b981", "#3b82f6", "#f59e0b",
+    "#ec4899", "#f97316", "#14b8a6", "#8b5cf6",
+  ];
+
+  // Layout: doughnut on the left, legend on the right
+  const legendWidth = 130;
+  const chartAreaWidth = width - legendWidth;
+  const cx = chartAreaWidth / 2;
+  const cy = height / 2;
+  const outerR = Math.min(chartAreaWidth, height) / 2 - 16;
+  const innerR = outerR * 0.58;
+
+  let startAngle = -Math.PI / 2;
+
+  cats.forEach((cat, i) => {
+    const slice = (cat.count / total) * 2 * Math.PI;
+    const color = COLORS[i % COLORS.length];
+    const midAngle = startAngle + slice / 2;
+
+    // Glow effect
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = color;
+
+    // Slice
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, outerR, startAngle, startAngle + slice);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    startAngle += slice;
+  });
+
+  // Doughnut hole
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR, 0, 2 * Math.PI);
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--bg2").trim() || "#1a1a2e";
+  ctx.fill();
+
+  // Center label
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
+  ctx.font = `bold ${Math.round(outerR * 0.38)}px system-ui`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(total, cx, cy - 7);
+  ctx.font = `${Math.round(outerR * 0.2)}px system-ui`;
+  ctx.fillStyle = "rgba(255,255,255,0.4)";
+  ctx.fillText("unidades", cx, cy + outerR * 0.22);
+
+  // Legend
+  const legendX = chartAreaWidth + 8;
+  const lineH = Math.min(22, (height - 16) / cats.length);
+  const startY = (height - lineH * cats.length) / 2;
+
+  cats.forEach((cat, i) => {
+    const color = COLORS[i % COLORS.length];
+    const y = startY + i * lineH + lineH / 2;
+
+    // Color dot
+    ctx.beginPath();
+    ctx.arc(legendX + 6, y, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
+    ctx.shadowBlur = 6;
+    ctx.shadowColor = color;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Label
+    let label = cat.name.length > 13 ? cat.name.slice(0, 11) + "…" : cat.name;
+    ctx.fillStyle = "rgba(255,255,255,0.75)";
+    ctx.font = "bold 10px system-ui";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillText(label, legendX + 15, y);
+
+    // Count
+    const pct = Math.round((cat.count / total) * 100);
+    ctx.fillStyle = "rgba(255,255,255,0.4)";
+    ctx.font = "9px monospace";
+    ctx.fillText(`${cat.count} ud · ${pct}%`, legendX + 15, y + 11);
+  });
 }
 
 // Initial fetch

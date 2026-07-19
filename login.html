@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso Admin — Sergio Almagre</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="stylesheet" href="preowned.css" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <style>
+    .login-container {
+      max-width: 480px;
+      margin: 12rem auto 6rem;
+      padding: 0 1.5rem;
+    }
+    .login-terminal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    .login-body {
+      padding: 2rem;
+    }
+    .login-prompt {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+    .login-input-group {
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .login-input-group label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .login-input-group input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.8rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .login-input-group input:focus {
+      border-color: var(--accent);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      display: block;
+    }
+    .error-msg {
+      color: #ef4444;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      margin-top: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <span class="nav-logo" onclick="window.location.href='/'" style="cursor: pointer;">sergioalmagre<span class="accent">.</span>com</span>
+    <ul class="nav-links">
+      <li><a href="/#about">about</a></li>
+      <li><a href="/#stack">stack</a></li>
+      <li><a href="/#projects">projects</a></li>
+      <li><a href="/#experience">experience</a></li>
+      <li><a href="/#contact">contact</a></li>
+      <li><a href="/preowned.html">pre-owned</a></li>
+    </ul>
+  </nav>
+
+  <main class="login-container">
+    <div class="login-terminal">
+      <div class="terminal-bar">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <span class="terminal-title">~/admin — auth</span>
+      </div>
+      <div class="login-body">
+        <div class="login-prompt">
+          $ sudo login --panel=pre-owned
+        </div>
+        
+        <form id="login-form">
+          <div class="login-input-group">
+            <label for="password">Contraseña de Administrador</label>
+            <input type="password" id="password" required autocomplete="current-password" autofocus placeholder="••••••••">
+          </div>
+          
+          <button type="submit" class="btn-primary login-btn">Iniciar Sesión</button>
+          <div id="error-box" class="error-msg hidden"></div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const password = document.getElementById("password").value;
+      const errorBox = document.getElementById("error-box");
+      errorBox.classList.add("hidden");
+
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password })
+        });
+
+        const data = await response.json();
+        if (response.ok && data.success) {
+          window.location.href = "/dashboard.html";
+        } else {
+          errorBox.textContent = data.error || "Contraseña incorrecta.";
+          errorBox.classList.remove("hidden");
+        }
+      } catch (err) {
+        console.error(err);
+        errorBox.textContent = "Error al intentar iniciar sesión.";
+        errorBox.classList.remove("hidden");
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Administrador — Sergio Almagre</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="stylesheet" href="preowned.css" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+</head>
+<body class="admin-body-bg">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <span class="nav-logo" onclick="window.location.href='/'" style="cursor: pointer;">sergioalmagre<span class="accent">.</span>com</span>
+    <ul class="nav-links">
+      <li><a href="/#about">about</a></li>
+      <li><a href="/#stack">stack</a></li>
+      <li><a href="/#projects">projects</a></li>
+      <li><a href="/#experience">experience</a></li>
+      <li><a href="/#contact">contact</a></li>
+      <li><a href="/preowned.html">pre-owned</a></li>
+      <li><a href="#" id="logout-btn" class="accent">logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="dashboard-container">
+    
+    <!-- HEADER -->
+    <header class="dash-header">
+      <div>
+        <h1 class="dash-title">Panel de Control</h1>
+        <p class="dash-subtitle">Gestión e indexación inteligente de tu inventario.</p>
+      </div>
+      
+      <!-- TABS SELECTOR -->
+      <div class="dash-tabs">
+        <button class="tab-btn active" id="tab-inventario-btn" data-tab="inventario-tab">Inventario</button>
+        <button class="tab-btn" id="tab-stats-btn" data-tab="stats-tab">Estadísticas</button>
+      </div>
+    </header>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- GENERAL SHARED ACTIONS & FILTERS -->
+    <!-- ACTIONS BAR -->
+    <section class="dash-actions" style="margin-top: 1.5rem;">
+      <!-- Búsqueda -->
+      <div class="dash-search-wrap">
+        <input type="text" id="dash-search" placeholder="Filtrar por modelo, fabricante, naturaleza...">
+      </div>
+      
+      <!-- Filtros Rápidos / Acciones -->
+      <div class="dash-quick-filters">
+        <button id="bulk-enrich-btn" class="btn-primary bulk-btn">
+          Procesamiento Masivo IA
+        </button>
+      </div>
+    </section>
+
+    <!-- METRICAS DE CONTEO RÁPIDAS -->
+    <div class="dash-stats-bar">
+      <span>Artículos: <strong class="accent" id="stat-notion-count">0</strong></span>
+      <span class="divider">|</span>
+      <span>Filtrados: <strong class="accent-purple" id="stat-filtered-count">0</strong></span>
+      <span class="divider">|</span>
+      <span>Seleccionados: <strong class="accent-green" id="stat-selected-count">0 (0 ud)</strong></span>
+    </div>
+
+    <!-- CONSTRUCTOR DE FILTROS DINÁMICOS -->
+    <section class="filter-constructor-section" id="filter-constructor">
+      <div class="filter-constructor-header">
+        <h3>
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          Filtros Avanzados
+        </h3>
+        <div class="filter-constructor-actions">
+          <button type="button" id="add-filter-rule-btn" class="btn-text">+ Añadir filtro</button>
+          <button type="button" id="clear-filters-btn" class="btn-text-danger hidden">Borrar filtros</button>
+        </div>
+      </div>
+      <div id="filter-rules-list" class="filter-rules-list">
+        <p class="text-xs text-dim italic py-2" id="no-filters-msg">
+          No hay filtros aplicados. Haz clic en "+ Añadir filtro" para filtrar por cualquier columna de tu inventario.
+        </p>
+      </div>
+    </section>
+
+    <!-- BULK PROGRESS -->
+    <div id="bulk-progress-panel" class="bulk-progress-panel hidden" style="margin-bottom: 1.5rem;">
+      <div class="bulk-progress-header">
+        <span>Procesando artículos con IA (Tavily + Grok)...</span>
+        <button id="cancel-bulk-btn" class="btn-cancel">Detener</button>
+      </div>
+      <div class="progress-bar-container">
+        <div id="bulk-progress-bar" class="progress-bar" style="width: 0%"></div>
+      </div>
+      <div id="bulk-progress-status" class="progress-status">0 de 0 procesados</div>
+    </div>
+
+    <!-- MAIN TABS CONTENT -->
+    
+    <!-- TAB 1: INVENTARIO -->
+    <div id="inventario-tab" class="tab-content">
+      <!-- LOADER / ERROR STATES -->
+      <div id="dash-loader" class="loader">
+        <div class="spinner"></div>
+        <p>Cargando inventario...</p>
+      </div>
+      <div id="dash-error" class="alert-box error hidden"></div>
+
+      <!-- ITEMS CARDS CONTAINER -->
+      <div id="items-list-container" class="items-list-container hidden">
+        <div class="items-list-header">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="select-all-items" class="custom-checkbox">
+            <span>Seleccionar todos</span>
+          </label>
+        </div>
+        <div id="items-list" class="items-list">
+          <!-- Se inyecta dinámicamente -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: ESTADÍSTICAS -->
+    <div id="stats-tab" class="tab-content hidden">
+      <section class="stats-grid">
+        <!-- Card 1 -->
+        <div class="stats-card">
+          <span class="stats-card-label">Total Modelos</span>
+          <span class="stats-card-value" id="stat-total-models">0</span>
+          <span class="stats-card-desc">Modelos únicos agrupados</span>
+        </div>
+        <!-- Card 2 -->
+        <div class="stats-card">
+          <span class="stats-card-label">Total Unidades</span>
+          <span class="stats-card-value" id="stat-total-units">0</span>
+          <span class="stats-card-desc" id="stat-sold-units">0 vendidas</span>
+        </div>
+        <!-- Card 3 -->
+        <div class="stats-card highlight-profit">
+          <span class="stats-card-label">Inversión Total</span>
+          <span class="stats-card-value" id="stat-total-cost">0 €</span>
+          <span class="stats-card-desc">Costo total de adquisición</span>
+        </div>
+        <!-- Card 4 -->
+        <div class="stats-card highlight-success">
+          <span class="stats-card-label">Ingresos Potenciales</span>
+          <span class="stats-card-value" id="stat-total-revenue">0 €</span>
+          <span class="stats-card-desc" id="stat-expected-profit">Margen estimado: 0 €</span>
+        </div>
+      </section>
+
+      <!-- GRÁFICOS MODERNOS DE RENDIMIENTO -->
+      <div class="stats-chart-section" style="margin-top: 1.5rem;">
+        <h3 class="stats-sec-title">// distribución_financiera_por_categoría</h3>
+        <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-top: 0.5rem; display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
+          <div style="position: relative; height: 260px;">
+            <canvas id="stats-chart" style="width: 100%; height: 100%; display: block;"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLA DETALLE FINANCIERO -->
+      <div class="stats-table-section">
+        <h3 class="stats-sec-title">// desglose_financiero_por_categoria</h3>
+        <div class="table-responsive">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Categoría</th>
+                <th>Artículos</th>
+                <th>Costo</th>
+                <th>Venta Estimada</th>
+                <th>Beneficio Estimado</th>
+                <th>Margen Promedio</th>
+              </tr>
+            </thead>
+            <tbody id="stats-table-body">
+              <!-- Se inyecta con JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL DE PRECIO DE VENTA (Vendido confirmation) -->
+  <div id="sell-price-modal" class="modal-overlay hidden">
+    <div class="modal-card max-w-md">
+      <div class="modal-body-padding">
+        <h3 class="gradient-text-rose-amber flex items-center gap-2">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px; color: #f43f5e;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Confirmar Precio de Venta
+        </h3>
+        <p class="modal-subtitle-text">
+          Introduce el precio real al que has vendido <span id="sell-modal-item-name" class="font-bold text-white"></span>. Este dato se guardará en tu inventario.
+        </p>
+        
+        <div class="grid grid-cols-2 gap-4 mt-4">
+          <div>
+            <label class="block text-label mb-1.5">Precio Compra (€)</label>
+            <div class="relative">
+              <input type="number" id="sell-modal-purchase-price" placeholder="Ej: 80" class="modal-input">
+              <span class="input-suffix">EUR</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-label mb-1.5">Precio Venta Final (€)</label>
+            <div class="relative">
+              <input type="number" id="sell-modal-sale-price" placeholder="Ej: 150" class="modal-input">
+              <span class="input-suffix">EUR</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-between items-center text-[10px] text-dim mt-3">
+          <span>Modifica o confirma el coste para asegurar previsiones correctas.</span>
+          <span id="sell-modal-suggested-price-wrap" class="hidden">Sugerido: <strong class="accent" id="sell-modal-suggested-price">0 €</strong></span>
+        </div>
+        <div class="modal-actions-row mt-6">
+          <button id="sell-modal-cancel" class="btn-ghost">Cancelar</button>
+          <button id="sell-modal-confirm" class="btn-rose">Confirmar Venta</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE DIÁLOGO / CONFIRMACIÓN GENERAL -->
+  <div id="general-confirm-modal" class="modal-overlay hidden">
+    <div class="modal-card max-w-md">
+      <div class="modal-body-padding">
+        <h3 id="confirm-modal-title" class="accent-purple">Confirmación</h3>
+        <p id="confirm-modal-message" class="modal-subtitle-text mt-3"></p>
+        <div class="modal-actions-row mt-6">
+          <button id="confirm-modal-cancel" class="btn-ghost">Cancelar</button>
+          <button id="confirm-modal-confirm" class="btn-primary">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIGURACIÓN DE PROPIEDADES INDIVIDUALES (TABLA VERTICAL CLAVE-VALOR) -->
+  <div id="item-config-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 650px;">
+      <div class="modal-body-padding">
+        <h3 class="flex items-center gap-2" style="font-size: 1.2rem; font-weight: 800; color: var(--accent);">
+          <svg style="width: 20px; height: 20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Propiedades Avanzadas del Artículo
+        </h3>
+        <p class="modal-subtitle-text mt-1" style="font-size: 0.8rem;">
+          Modifica los valores del artículo guardados en la base de datos principal. Las columnas de solo lectura (relaciones, fórmulas, etc.) están deshabilitadas.
+        </p>
+
+        <div style="max-height: 400px; overflow-y: auto; margin-top: 1.25rem; border: 1px solid var(--border); border-radius: 8px;">
+          <table class="dash-table" style="width: 100%; border-collapse: collapse; margin: 0;">
+            <thead>
+              <tr style="background: var(--bg3);">
+                <th style="font-size: 0.7rem; padding: 0.6rem 0.8rem; text-transform: uppercase;">Propiedad (Clave)</th>
+                <th style="font-size: 0.7rem; padding: 0.6rem 0.8rem; text-transform: uppercase;">Valor</th>
+              </tr>
+            </thead>
+            <tbody id="config-properties-body">
+              <!-- Injected dynamically as key-value rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="modal-actions-row mt-6" style="display: flex; justify-content: flex-end; gap: 0.8rem;">
+          <button id="config-modal-cancel" class="btn-ghost">Cancelar</button>
+          <button id="config-modal-save" class="btn-primary">Guardar propiedades</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

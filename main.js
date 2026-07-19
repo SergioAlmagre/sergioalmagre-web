@@ -28,6 +28,13 @@ const sequences = [
 <span class="comment">Ship:   USS Dev Enterprise (NCC-1701)</span>
 <span class="comment">Status: Tactical patrol ready.</span>
 <span class="val" id="terminal-play-hint" style="color: #00d4ff; text-shadow: 0 0 10px rgba(0, 212, 255, 0.4); cursor: pointer; text-decoration: underline;">[ CLICK HERE OR RUN 'play' TO PILOT SHIP ]</span>`
+  },
+  {
+    cmd: 'preowned --manage',
+    output: `<span class="val">CONNECTING TO PRE-OWNED DATABASE...</span>
+<span class="comment">Status: Online. database loaded.</span>
+<span class="comment">System: Edge worker ready.</span>
+<span class="val2" id="terminal-admin-hint" style="color: #a78bfa; text-shadow: 0 0 10px rgba(167, 139, 250, 0.4); cursor: pointer; text-decoration: underline;">[ CLICK HERE TO MANAGE INVENTORY ]</span>`
   }
 ];
 
@@ -170,6 +177,8 @@ if (outputBody) {
   outputBody.addEventListener('click', (e) => {
     if (e.target.id === 'terminal-play-hint' || e.target.closest('#terminal-play-hint')) {
       openGame();
+    } else if (e.target.id === 'terminal-admin-hint' || e.target.closest('#terminal-admin-hint')) {
+      window.location.href = '/login.html';
     }
   });
 }

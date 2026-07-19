@@ -17,3 +17,7 @@ node_modules/
 .npm/
 package-lock.json
 *.log
+
+# Cloudflare Wrangler local files
+.dev.vars
+.wrangler/

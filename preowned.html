@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-owned — Sergio Almagre</title>
+  <meta name="description" content="Catálogo exclusivo de material audiovisual de segunda mano. Cámaras, objetivos y accesorios." />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="stylesheet" href="preowned.css" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <span class="nav-logo" onclick="window.location.href='/'" style="cursor: pointer;">sergioalmagre<span class="accent">.</span>com</span>
+    <ul class="nav-links">
+      <li><a href="/#about">about</a></li>
+      <li><a href="/#stack">stack</a></li>
+      <li><a href="/#projects">projects</a></li>
+      <li><a href="/#experience">experience</a></li>
+      <li><a href="/#contact">contact</a></li>
+      <li><a href="/preowned.html" class="accent">pre-owned</a></li>
+    </ul>
+  </nav>
+
+  <!-- STORE HERO -->
+  <header class="store-hero">
+    <div class="store-hero-inner">
+      <p class="hero-eyebrow">// pre-owned_store</p>
+      <h1 class="store-title">Material<br><span class="accent">Audiovisual</span></h1>
+      <p class="store-subtitle">Catálogo exclusivo de material audiovisual de segunda mano en excelente estado.</p>
+    </div>
+  </header>
+
+  <!-- STORE CONTAINER -->
+  <main class="store-container">
+    
+    <!-- FILTROS -->
+    <section class="filters-bar">
+      <!-- Buscar -->
+      <div class="filter-group">
+        <label for="search-input">Buscar artículo</label>
+        <div class="input-wrap-search">
+          <input type="text" id="search-input" placeholder="Cámara, objetivo, accesorios...">
+        </div>
+      </div>
+
+      <!-- Precios -->
+      <div class="filter-group price-range">
+        <div class="price-input-col">
+          <label for="min-price">Precio Mín (€)</label>
+          <input type="number" id="min-price" placeholder="Mín">
+        </div>
+        <div class="price-input-col">
+          <label for="max-price">Precio Máx (€)</label>
+          <input type="number" id="max-price" placeholder="Máx">
+        </div>
+      </div>
+
+      <!-- Categoría -->
+      <div class="filter-group">
+        <label for="category-select">Categoría</label>
+        <select id="category-select">
+          <option value="">Todas las categorías</option>
+        </select>
+      </div>
+
+      <!-- Ordenar -->
+      <div class="filter-group">
+        <label for="sort-select">Ordenar por</label>
+        <select id="sort-select">
+          <option value="recent">Más recientes</option>
+          <option value="price-asc">Precio: menor a mayor</option>
+          <option value="price-desc">Precio: mayor a menor</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- LOADING / ERROR / EMPTY STATES -->
+    <div id="loader" class="loader">
+      <div class="spinner"></div>
+      <p>Cargando catálogo...</p>
+    </div>
+
+    <div id="error-message" class="alert-box error hidden"></div>
+
+    <div id="empty-state" class="empty-state hidden">
+      <svg class="empty-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+      <h3>No hay artículos disponibles</h3>
+      <p>No se encontraron artículos que coincidan con los filtros aplicados.</p>
+    </div>
+
+    <!-- PRODUCTS GRID -->
+    <section id="products-grid" class="products-grid hidden">
+      <!-- Se inyecta dinámicamente con JS -->
+    </section>
+
+  </main>
+
+  <!-- MODAL DE DETALLE -->
+  <div id="detail-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <button class="modal-close" id="close-modal-btn" aria-label="Cerrar modal">&times;</button>
+      
+      <div class="modal-content-grid">
+        <!-- Imagen -->
+        <div class="modal-image-wrap" id="modal-image-container">
+          <!-- img tag inyectado con JS -->
+        </div>
+        
+        <!-- Info -->
+        <div class="modal-info">
+          <div>
+            <div class="modal-prices-row">
+              <span class="modal-price" id="modal-secondhand-price">-- €</span>
+              <span class="modal-retail-price line-through" id="modal-retail-price">-- €</span>
+              <span class="modal-dto-badge" id="modal-dto-badge">--% DTO</span>
+            </div>
+
+            <h2 class="modal-title" id="modal-title">Título del Producto</h2>
+            
+            <div class="description-section">
+              <span class="section-tag-label">// especificaciones_y_detalles</span>
+              <pre class="modal-description" id="modal-description">Cargando...</pre>
+            </div>
+          </div>
+          
+          <div class="contact-box">
+            <h4>¿Cómo adquirir este artículo?</h4>
+            <p>Este material está a la venta. Escríbeme por email indicando el artículo en el que estás interesado para coordinar los detalles:</p>
+            <a href="#" id="modal-email-btn" class="btn-primary modal-contact-btn">
+              <svg class="icon-mail" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16" style="margin-right: 8px; vertical-align: middle;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              <span>Contactar por Email</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer-simple">
+    <p>© 2026 Sergio Almagre · <a href="/login.html" class="admin-link">Acceso Administrador</a></p>
+  </footer>
+
+  <script src="preowned.js"></script>
+</body>
+</html>

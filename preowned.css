@@ -561,6 +561,112 @@
   .modal-card {
     max-height: 95vh;
   }
+
+  /* Public Catalog 2-Column Grid Layout */
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+  
+  .product-body {
+    padding: 0.75rem !important;
+  }
+  
+  .product-price {
+    font-size: 1.05rem !important;
+  }
+  
+  .product-retail-price {
+    font-size: 0.7rem !important;
+  }
+  
+  .product-name {
+    font-size: 0.8rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+  
+  .product-desc {
+    font-size: 0.72rem !important;
+    margin-bottom: 0.75rem !important;
+    line-height: 1.4 !important;
+    -webkit-line-clamp: 2 !important;
+  }
+  
+  .product-footer {
+    padding-top: 0.5rem !important;
+    font-size: 0.65rem !important;
+  }
+  
+  .product-footer span:first-child {
+    display: none !important; /* Hide date on mobile to fit row */
+  }
+  
+  .dto-badge, .qty-badge {
+    top: 0.4rem !important;
+    font-size: 0.55rem !important;
+    padding: 0.15rem 0.35rem !important;
+  }
+
+  /* Dashboard Compact Horizontal List Row Layout */
+  .dash-card-header {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    padding: 0.6rem !important;
+  }
+  
+  .dash-card-left {
+    gap: 0.75rem !important;
+  }
+  
+  .dash-card-img-wrap {
+    width: 64px !important;
+    height: 64px !important;
+    align-self: center !important;
+    border-radius: 4px !important;
+  }
+  
+  .dash-card-title-text {
+    font-size: 0.9rem !important;
+    margin: 0 !important;
+    white-space: normal !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+  
+  .dash-card-meta {
+    font-size: 0.65rem !important;
+    margin-bottom: 0.15rem !important;
+    gap: 0.3rem !important;
+  }
+  
+  .dash-card-metrics {
+    font-size: 0.7rem !important;
+    gap: 0.4rem !important;
+  }
+  
+  /* Hide switches only when card is NOT expanded */
+  .dash-card-item:not(.expanded) .dash-card-switches {
+    display: none !important;
+  }
+  
+  .dash-card-right {
+    gap: 0.4rem !important;
+    justify-content: flex-end !important;
+    margin-left: auto;
+  }
+  
+  .dash-card-actions {
+    gap: 0.35rem !important;
+  }
+
+  .dash-card-actions .btn-primary {
+    font-size: 0.65rem !important;
+    padding: 0.3rem 0.5rem !important;
+    border-radius: 4px !important;
+  }
 }
 
 /* ── DASHBOARD STYLES ───────────────────────────────── */

@@ -179,6 +179,12 @@ async function fetchNotionItems() {
     items = data.items || [];
     notionSchema = data.schema || {};
 
+    // Restore saved filters and render them now that we have the schema!
+    loadFiltersFromStorage();
+    if (filterRules.length > 0) {
+      renderFilterRules();
+    }
+
     applyFilters();
   } catch (err) {
     console.error(err);
@@ -1457,9 +1463,5 @@ function drawStatsChart(categoryStats) {
   }
 }
 
-// Initial fetch — restore saved filters first, then fetch data
-loadFiltersFromStorage();
-if (filterRules.length > 0) {
-  renderFilterRules();
-}
+// Initial fetch
 fetchNotionItems();

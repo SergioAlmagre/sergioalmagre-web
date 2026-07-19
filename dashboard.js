@@ -13,6 +13,25 @@ let analyzingIds = {};
 let savingIds = {};
 let currentConfigItem = null;
 
+// --- Filter persistence via localStorage ---
+const FILTER_STORAGE_KEY = "dashboard_filterRules_v1";
+
+function saveFiltersToStorage() {
+  try {
+    localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filterRules));
+  } catch (_) {}
+}
+
+function loadFiltersFromStorage() {
+  try {
+    const raw = localStorage.getItem(FILTER_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) filterRules = parsed;
+    }
+  } catch (_) {}
+}
+
 // DOM Elements
 const loader = document.getElementById("dash-loader");
 const errorBox = document.getElementById("dash-error");
@@ -197,12 +216,14 @@ addFilterRuleBtn.addEventListener("click", () => {
   const id = Math.random().toString(36).substring(2, 9);
   filterRules.push({ id, column: "", condition: "contains", value: "" });
   renderFilterRules();
+  saveFiltersToStorage();
 });
 
 clearFiltersBtn.addEventListener("click", () => {
   filterRules = [];
   renderFilterRules();
   applyFilters();
+  saveFiltersToStorage();
 });
 
 function renderFilterRules() {
@@ -249,6 +270,7 @@ function renderFilterRules() {
       }
       renderFilterRules();
       applyFilters();
+      saveFiltersToStorage();
     });
 
     row.appendChild(colSelect);
@@ -288,6 +310,7 @@ function renderFilterRules() {
         rule.condition = e.target.value;
         renderFilterRules();
         applyFilters();
+        saveFiltersToStorage();
       });
       row.appendChild(condSelect);
 
@@ -335,6 +358,7 @@ function renderFilterRules() {
                 rule.value = updated;
                 applyFilters();
                 renderFilterRules();
+                saveFiltersToStorage();
               });
               
               label.appendChild(checkbox);
@@ -354,6 +378,7 @@ function renderFilterRules() {
           textInput.addEventListener("input", (e) => {
             rule.value = e.target.value;
             applyFilters();
+            saveFiltersToStorage();
           });
           valContainer.appendChild(textInput);
         }
@@ -369,6 +394,7 @@ function renderFilterRules() {
       filterRules = filterRules.filter(r => r.id !== rule.id);
       renderFilterRules();
       applyFilters();
+      saveFiltersToStorage();
     });
     row.appendChild(deleteBtn);
 
@@ -813,7 +839,8 @@ function renderItemsList() {
 // Checkbox action: Publish toggle
 async function handleTogglePublish(item, isPublished) {
   item.enriched.publicar = isPublished;
-  renderItemsList();
+  // Re-run filters so active filter rules react immediately to the change
+  applyFilters();
 
   try {
     const response = await fetch("/api/notion/update", {
@@ -832,7 +859,7 @@ async function handleTogglePublish(item, isPublished) {
   } catch (err) {
     console.error(err);
     item.enriched.publicar = !isPublished;
-    renderItemsList();
+    applyFilters();
     showToast("Error al guardar estado de publicación.", "error");
   }
 }
@@ -840,7 +867,7 @@ async function handleTogglePublish(item, isPublished) {
 // Checkbox action: No Vender toggle
 async function handleToggleNoVender(item, isNoVender) {
   item.enriched.noVender = isNoVender;
-  renderItemsList();
+  applyFilters();
 
   try {
     const response = await fetch("/api/notion/update", {
@@ -859,7 +886,7 @@ async function handleToggleNoVender(item, isNoVender) {
   } catch (err) {
     console.error(err);
     item.enriched.noVender = !isNoVender;
-    renderItemsList();
+    applyFilters();
     showToast("Error al guardar estado.", "error");
   }
 }
@@ -892,7 +919,7 @@ function handleVendidoChange(item, isChecked) {
       item.enriched.purchasePrice = cost;
       item.enriched.secondHandPrice = sale;
       item.enriched.vendido = true;
-      renderItemsList();
+      applyFilters();
 
       try {
         const response = await fetch("/api/notion/update", {
@@ -1430,5 +1457,9 @@ function drawStatsChart(categoryStats) {
   }
 }
 
-// Initial fetch
+// Initial fetch — restore saved filters first, then fetch data
+loadFiltersFromStorage();
+if (filterRules.length > 0) {
+  renderFilterRules();
+}
 fetchNotionItems();

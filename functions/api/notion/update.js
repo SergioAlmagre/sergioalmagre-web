@@ -32,11 +32,12 @@ export async function onRequestPost(context) {
   }
 
   try {
-    const { itemId, itemIds, title, retailPrice, secondHandPrice, purchasePrice, description, imageUrl, publicar, vendido, noVender, rawProperties } = await request.json();
+    const payload = await request.json();
+    const { itemId, itemIds, title, retailPrice, secondHandPrice, purchasePrice, description, imageUrl, publicar, vendido, noVender, rawProperties, archived, isCreate, itemTitle, cantidad } = payload;
 
     const idsToUpdate = Array.isArray(itemIds) ? itemIds : [itemId].filter(Boolean);
 
-    if (idsToUpdate.length === 0) {
+    if (!isCreate && idsToUpdate.length === 0) {
       return new Response(
         JSON.stringify({ error: "Falta el parámetro requerido 'itemId' o 'itemIds'." }),
         { status: 400, headers: { "Content-Type": "application/json" } }
@@ -215,7 +216,69 @@ export async function onRequestPost(context) {
       }
     }
 
-    if (Object.keys(propertiesToUpdate).length === 0) {
+    // 3.3 Si es creación de un nuevo registro
+    if (isCreate === true) {
+      let primaryTitleKey = "";
+      for (const key of Object.keys(properties)) {
+        if (properties[key].type === "title") {
+          primaryTitleKey = key;
+          break;
+        }
+      }
+
+      if (!primaryTitleKey) {
+        return new Response(
+          JSON.stringify({ error: "No se pudo encontrar la columna de título principal en tu base de datos de Notion." }),
+          { status: 400, headers: { "Content-Type": "application/json" } }
+        );
+      }
+
+      // Añadir la propiedad de título principal
+      propertiesToUpdate[primaryTitleKey] = {
+        title: [{ text: { content: itemTitle || "Nuevo Artículo" } }]
+      };
+
+      // Si existe columna de cantidad, establecer valor inicial
+      let cantidadKey = "";
+      for (const key of Object.keys(properties)) {
+        if (normalizeString(key) === "cantidad" && properties[key].type === "number") {
+          cantidadKey = key;
+          break;
+        }
+      }
+      if (cantidadKey) {
+        propertiesToUpdate[cantidadKey] = { number: Number(cantidad || 1) };
+      }
+
+      const createResponse = await fetch(`https://api.notion.com/v1/pages`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${notionToken}`,
+          "Notion-Version": "2022-06-28",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          parent: { database_id: databaseId },
+          properties: propertiesToUpdate,
+        }),
+      });
+
+      if (!createResponse.ok) {
+        const errorText = await createResponse.text();
+        console.error("Error al crear la página en Notion:", errorText);
+        return new Response(
+          JSON.stringify({ error: `Notion API Error: ${errorText}` }),
+          { status: createResponse.status, headers: { "Content-Type": "application/json" } }
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    if (Object.keys(propertiesToUpdate).length === 0 && archived !== true) {
       return new Response(
         JSON.stringify({
           error: "No se encontraron columnas en Notion donde guardar los datos."
@@ -224,8 +287,10 @@ export async function onRequestPost(context) {
       );
     }
 
-    // 4. Actualizar los datos en todas las páginas de Notion en paralelo
+    // 4. Actualizar o archivar (eliminar) los datos en Notion
     const promises = idsToUpdate.map(async (id) => {
+      const bodyPayload = archived === true ? { archived: true } : { properties: propertiesToUpdate };
+
       const updateResponse = await fetch(`https://api.notion.com/v1/pages/${id}`, {
         method: "PATCH",
         headers: {
@@ -233,14 +298,12 @@ export async function onRequestPost(context) {
           "Notion-Version": "2022-06-28",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          properties: propertiesToUpdate,
-        }),
+        body: JSON.stringify(bodyPayload),
       });
 
       if (!updateResponse.ok) {
         const errorText = await updateResponse.text();
-        throw new Error(`Error en Notion al actualizar la página ${id}: ${errorText}`);
+        throw new Error(`Error en Notion al actualizar/eliminar la página ${id}: ${errorText}`);
       }
     });
 
@@ -253,7 +316,7 @@ export async function onRequestPost(context) {
   } catch (error) {
     console.error("Excepción en Notion update API:", error);
     return new Response(
-      JSON.stringify({ error: error.message || "Error interno al actualizar datos." }),
+      JSON.stringify({ error: error.message || "Error interno al procesar los datos." }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }

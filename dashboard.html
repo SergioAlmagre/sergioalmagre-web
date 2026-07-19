@@ -49,89 +49,6 @@
     <!-- TOAST NOTIFICATION CONTAINER -->
     <div id="toast-container" class="toast-container"></div>
 
-    <!-- GENERAL SHARED ACTIONS & FILTERS -->
-    <!-- ACTIONS BAR -->
-    <section class="dash-actions" style="margin-top: 1.5rem;">
-      <!-- Búsqueda -->
-      <div class="dash-search-wrap">
-        <input type="text" id="dash-search" placeholder="Filtrar por modelo, fabricante, naturaleza...">
-      </div>
-      
-      <!-- Filtros Rápidos / Acciones -->
-      <div class="dash-quick-filters">
-        <button id="bulk-enrich-btn" class="btn-primary bulk-btn">
-          Procesamiento Masivo IA
-        </button>
-      </div>
-    </section>
-
-    <!-- METRICAS DE CONTEO RÁPIDAS -->
-    <div class="dash-stats-bar">
-      <span>Artículos: <strong class="accent" id="stat-notion-count">0</strong></span>
-      <span class="divider">|</span>
-      <span>Filtrados: <strong class="accent-purple" id="stat-filtered-count">0</strong></span>
-      <span class="divider">|</span>
-      <span>Seleccionados: <strong class="accent-green" id="stat-selected-count">0 (0 ud)</strong></span>
-    </div>
-
-    <!-- CONSTRUCTOR DE FILTROS DINÁMICOS -->
-    <section class="filter-constructor-section" id="filter-constructor">
-      <div class="filter-constructor-header">
-        <h3>
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          Filtros Avanzados
-        </h3>
-        <div class="filter-constructor-actions">
-          <button type="button" id="add-filter-rule-btn" class="btn-text">+ Añadir filtro</button>
-          <button type="button" id="clear-filters-btn" class="btn-text-danger hidden">Borrar filtros</button>
-        </div>
-      </div>
-      <div id="filter-rules-list" class="filter-rules-list">
-        <p class="text-xs text-dim italic py-2" id="no-filters-msg">
-          No hay filtros aplicados. Haz clic en "+ Añadir filtro" para filtrar por cualquier columna de tu inventario.
-        </p>
-      </div>
-    </section>
-
-    <!-- FILTRO DE RANGO DE DESCUENTO -->
-    <section class="filter-constructor-section discount-filter-section" id="discount-filter-section" style="margin-bottom: 1.5rem;">
-      <div class="filter-constructor-header">
-        <h3>
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-          </svg>
-          Filtro por Descuento (%)
-        </h3>
-        <label class="toggle-switch" title="Activar / Desactivar filtro de descuento">
-          <input type="checkbox" id="discount-filter-toggle">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-      <div id="discount-filter-body" class="discount-filter-body disabled">
-        <div class="discount-range-labels">
-          <span class="discount-range-badge min-badge">
-            <span id="discount-min-label">0</span>%
-          </span>
-          <span class="discount-range-track-wrap">
-            <div class="dual-range-wrapper">
-              <div class="dual-range-track"></div>
-              <div class="dual-range-fill" id="dual-range-fill"></div>
-              <input type="range" id="discount-min" class="dual-range dual-range-min" min="0" max="100" value="0" step="1">
-              <input type="range" id="discount-max" class="dual-range dual-range-max" min="0" max="100" value="100" step="1">
-            </div>
-          </span>
-          <span class="discount-range-badge max-badge">
-            <span id="discount-max-label">100</span>%
-          </span>
-        </div>
-        <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.6rem; text-align: center;">
-          Mostrando artículos con descuento entre <strong id="discount-range-summary" class="accent">0% – 100%</strong>
-        </p>
-      </div>
-    </section>
-
     <!-- BULK PROGRESS -->
     <div id="bulk-progress-panel" class="bulk-progress-panel hidden" style="margin-bottom: 1.5rem;">
       <div class="bulk-progress-header">
@@ -148,6 +65,95 @@
     
     <!-- TAB 1: INVENTARIO -->
     <div id="inventario-tab" class="tab-content">
+      <!-- INVENTARIO FILTERS -->
+      <!-- ACTIONS BAR -->
+      <section class="dash-actions" style="margin-top: 1.5rem;">
+        <!-- Búsqueda -->
+        <div class="dash-search-wrap">
+          <input type="text" id="dash-search" placeholder="Filtrar por modelo, fabricante, naturaleza...">
+        </div>
+        
+        <!-- Filtros Rápidos / Acciones -->
+        <div class="dash-quick-filters" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <button id="add-item-btn" class="btn-ghost" style="padding: 0.6rem 1rem; display: flex; align-items: center; gap: 0.4rem; font-weight: 700;">
+            <svg style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+            </svg>
+            Añadir Anuncio
+          </button>
+          <button id="bulk-enrich-btn" class="btn-primary bulk-btn">
+            Procesamiento Masivo IA
+          </button>
+        </div>
+      </section>
+
+      <!-- METRICAS DE CONTEO RÁPIDAS -->
+      <div class="dash-stats-bar">
+        <span>Artículos: <strong class="accent" id="stat-notion-count">0</strong></span>
+        <span class="divider">|</span>
+        <span>Filtrados: <strong class="accent-purple" id="stat-filtered-count">0</strong></span>
+        <span class="divider">|</span>
+        <span>Seleccionados: <strong class="accent-green" id="stat-selected-count">0 (0 ud)</strong></span>
+      </div>
+
+      <!-- CONSTRUCTOR DE FILTROS DINÁMICOS -->
+      <section class="filter-constructor-section" id="filter-constructor">
+        <div class="filter-constructor-header">
+          <h3>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            Filtros Avanzados
+          </h3>
+          <div class="filter-constructor-actions">
+            <button type="button" id="add-filter-rule-btn" class="btn-text">+ Añadir filtro</button>
+            <button type="button" id="clear-filters-btn" class="btn-text-danger hidden">Borrar filtros</button>
+          </div>
+        </div>
+        <div id="filter-rules-list" class="filter-rules-list">
+          <p class="text-xs text-dim italic py-2" id="no-filters-msg">
+            No hay filtros aplicados. Haz clic en "+ Añadir filtro" para filtrar por cualquier columna de tu inventario.
+          </p>
+        </div>
+      </section>
+
+      <!-- FILTRO DE RANGO DE DESCUENTO -->
+      <section class="filter-constructor-section discount-filter-section" id="discount-filter-section" style="margin-bottom: 1.5rem;">
+        <div class="filter-constructor-header">
+          <h3>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+            Filtro por Descuento (%)
+          </h3>
+          <label class="toggle-switch" title="Activar / Desactivar filtro de descuento">
+            <input type="checkbox" id="discount-filter-toggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div id="discount-filter-body" class="discount-filter-body disabled">
+          <div class="discount-range-labels">
+            <span class="discount-range-badge min-badge">
+              <span id="discount-min-label">0</span>%
+            </span>
+            <span class="discount-range-track-wrap">
+              <div class="dual-range-wrapper">
+                <div class="dual-range-track"></div>
+                <div class="dual-range-fill" id="dual-range-fill"></div>
+                <input type="range" id="discount-min" class="dual-range dual-range-min" min="0" max="100" value="0" step="1">
+                <input type="range" id="discount-max" class="dual-range dual-range-max" min="0" max="100" value="100" step="1">
+              </div>
+            </span>
+            <span class="discount-range-badge max-badge">
+              <span id="discount-max-label">100</span>%
+            </span>
+          </div>
+          <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.6rem; text-align: center;">
+            Mostrando artículos con descuento entre <strong id="discount-range-summary" class="accent">0% – 100%</strong>
+          </p>
+        </div>
+      </section>
+
       <!-- LOADER / ERROR STATES -->
       <div id="dash-loader" class="loader">
         <div class="spinner"></div>
@@ -171,6 +177,72 @@
 
     <!-- TAB 2: ESTADÍSTICAS -->
     <div id="stats-tab" class="tab-content hidden">
+      <!-- ESTADÍSTICAS FILTERS -->
+      <!-- ACTIONS BAR -->
+      <section class="dash-actions" style="margin-top: 1.5rem;">
+        <div class="dash-search-wrap" style="flex: 1;">
+          <input type="text" id="stats-dash-search" placeholder="Filtrar estadísticas por modelo, fabricante, naturaleza...">
+        </div>
+      </section>
+
+      <!-- CONSTRUCTOR DE FILTROS DINÁMICOS ESTADÍSTICAS -->
+      <section class="filter-constructor-section" id="stats-filter-constructor" style="margin-top: 1rem;">
+        <div class="filter-constructor-header">
+          <h3>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            Filtros Estadísticas
+          </h3>
+          <div class="filter-constructor-actions">
+            <button type="button" id="stats-add-filter-rule-btn" class="btn-text">+ Añadir filtro</button>
+            <button type="button" id="stats-clear-filters-btn" class="btn-text-danger hidden">Borrar filtros</button>
+          </div>
+        </div>
+        <div id="stats-filter-rules-list" class="filter-rules-list">
+          <p class="text-xs text-dim italic py-2" id="stats-no-filters-msg">
+            No hay filtros aplicados a las estadísticas. Haz clic en "+ Añadir filtro" para segmentar el análisis.
+          </p>
+        </div>
+      </section>
+
+      <!-- FILTRO DE RANGO DE DESCUENTO ESTADÍSTICAS -->
+      <section class="filter-constructor-section discount-filter-section" id="stats-discount-filter-section" style="margin-bottom: 1.5rem;">
+        <div class="filter-constructor-header">
+          <h3>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+            Descuento Estadísticas (%)
+          </h3>
+          <label class="toggle-switch" title="Activar / Desactivar filtro de descuento en estadísticas">
+            <input type="checkbox" id="stats-discount-filter-toggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div id="stats-discount-filter-body" class="discount-filter-body disabled">
+          <div class="discount-range-labels">
+            <span class="discount-range-badge min-badge">
+              <span id="stats-discount-min-label">0</span>%
+            </span>
+            <span class="discount-range-track-wrap">
+              <div class="dual-range-wrapper">
+                <div class="dual-range-track"></div>
+                <div class="dual-range-fill" id="stats-dual-range-fill"></div>
+                <input type="range" id="stats-discount-min" class="dual-range dual-range-min" min="0" max="100" value="0" step="1">
+                <input type="range" id="stats-discount-max" class="dual-range dual-range-max" min="0" max="100" value="100" step="1">
+              </div>
+            </span>
+            <span class="discount-range-badge max-badge">
+              <span id="stats-discount-max-label">100</span>%
+            </span>
+          </div>
+          <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.6rem; text-align: center;">
+            Mostrando estadísticas entre descuentos de <strong id="stats-discount-range-summary" class="accent">0% – 100%</strong>
+          </p>
+        </div>
+      </section>
+
       <section class="stats-grid">
         <!-- Card 1 -->
         <div class="stats-card">
@@ -196,6 +268,12 @@
           <span class="stats-card-value" id="stat-total-revenue">0 €</span>
           <span class="stats-card-desc" id="stat-expected-profit">Margen estimado: 0 €</span>
         </div>
+        <!-- Card 5 -->
+        <div class="stats-card" style="border-color: rgba(59, 130, 246, 0.3);">
+          <span class="stats-card-label">Valor Retail Total</span>
+          <span class="stats-card-value" id="stat-total-retail" style="color: #3b82f6;">0 €</span>
+          <span class="stats-card-desc">Suma de precios nuevos retail</span>
+        </div>
       </section>
 
       <!-- GRÁFICOS MODERNOS DE RENDIMIENTO -->
@@ -203,16 +281,41 @@
         <div class="stats-charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 0.5rem;">
           <!-- Chart 1: Bar Chart -->
           <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
-            <h3 class="stats-sec-title" style="margin-top: 0; margin-bottom: 1rem;">// distribución_ingresos_por_categoría</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+              <h3 class="stats-sec-title" style="margin: 0;">// distribución_ingresos_por_categoría</h3>
+              <div class="chart-toggle-group" style="display: flex; gap: 2px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 2px;">
+                <button class="chart-toggle-btn active" id="btn-toggle-bar-val" style="background: var(--bg3); border: none; border-radius: 4px; color: var(--accent); font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.4rem; cursor: pointer; outline: none;">Val</button>
+                <button class="chart-toggle-btn" id="btn-toggle-bar-pct" style="background: transparent; border: none; border-radius: 4px; color: var(--text-dim); font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.4rem; cursor: pointer; outline: none;">%</button>
+              </div>
+            </div>
             <div style="position: relative; height: 230px;">
               <canvas id="stats-chart" style="width: 100%; height: 100%; display: block;"></canvas>
             </div>
           </div>
-          <!-- Chart 2: Circular/Pie Chart -->
+          <!-- Chart 2: Unsold vs Sold Pie Chart -->
           <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
-            <h3 class="stats-sec-title" style="margin-top: 0; margin-bottom: 1rem;">// volumen_unidades_por_categoría</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+              <h3 class="stats-sec-title" style="margin: 0;">// volumen_sin_vender_vs_vendido</h3>
+              <div class="chart-toggle-group" style="display: flex; gap: 2px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 2px;">
+                <button class="chart-toggle-btn active" id="btn-toggle-pie-units-val" style="background: var(--bg3); border: none; border-radius: 4px; color: var(--accent); font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.4rem; cursor: pointer; outline: none;">Val</button>
+                <button class="chart-toggle-btn" id="btn-toggle-pie-units-pct" style="background: transparent; border: none; border-radius: 4px; color: var(--text-dim); font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.4rem; cursor: pointer; outline: none;">%</button>
+              </div>
+            </div>
             <div style="position: relative; height: 230px;">
-              <canvas id="stats-pie-chart" style="width: 100%; height: 100%; display: block;"></canvas>
+              <canvas id="stats-pie-chart-units" style="width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+          </div>
+          <!-- Chart 3: Investment vs Earnings Pie Chart -->
+          <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+              <h3 class="stats-sec-title" style="margin: 0;">// inversión_vs_conseguido_por_ventas</h3>
+              <div class="chart-toggle-group" style="display: flex; gap: 2px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 2px;">
+                <button class="chart-toggle-btn active" id="btn-toggle-pie-finance-val" style="background: var(--bg3); border: none; border-radius: 4px; color: var(--accent); font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.4rem; cursor: pointer; outline: none;">Val</button>
+                <button class="chart-toggle-btn" id="btn-toggle-pie-finance-pct" style="background: transparent; border: none; border-radius: 4px; color: var(--text-dim); font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.4rem; cursor: pointer; outline: none;">%</button>
+              </div>
+            </div>
+            <div style="position: relative; height: 230px;">
+              <canvas id="stats-pie-chart-finance" style="width: 100%; height: 100%; display: block;"></canvas>
             </div>
           </div>
         </div>
@@ -373,6 +476,6 @@
     </div>
   </div>
 
-  <script src="dashboard.js?v=5"></script>
+  <script src="dashboard.js?v=6"></script>
 </body>
 </html>

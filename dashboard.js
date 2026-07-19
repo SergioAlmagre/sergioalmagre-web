@@ -23,6 +23,12 @@ let discountFilterEnabled = false;
 let discountFilterMin = 0;
 let discountFilterMax = 100;
 
+// --- Stats Discount range filter state ---
+const STATS_DISCOUNT_STORAGE_KEY = "dashboard_stats_discount_filter_v1";
+let statsDiscountFilterEnabled = false;
+let statsDiscountFilterMin = 0;
+let statsDiscountFilterMax = 100;
+
 function saveDiscountFilterToStorage() {
   try {
     localStorage.setItem(DISCOUNT_STORAGE_KEY, JSON.stringify({
@@ -45,8 +51,32 @@ function loadDiscountFilterFromStorage() {
   } catch (_) {}
 }
 
+function saveStatsDiscountToStorage() {
+  try {
+    localStorage.setItem(STATS_DISCOUNT_STORAGE_KEY, JSON.stringify({
+      enabled: statsDiscountFilterEnabled,
+      min: statsDiscountFilterMin,
+      max: statsDiscountFilterMax
+    }));
+  } catch (_) {}
+}
+
+function loadStatsDiscountFromStorage() {
+  try {
+    const raw = localStorage.getItem(STATS_DISCOUNT_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      statsDiscountFilterEnabled = !!parsed.enabled;
+      statsDiscountFilterMin = typeof parsed.min === "number" ? parsed.min : 0;
+      statsDiscountFilterMax = typeof parsed.max === "number" ? parsed.max : 100;
+    }
+  } catch (_) {}
+}
+
 // --- Filter persistence via localStorage ---
 const FILTER_STORAGE_KEY = "dashboard_filterRules_v1";
+const STATS_FILTER_STORAGE_KEY = "dashboard_stats_filterRules_v1";
+let statsFilterRules = [];
 
 function saveFiltersToStorage() {
   try {
@@ -60,6 +90,22 @@ function loadFiltersFromStorage() {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) filterRules = parsed;
+    }
+  } catch (_) {}
+}
+
+function saveStatsFiltersToStorage() {
+  try {
+    localStorage.setItem(STATS_FILTER_STORAGE_KEY, JSON.stringify(statsFilterRules));
+  } catch (_) {}
+}
+
+function loadStatsFiltersFromStorage() {
+  try {
+    const raw = localStorage.getItem(STATS_FILTER_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) statsFilterRules = parsed;
     }
   } catch (_) {}
 }
@@ -84,8 +130,32 @@ const statTotalUnits = document.getElementById("stat-total-units");
 const statSoldUnits = document.getElementById("stat-sold-units");
 const statTotalCost = document.getElementById("stat-total-cost");
 const statTotalRevenue = document.getElementById("stat-total-revenue");
+const statTotalRetail = document.getElementById("stat-total-retail");
 const statExpectedProfit = document.getElementById("stat-expected-profit");
 const statsTableBody = document.getElementById("stats-table-body");
+
+// Chart display unit mode selectors ("val" or "pct")
+let chartDisplayModes = {
+  categoryBar: "val",
+  unitsPie: "val",
+  financePie: "val"
+};
+
+// Stats filter DOM elements
+const statsSearchInput = document.getElementById("stats-dash-search");
+const statsAddFilterRuleBtn = document.getElementById("stats-add-filter-rule-btn");
+const statsClearFiltersBtn = document.getElementById("stats-clear-filters-btn");
+const statsFilterRulesList = document.getElementById("stats-filter-rules-list");
+const statsNoFiltersMsg = document.getElementById("stats-no-filters-msg");
+
+const statsDiscountToggle = document.getElementById("stats-discount-filter-toggle");
+const statsDiscountFilterBody = document.getElementById("stats-discount-filter-body");
+const statsDiscountMinInput = document.getElementById("stats-discount-min");
+const statsDiscountMaxInput = document.getElementById("stats-discount-max");
+const statsDiscountMinLabel = document.getElementById("stats-discount-min-label");
+const statsDiscountMaxLabel = document.getElementById("stats-discount-max-label");
+const statsDiscountRangeSummary = document.getElementById("stats-discount-range-summary");
+const statsDualRangeFill = document.getElementById("stats-dual-range-fill");
 
 // Toast Container
 const toastContainer = document.getElementById("toast-container");
@@ -110,6 +180,23 @@ const itemConfigModal = document.getElementById("item-config-modal");
 const configPropertiesBody = document.getElementById("config-properties-body");
 const configModalCancel = document.getElementById("config-modal-cancel");
 const configModalSave = document.getElementById("config-modal-save");
+const configModalDelete = document.getElementById("config-modal-delete");
+
+// Add Item modal elements
+const addItemBtn = document.getElementById("add-item-btn");
+const addItemModal = document.getElementById("add-item-modal");
+const addItemCancel = document.getElementById("add-item-cancel");
+const addItemSave = document.getElementById("add-item-save");
+const addItemTitle = document.getElementById("add-item-title");
+const addItemCategorySelect = document.getElementById("add-item-category-select");
+const addItemCategoryCustom = document.getElementById("add-item-category-custom");
+const addItemBrandSelect = document.getElementById("add-item-brand-select");
+const addItemBrandCustom = document.getElementById("add-item-brand-custom");
+const addItemRetail = document.getElementById("add-item-retail");
+const addItemPurchase = document.getElementById("add-item-purchase");
+const addItemSale = document.getElementById("add-item-sale");
+const addItemImage = document.getElementById("add-item-image");
+const addItemDescription = document.getElementById("add-item-description");
 
 // Tabs switching
 const tabBtns = document.querySelectorAll(".tab-btn");
@@ -167,6 +254,26 @@ function updateDiscountSliderUI() {
   discountFilterMax = maxPercent;
 }
 
+function updateStatsDiscountSliderUI() {
+  if (!statsDiscountMinInput || !statsDiscountMaxInput || !statsDualRangeFill) return;
+  
+  const minPercent = parseInt(statsDiscountMinInput.value, 10);
+  const maxPercent = parseInt(statsDiscountMaxInput.value, 10);
+
+  if (statsDiscountMinLabel) statsDiscountMinLabel.textContent = minPercent;
+  if (statsDiscountMaxLabel) statsDiscountMaxLabel.textContent = maxPercent;
+  if (statsDiscountRangeSummary) {
+    statsDiscountRangeSummary.textContent = `${minPercent}% – ${maxPercent}%`;
+  }
+
+  // Update visual fill track
+  statsDualRangeFill.style.left = minPercent + "%";
+  statsDualRangeFill.style.width = (maxPercent - minPercent) + "%";
+
+  statsDiscountFilterMin = minPercent;
+  statsDiscountFilterMax = maxPercent;
+}
+
 if (discountMinInput && discountMaxInput) {
   discountMinInput.addEventListener("input", () => {
     if (parseInt(discountMinInput.value, 10) > parseInt(discountMaxInput.value, 10)) {
@@ -195,6 +302,34 @@ if (discountMinInput && discountMaxInput) {
   });
 }
 
+if (statsDiscountMinInput && statsDiscountMaxInput) {
+  statsDiscountMinInput.addEventListener("input", () => {
+    if (parseInt(statsDiscountMinInput.value, 10) > parseInt(statsDiscountMaxInput.value, 10)) {
+      statsDiscountMinInput.value = statsDiscountMaxInput.value;
+    }
+    statsDiscountMinInput.style.zIndex = "4";
+    statsDiscountMaxInput.style.zIndex = "3";
+    updateStatsDiscountSliderUI();
+    saveStatsDiscountToStorage();
+    if (statsDiscountFilterEnabled) {
+      applyStatsFilters();
+    }
+  });
+
+  statsDiscountMaxInput.addEventListener("input", () => {
+    if (parseInt(statsDiscountMaxInput.value, 10) < parseInt(statsDiscountMinInput.value, 10)) {
+      statsDiscountMaxInput.value = statsDiscountMinInput.value;
+    }
+    statsDiscountMaxInput.style.zIndex = "4";
+    statsDiscountMinInput.style.zIndex = "3";
+    updateStatsDiscountSliderUI();
+    saveStatsDiscountToStorage();
+    if (statsDiscountFilterEnabled) {
+      applyStatsFilters();
+    }
+  });
+}
+
 if (discountToggle) {
   discountToggle.addEventListener("change", (e) => {
     discountFilterEnabled = e.target.checked;
@@ -207,6 +342,21 @@ if (discountToggle) {
     }
     saveDiscountFilterToStorage();
     applyFilters();
+  });
+}
+
+if (statsDiscountToggle) {
+  statsDiscountToggle.addEventListener("change", (e) => {
+    statsDiscountFilterEnabled = e.target.checked;
+    if (statsDiscountFilterBody) {
+      if (statsDiscountFilterEnabled) {
+        statsDiscountFilterBody.classList.remove("disabled");
+      } else {
+        statsDiscountFilterBody.classList.add("disabled");
+      }
+    }
+    saveStatsDiscountToStorage();
+    applyStatsFilters();
   });
 }
 
@@ -227,6 +377,23 @@ if (discountMinInput && discountMaxInput) {
   discountMaxInput.value = discountFilterMax;
 }
 updateDiscountSliderUI();
+
+loadStatsDiscountFromStorage();
+if (statsDiscountToggle) {
+  statsDiscountToggle.checked = statsDiscountFilterEnabled;
+  if (statsDiscountFilterBody) {
+    if (statsDiscountFilterEnabled) {
+      statsDiscountFilterBody.classList.remove("disabled");
+    } else {
+      statsDiscountFilterBody.classList.add("disabled");
+    }
+  }
+}
+if (statsDiscountMinInput && statsDiscountMaxInput) {
+  statsDiscountMinInput.value = statsDiscountFilterMin;
+  statsDiscountMaxInput.value = statsDiscountFilterMax;
+}
+updateStatsDiscountSliderUI();
 
 let sellModalCallbacks = { onConfirm: null, onCancel: null };
 let confirmModalCallbacks = { onConfirm: null, onCancel: null };
@@ -330,7 +497,14 @@ async function fetchNotionItems() {
       renderFilterRules();
     }
 
+    // Restore stats filters too!
+    loadStatsFiltersFromStorage();
+    if (statsFilterRules.length > 0) {
+      renderStatsFilterRules();
+    }
+
     applyFilters();
+    applyStatsFilters();
   } catch (err) {
     console.error(err);
     errorBox.textContent = err.message || "Error al conectar con el inventario.";
@@ -356,6 +530,42 @@ tabBtns.forEach(btn => {
     }
   });
 });
+
+// Helper to configure button toggle group visual active state
+function setupChartToggle(valBtnId, pctBtnId, key) {
+  const valBtn = document.getElementById(valBtnId);
+  const pctBtn = document.getElementById(pctBtnId);
+  if (!valBtn || !pctBtn) return;
+
+  valBtn.addEventListener("click", () => {
+    chartDisplayModes[key] = "val";
+    valBtn.classList.add("active");
+    valBtn.style.background = "var(--bg3)";
+    valBtn.style.color = "var(--accent)";
+    
+    pctBtn.classList.remove("active");
+    pctBtn.style.background = "transparent";
+    pctBtn.style.color = "var(--text-dim)";
+    calculateStats();
+  });
+
+  pctBtn.addEventListener("click", () => {
+    chartDisplayModes[key] = "pct";
+    pctBtn.classList.add("active");
+    pctBtn.style.background = "var(--bg3)";
+    pctBtn.style.color = "var(--accent)";
+    
+    valBtn.classList.remove("active");
+    valBtn.style.background = "transparent";
+    valBtn.style.color = "var(--text-dim)";
+    calculateStats();
+  });
+}
+
+// Initialise chart mode toggles
+setupChartToggle("btn-toggle-bar-val", "btn-toggle-bar-pct", "categoryBar");
+setupChartToggle("btn-toggle-pie-units-val", "btn-toggle-pie-units-pct", "unitsPie");
+setupChartToggle("btn-toggle-pie-finance-val", "btn-toggle-pie-finance-pct", "financePie");
 
 // Advanced filters logic
 const addFilterRuleBtn = document.getElementById("add-filter-rule-btn");
@@ -554,15 +764,222 @@ function renderFilterRules() {
 }
 
 // Global click to close active filter dropdowns
+let activeStatsRuleDropdown = null;
+
+if (statsAddFilterRuleBtn) {
+  statsAddFilterRuleBtn.addEventListener("click", () => {
+    const id = Math.random().toString(36).substring(2, 9);
+    statsFilterRules.push({ id, column: "", condition: "contains", value: "" });
+    renderStatsFilterRules();
+    saveStatsFiltersToStorage();
+  });
+}
+
+if (statsClearFiltersBtn) {
+  statsClearFiltersBtn.addEventListener("click", () => {
+    statsFilterRules = [];
+    renderStatsFilterRules();
+    applyStatsFilters();
+    saveStatsFiltersToStorage();
+  });
+}
+
+function renderStatsFilterRules() {
+  if (!statsFilterRulesList || !statsNoFiltersMsg || !statsClearFiltersBtn) return;
+
+  const ruleRows = statsFilterRulesList.querySelectorAll(".filter-rule-row");
+  ruleRows.forEach(row => row.remove());
+  
+  if (statsFilterRules.length === 0) {
+    statsNoFiltersMsg.classList.remove("hidden");
+    statsClearFiltersBtn.classList.add("hidden");
+  } else {
+    statsNoFiltersMsg.classList.add("hidden");
+    statsClearFiltersBtn.classList.remove("hidden");
+  }
+
+  statsFilterRules.forEach(rule => {
+    const row = document.createElement("div");
+    row.className = "filter-rule-row";
+    row.id = `stats-rule-${rule.id}`;
+
+    // Select column dropdown
+    let colOptions = `<option value="">-- Seleccionar columna --</option>`;
+    Object.keys(notionSchema).sort((a,b)=>a.localeCompare(b)).forEach(col => {
+      colOptions += `<option value="${col}" ${rule.column === col ? "selected" : ""}>${col}</option>`;
+    });
+
+    const colSelect = document.createElement("select");
+    colSelect.innerHTML = colOptions;
+    colSelect.addEventListener("change", (e) => {
+      const col = e.target.value;
+      rule.column = col;
+      
+      const schema = notionSchema[col];
+      if (schema?.type === "checkbox") {
+        rule.condition = "checked";
+        rule.value = true;
+      } else if (schema?.type === "select" || schema?.type === "status" || schema?.type === "multi_select") {
+        rule.condition = "is";
+        rule.value = [];
+      } else {
+        rule.condition = "contains";
+        rule.value = "";
+      }
+      renderStatsFilterRules();
+      applyStatsFilters();
+      saveStatsFiltersToStorage();
+    });
+
+    row.appendChild(colSelect);
+
+    // Condition select
+    if (rule.column) {
+      const schema = notionSchema[rule.column];
+      const condSelect = document.createElement("select");
+      let condOptions = "";
+      
+      if (schema?.type === "checkbox") {
+        condOptions = `
+          <option value="checked" ${rule.condition === "checked" ? "selected" : ""}>Está marcado</option>
+          <option value="unchecked" ${rule.condition === "unchecked" ? "selected" : ""}>No está marcado</option>
+        `;
+      } else if (schema?.type === "select" || schema?.type === "status" || schema?.type === "multi_select") {
+        condOptions = `
+          <option value="is" ${rule.condition === "is" ? "selected" : ""}>Es igual a</option>
+          <option value="is_not" ${rule.condition === "is_not" ? "selected" : ""}>No es igual a</option>
+          <option value="empty" ${rule.condition === "empty" ? "selected" : ""}>Está vacío</option>
+          <option value="not_empty" ${rule.condition === "not_empty" ? "selected" : ""}>No está vacío</option>
+        `;
+      } else {
+        condOptions = `
+          <option value="contains" ${rule.condition === "contains" ? "selected" : ""}>Contiene</option>
+          <option value="not_contains" ${rule.condition === "not_contains" ? "selected" : ""}>No contiene</option>
+          <option value="is" ${rule.condition === "is" ? "selected" : ""}>Es igual a</option>
+          <option value="is_not" ${rule.condition === "is_not" ? "selected" : ""}>No es igual a</option>
+          <option value="empty" ${rule.condition === "empty" ? "selected" : ""}>Está vacío</option>
+          <option value="not_empty" ${rule.condition === "not_empty" ? "selected" : ""}>No está vacío</option>
+        `;
+      }
+      
+      condSelect.innerHTML = condOptions;
+      condSelect.addEventListener("change", (e) => {
+        rule.condition = e.target.value;
+        renderStatsFilterRules();
+        applyStatsFilters();
+        saveStatsFiltersToStorage();
+      });
+      row.appendChild(condSelect);
+
+      // Value input or multi-select dropdown
+      if (rule.condition !== "empty" && rule.condition !== "not_empty" && rule.condition !== "checked" && rule.condition !== "unchecked") {
+        const valContainer = document.createElement("div");
+        valContainer.className = "filter-rule-value-container";
+
+        if (schema?.options && schema.options.length > 0) {
+          const currentArr = Array.isArray(rule.value) ? rule.value : [];
+          const dropBtn = document.createElement("button");
+          dropBtn.className = "btn-multiselect-dropdown";
+          dropBtn.innerHTML = `<span>${currentArr.length > 0 ? `${currentArr.length} seleccionados` : "Todos"}</span><svg class="h-3 w-3 ml-2 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" /></svg>`;
+          
+          dropBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (activeStatsRuleDropdown === rule.id) {
+              activeStatsRuleDropdown = null;
+            } else {
+              activeStatsRuleDropdown = rule.id;
+            }
+            renderStatsFilterRules();
+          });
+          
+          valContainer.appendChild(dropBtn);
+
+          if (activeStatsRuleDropdown === rule.id) {
+            const dropdownPanel = document.createElement("div");
+            dropdownPanel.className = "multiselect-dropdown-panel";
+            
+            schema.options.forEach(opt => {
+              const label = document.createElement("label");
+              label.className = "multiselect-dropdown-option";
+              
+              const isChecked = currentArr.includes(opt);
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.checked = isChecked;
+              
+              checkbox.addEventListener("change", () => {
+                const updated = isChecked 
+                  ? currentArr.filter(o => o !== opt) 
+                  : [...currentArr, opt];
+                rule.value = updated;
+                applyStatsFilters();
+                renderStatsFilterRules();
+                saveStatsFiltersToStorage();
+              });
+              
+              label.appendChild(checkbox);
+              const textSpan = document.createElement("span");
+              textSpan.textContent = opt;
+              label.appendChild(textSpan);
+              dropdownPanel.appendChild(label);
+            });
+            valContainer.appendChild(dropdownPanel);
+          }
+        } else {
+          const textInput = document.createElement("input");
+          textInput.type = "text";
+          textInput.value = String(rule.value || "");
+          textInput.placeholder = "Escribe valor...";
+          textInput.addEventListener("input", (e) => {
+            rule.value = e.target.value;
+            applyStatsFilters();
+            saveStatsFiltersToStorage();
+          });
+          valContainer.appendChild(textInput);
+        }
+        row.appendChild(valContainer);
+      }
+    }
+
+    // Delete rule button
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn-rule-delete";
+    deleteBtn.innerHTML = `<svg style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`;
+    deleteBtn.addEventListener("click", () => {
+      statsFilterRules = statsFilterRules.filter(r => r.id !== rule.id);
+      renderStatsFilterRules();
+      applyStatsFilters();
+      saveStatsFiltersToStorage();
+    });
+    row.appendChild(deleteBtn);
+
+    statsFilterRulesList.appendChild(row);
+  });
+}
+
+// Global click to close active filter dropdowns
 document.addEventListener("click", () => {
+  let changed = false;
   if (activeRuleDropdown !== null) {
     activeRuleDropdown = null;
     renderFilterRules();
+    changed = true;
+  }
+  if (activeStatsRuleDropdown !== null) {
+    activeStatsRuleDropdown = null;
+    renderStatsFilterRules();
+    changed = true;
   }
 });
 
 // Search input
-searchInput.addEventListener("input", applyFilters);
+if (searchInput) {
+  searchInput.addEventListener("input", applyFilters);
+}
+
+if (statsSearchInput) {
+  statsSearchInput.addEventListener("input", applyStatsFilters);
+}
 
 function getFullItemName(item) {
   const naturaleza = String(item.rawProperties["Naturaleza"] || "").trim();
@@ -578,7 +995,7 @@ function getFullItemName(item) {
 }
 
 function applyFilters() {
-  const query = searchInput.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const query = searchInput ? searchInput.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
 
   filteredItems = items.filter(item => {
     const textMatch = 
@@ -668,6 +1085,100 @@ function applyFilters() {
   });
 
   renderItemsList();
+}
+
+let statsFilteredItems = [];
+
+function applyStatsFilters() {
+  const query = statsSearchInput ? statsSearchInput.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+
+  statsFilteredItems = items.filter(item => {
+    const textMatch = 
+      item.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(query) ||
+      item.enriched.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(query) ||
+      item.enriched.description.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(query) ||
+      Object.values(item.rawProperties).some(val => {
+        if (!val) return false;
+        if (Array.isArray(val)) {
+          return val.some(v => String(v).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(query));
+        }
+        return String(val).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(query);
+      });
+
+    if (!textMatch) return false;
+
+    // Apply advanced rules
+    for (const rule of statsFilterRules) {
+      if (!rule.column) continue;
+      
+      const propSchema = notionSchema[rule.column];
+      const itemVal = item.rawProperties[rule.column];
+      if (!propSchema) continue;
+
+      // 1. Checkbox
+      if (propSchema.type === "checkbox") {
+        const isChecked = !!itemVal;
+        if (rule.condition === "checked" && !isChecked) return false;
+        if (rule.condition === "unchecked" && isChecked) return false;
+      }
+      // 2. Select/Status/Multi-select options
+      else if (propSchema.type === "select" || propSchema.type === "status" || propSchema.type === "multi_select") {
+        const selectedOptions = Array.isArray(rule.value) ? rule.value : [];
+        if (rule.condition === "empty") {
+          if (propSchema.type === "multi_select") {
+            if (((itemVal || [])).length > 0) return false;
+          } else {
+            if (itemVal !== null && itemVal !== "") return false;
+          }
+        } else if (rule.condition === "not_empty") {
+          if (propSchema.type === "multi_select") {
+            if (((itemVal || [])).length === 0) return false;
+          } else {
+            if (itemVal === null || itemVal === "") return false;
+          }
+        } else if (rule.condition === "is") {
+          if (selectedOptions.length === 0) continue;
+          if (propSchema.type === "multi_select") {
+            const arr = itemVal || [];
+            if (!arr.some(opt => selectedOptions.includes(opt))) return false;
+          } else {
+            if (!selectedOptions.includes(itemVal)) return false;
+          }
+        } else if (rule.condition === "is_not") {
+          if (selectedOptions.length === 0) continue;
+          if (propSchema.type === "multi_select") {
+            const arr = itemVal || [];
+            if (arr.some(opt => selectedOptions.includes(opt))) return false;
+          } else {
+            if (selectedOptions.includes(itemVal)) return false;
+          }
+        }
+      }
+      // 3. Text/Numbers
+      else {
+        const itemStr = String(itemVal || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const targetStr = String(rule.value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+        if (rule.condition === "empty" && itemStr.trim() !== "") return false;
+        if (rule.condition === "not_empty" && itemStr.trim() === "") return false;
+        if (rule.condition === "contains" && !itemStr.includes(targetStr)) return false;
+        if (rule.condition === "not_contains" && itemStr.includes(targetStr)) return false;
+        if (rule.condition === "is" && itemStr !== targetStr) return false;
+        if (rule.condition === "is_not" && itemStr === targetStr) return false;
+      }
+    }
+
+    // Apply stats discount range filter if enabled
+    if (statsDiscountFilterEnabled) {
+      const discount = Number(item.enriched.savingsPercentage) || 0;
+      if (discount < statsDiscountFilterMin || discount > statsDiscountFilterMax) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
   calculateStats();
 }
 
@@ -1416,17 +1927,22 @@ function openConfigModal(item) {
     const isReadOnly = (schema.type === "formula" || schema.type === "relation" || schema.type === "rollup" || schema.type === "created_time" || schema.type === "last_edited_time");
 
     const tr = document.createElement("tr");
+    tr.style.borderBottom = "1px solid var(--border)";
 
     // Left cell: Key
     const keyTd = document.createElement("td");
     keyTd.style.fontWeight = "700";
     keyTd.style.fontSize = "0.75rem";
-    keyTd.innerHTML = `${col} <span style="font-size:0.6rem; color:var(--text-dim); display:block; font-weight:normal; font-family:var(--font-mono);">Tipo: ${schema.type}</span>`;
+    keyTd.style.padding = "0.6rem 0.8rem";
+    keyTd.style.verticalAlign = "middle";
+    keyTd.style.color = "var(--text)";
+    keyTd.innerHTML = `${col} <span style="font-size:0.6rem; color:var(--text-dim); display:block; font-weight:normal; font-family:var(--font-mono); margin-top:0.15rem;">Tipo: ${schema.type}</span>`;
     tr.appendChild(keyTd);
 
     // Right cell: Editable Value Input
     const valTd = document.createElement("td");
-    valTd.style.padding = "0.5rem 0.8rem";
+    valTd.style.padding = "0.6rem 0.8rem";
+    valTd.style.verticalAlign = "middle";
 
     if (isReadOnly) {
       // Disabled text input for read-only values
@@ -1434,11 +1950,11 @@ function openConfigModal(item) {
       if (Array.isArray(val)) valStr = val.join(", ");
       else valStr = val !== null && val !== undefined ? String(val) : "";
       
-      valTd.innerHTML = `<input type="text" class="form-control-input" value="${valStr}" disabled style="background:rgba(255,255,255,0.02); color:var(--text-dim); cursor:not-allowed; font-size:0.75rem; padding:0.35rem 0.6rem;">`;
+      valTd.innerHTML = `<input type="text" class="form-control-input" value="${valStr}" disabled style="background:rgba(255,255,255,0.02); color:var(--text-dim); cursor:not-allowed; font-size:0.75rem; padding:0.35rem 0.6rem; width:100%; border-color:var(--border);">`;
     } else if (schema.type === "checkbox") {
-      valTd.innerHTML = `<input type="checkbox" class="config-val-input" data-col="${col}" ${!!val ? "checked" : ""} style="width:1.1rem; height:1.1rem; cursor:pointer;">`;
+      valTd.innerHTML = `<div style="display:flex; align-items:center; height:100%;"><input type="checkbox" class="config-val-input" data-col="${col}" ${!!val ? "checked" : ""} style="width:1.1rem; height:1.1rem; cursor:pointer; accent-color:var(--accent);"></div>`;
     } else if (schema.type === "number") {
-      valTd.innerHTML = `<input type="number" class="config-val-input form-control-input" data-col="${col}" value="${val !== null && val !== undefined ? val : ""}" style="font-size:0.75rem; padding:0.35rem 0.6rem;">`;
+      valTd.innerHTML = `<input type="number" class="config-val-input form-control-input" data-col="${col}" value="${val !== null && val !== undefined ? val : ""}" style="font-size:0.75rem; padding:0.35rem 0.6rem; width:100%;">`;
     } else if (schema.type === "select" || schema.type === "status") {
       let options = `<option value="">-- Vacío --</option>`;
       if (schema.options) {
@@ -1450,10 +1966,10 @@ function openConfigModal(item) {
     } else if (schema.type === "multi_select") {
       // Input text of comma separated values for multi select
       const currentList = Array.isArray(val) ? val : [];
-      valTd.innerHTML = `<input type="text" class="config-val-input form-control-input" data-col="${col}" data-type="multi" value="${currentList.join(", ")}" placeholder="Opción 1, Opción 2..." style="font-size:0.75rem; padding:0.35rem 0.6rem;">`;
+      valTd.innerHTML = `<input type="text" class="config-val-input form-control-input" data-col="${col}" data-type="multi" value="${currentList.join(", ")}" placeholder="Opción 1, Opción 2..." style="font-size:0.75rem; padding:0.35rem 0.6rem; width:100%;">`;
     } else {
       // URL, Date, Title, rich_text, etc.
-      valTd.innerHTML = `<input type="text" class="config-val-input form-control-input" data-col="${col}" value="${val !== null && val !== undefined ? String(val) : ""}" style="font-size:0.75rem; padding:0.35rem 0.6rem;">`;
+      valTd.innerHTML = `<input type="text" class="config-val-input form-control-input" data-col="${col}" value="${val !== null && val !== undefined ? String(val) : ""}" style="font-size:0.75rem; padding:0.35rem 0.6rem; width:100%;">`;
     }
 
     tr.appendChild(valTd);
@@ -1517,27 +2033,218 @@ configModalSave.addEventListener("click", async () => {
   }
 });
 
+// configModalDelete action
+if (configModalDelete) {
+  configModalDelete.addEventListener("click", () => {
+    if (!currentConfigItem) return;
+    
+    openConfirmModal(
+      "Eliminar Artículo",
+      `¿Estás seguro de que deseas eliminar permanentemente el artículo "${currentConfigItem.title || "este artículo"}" de Notion?`,
+      async () => {
+        try {
+          configModalDelete.textContent = "Eliminando...";
+          configModalDelete.disabled = true;
+          
+          const response = await fetch("/api/notion/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              itemId: currentConfigItem.id,
+              archived: true
+            })
+          });
+
+          if (!response.ok) throw new Error("Error al archivar el elemento.");
+          
+          showToast("Artículo eliminado con éxito");
+          itemConfigModal.classList.add("hidden");
+          fetchNotionItems(); // reload
+        } catch (err) {
+          console.error(err);
+          showToast("Error al eliminar el artículo.", "error");
+        } finally {
+          configModalDelete.textContent = "Eliminar Artículo";
+          configModalDelete.disabled = false;
+          currentConfigItem = null;
+        }
+      }
+    );
+  });
+}
+
+// Helper to populate category and brand select dropdowns from notionSchema options
+function populateAddItemModalDropdowns() {
+  if (!addItemCategorySelect || !addItemBrandSelect || !addItemCategoryCustom || !addItemBrandCustom) return;
+
+  // 1. Populate Naturaleza (Categoría)
+  const categorySchema = notionSchema["Naturaleza"];
+  let catOptions = `<option value="">-- Seleccionar categoría --</option>`;
+  if (categorySchema && categorySchema.options) {
+    categorySchema.options.sort((a,b)=>a.localeCompare(b)).forEach(opt => {
+      catOptions += `<option value="${opt}">${opt}</option>`;
+    });
+  }
+  catOptions += `<option value="__NEW__">+ Añadir nueva categoría...</option>`;
+  addItemCategorySelect.innerHTML = catOptions;
+  addItemCategoryCustom.classList.add("hidden");
+  addItemCategoryCustom.value = "";
+
+  // 2. Populate Fabricante (Brand)
+  const brandSchema = notionSchema["Fabricante"];
+  let brandOptions = `<option value="">-- Seleccionar fabricante --</option>`;
+  if (brandSchema && brandSchema.options) {
+    brandSchema.options.sort((a,b)=>a.localeCompare(b)).forEach(opt => {
+      brandOptions += `<option value="${opt}">${opt}</option>`;
+    });
+  }
+  brandOptions += `<option value="__NEW__">+ Añadir nuevo fabricante...</option>`;
+  addItemBrandSelect.innerHTML = brandOptions;
+  addItemBrandCustom.classList.add("hidden");
+  addItemBrandCustom.value = "";
+
+  // 3. Setup event listeners
+  addItemCategorySelect.onchange = () => {
+    if (addItemCategorySelect.value === "__NEW__") {
+      addItemCategoryCustom.classList.remove("hidden");
+      addItemCategoryCustom.focus();
+    } else {
+      addItemCategoryCustom.classList.add("hidden");
+      addItemCategoryCustom.value = "";
+    }
+  };
+
+  addItemBrandSelect.onchange = () => {
+    if (addItemBrandSelect.value === "__NEW__") {
+      addItemBrandCustom.classList.remove("hidden");
+      addItemBrandCustom.focus();
+    } else {
+      addItemBrandCustom.classList.add("hidden");
+      addItemBrandCustom.value = "";
+    }
+  };
+}
+
+// Add Item Modal interaction listeners
+if (addItemBtn) {
+  addItemBtn.addEventListener("click", () => {
+    // Reset fields
+    addItemTitle.value = "";
+    addItemRetail.value = "";
+    addItemPurchase.value = "";
+    addItemSale.value = "";
+    addItemImage.value = "";
+    addItemDescription.value = "";
+    
+    // Populate dropdowns from notionSchema
+    populateAddItemModalDropdowns();
+    
+    addItemModal.classList.remove("hidden");
+  });
+}
+
+if (addItemCancel) {
+  addItemCancel.addEventListener("click", () => {
+    addItemModal.classList.add("hidden");
+  });
+}
+
+if (addItemSave) {
+  addItemSave.addEventListener("click", async () => {
+    const titleVal = addItemTitle.value.trim();
+    if (!titleVal) {
+      showToast("El Nombre/Modelo del producto es obligatorio.", "error");
+      return;
+    }
+    
+    // Determine category selection
+    let categoryVal = "";
+    if (addItemCategorySelect.value === "__NEW__") {
+      categoryVal = addItemCategoryCustom.value.trim();
+    } else {
+      categoryVal = addItemCategorySelect.value;
+    }
+
+    // Determine brand selection
+    let brandVal = "";
+    if (addItemBrandSelect.value === "__NEW__") {
+      brandVal = addItemBrandCustom.value.trim();
+    } else {
+      brandVal = addItemBrandSelect.value;
+    }
+
+    const retailVal = addItemRetail.value.trim();
+    const purchaseVal = addItemPurchase.value.trim();
+    const saleVal = addItemSale.value.trim();
+    const imageVal = addItemImage.value.trim();
+    const descVal = addItemDescription.value.trim();
+
+    addItemSave.textContent = "Guardando...";
+    addItemSave.disabled = true;
+
+    try {
+      const response = await fetch("/api/notion/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          isCreate: true,
+          itemTitle: titleVal,
+          title: titleVal, // set as default ad title
+          retailPrice: retailVal === "" ? null : Number(retailVal),
+          secondHandPrice: saleVal === "" ? null : Number(saleVal),
+          purchasePrice: purchaseVal === "" ? null : Number(purchaseVal),
+          description: descVal,
+          imageUrl: imageVal,
+          publicar: false,
+          vendido: false,
+          noVender: false,
+          rawProperties: {
+            "Naturaleza": categoryVal,
+            "Fabricante": brandVal
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Fallo en Notion API.");
+      }
+
+      showToast("Artículo añadido a Notion con éxito", "success");
+      addItemModal.classList.add("hidden");
+      fetchNotionItems(); // reload
+    } catch (err) {
+      console.error(err);
+      showToast(`Error al añadir artículo: ${err.message || "Error desconocido"}`, "error");
+    } finally {
+      addItemSave.textContent = "Añadir a Notion";
+      addItemSave.disabled = false;
+    }
+  });
+}
+
 // Financial statistics calculations and Canvas chart renderer
 function calculateStats() {
-  const activeItems = filteredItems; // dynamic filters apply to statistics!
+  const activeItems = statsFilteredItems; // independent stats filters apply here!
   
   const totalModels = activeItems.length;
   const totalUnits = activeItems.reduce((acc, it) => acc + (it.cantidad || 1), 0);
   const soldUnits = activeItems.filter(it => it.enriched.vendido).reduce((acc, it) => acc + (it.cantidad || 1), 0);
 
   let totalCost = 0;
-  let totalRevenue = 0;
-
+  let totalRetail = 0;
   // Categories dictionary
   const categoryStats = {};
 
   activeItems.forEach(item => {
-    const cost = item.enriched.purchasePrice || 0;
+    // "suma de precios de compra o precio nuevo si éste no tiene precio de compra"
+    const cost = item.enriched.purchasePrice || item.enriched.retailPrice || 0;
     const price = item.enriched.secondHandPrice || 0;
+    const retail = item.enriched.retailPrice || 0;
     const qty = item.cantidad || 1;
     
     totalCost += cost * qty;
-    totalRevenue += price * qty;
+    totalRetail += retail * qty;
 
     const category = String(item.rawProperties["Naturaleza"] || "General").trim();
     if (!categoryStats[category]) {
@@ -1554,6 +2261,8 @@ function calculateStats() {
     categoryStats[category].revenue += price * qty;
   });
 
+  // Potential Revenue (sum of all listed sale prices)
+  const totalRevenue = activeItems.reduce((acc, it) => acc + ((it.enriched.secondHandPrice || 0) * (it.cantidad || 1)), 0);
   const expectedProfit = totalRevenue - totalCost;
 
   // Render quick kpi cards
@@ -1562,6 +2271,9 @@ function calculateStats() {
   statSoldUnits.textContent = `${soldUnits} vendidas`;
   statTotalCost.textContent = `${Math.round(totalCost)} €`;
   statTotalRevenue.textContent = `${Math.round(totalRevenue)} €`;
+  if (statTotalRetail) {
+    statTotalRetail.textContent = `${Math.round(totalRetail)} €`;
+  }
   statExpectedProfit.textContent = `Margen estimado: ${Math.round(expectedProfit)} €`;
 
   // Render categories detailed breakdown table
@@ -1584,10 +2296,24 @@ function calculateStats() {
     statsTableBody.appendChild(tr);
   });
 
-  // Render Canvas horizontal bar chart
+  // Render Canvas horizontal bar chart (revenues per category)
   drawStatsChart(categoryStats);
-  // Render doughnut chart
-  drawPieChart(categoryStats);
+
+  // Render Chart 2: Unsold vs Sold units doughnut
+  const unsoldUnits = Math.max(0, totalUnits - soldUnits);
+  const slicesUnits = [
+    { name: "Vendidas", value: soldUnits, color: "#10b981" },
+    { name: "Sin Vender", value: unsoldUnits, color: "#a78bfa" }
+  ];
+  drawGenericPieChart("stats-pie-chart-units", "unidades", slicesUnits, chartDisplayModes.unitsPie, totalUnits, totalUnits);
+
+  // Render Chart 3: Total invested vs Realized sales earnings (€)
+  const totalEarned = activeItems.filter(it => it.enriched.vendido).reduce((acc, it) => acc + ((it.enriched.secondHandPrice || 0) * (it.cantidad || 1)), 0);
+  const slicesFinance = [
+    { name: "Inversión Total", value: totalCost, color: "#3b82f6" },
+    { name: "Conseguido (€)", value: totalEarned, color: "#10b981" }
+  ];
+  drawGenericPieChart("stats-pie-chart-finance", "total €", slicesFinance, chartDisplayModes.financePie, totalCost, totalCost);
 }
 
 // Draw custom modern chart in canvas
@@ -1618,6 +2344,7 @@ function drawStatsChart(categoryStats) {
     return;
   }
   
+  const totalRevenueAll = statsFilteredItems.reduce((acc, it) => acc + ((it.enriched.secondHandPrice || 0) * (it.cantidad || 1)), 0);
   const maxVal = Math.max(...cats.map(c => c.revenue), 100);
   const paddingLeft = 110;
   const paddingRight = 60;
@@ -1668,13 +2395,22 @@ function drawStatsChart(categoryStats) {
     ctx.fillStyle = "#10b981";
     ctx.font = "bold 10px monospace";
     ctx.textAlign = "left";
-    ctx.fillText(`${Math.round(cat.revenue)} €`, paddingLeft + valWidth + 10, y + barHeight / 2);
+    
+    let textLabel = "";
+    if (chartDisplayModes.categoryBar === "pct") {
+      const pct = totalRevenueAll > 0 ? Math.round((cat.revenue / totalRevenueAll) * 100) : 0;
+      textLabel = `${pct} %`;
+    } else {
+      textLabel = `${Math.round(cat.revenue)} €`;
+    }
+    
+    ctx.fillText(textLabel, paddingLeft + valWidth + 10, y + barHeight / 2);
   }
 }
 
-// Draw doughnut chart: units per category
-function drawPieChart(categoryStats) {
-  const canvas = document.getElementById("stats-pie-chart");
+// Reusable doughnut chart renderer for Canvas
+function drawGenericPieChart(canvasId, centerLabel, slices, activeUnit = "val", centerValue = null, percentBase = null) {
+  const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
 
@@ -1688,10 +2424,9 @@ function drawPieChart(categoryStats) {
   const height = rect.height;
   ctx.clearRect(0, 0, width, height);
 
-  const cats = Object.values(categoryStats).sort((a, b) => b.count - a.count);
-  const total = cats.reduce((acc, c) => acc + c.count, 0);
+  const total = slices.reduce((acc, s) => acc + s.value, 0);
 
-  if (cats.length === 0 || total === 0) {
+  if (slices.length === 0 || total === 0) {
     ctx.fillStyle = "rgba(255,255,255,0.35)";
     ctx.font = "12px monospace";
     ctx.textAlign = "center";
@@ -1700,13 +2435,8 @@ function drawPieChart(categoryStats) {
     return;
   }
 
-  const COLORS = [
-    "#a78bfa", "#10b981", "#3b82f6", "#f59e0b",
-    "#ec4899", "#f97316", "#14b8a6", "#8b5cf6",
-  ];
-
   // Layout: doughnut on the left, legend on the right
-  const legendWidth = 130;
+  const legendWidth = 145;
   const chartAreaWidth = Math.max(0, width - legendWidth);
   const cx = chartAreaWidth / 2;
   const cy = height / 2;
@@ -1714,16 +2444,14 @@ function drawPieChart(categoryStats) {
   const innerR = outerR * 0.58;
 
   if (outerR <= 10 || chartAreaWidth <= 20) {
-    // Canvas too small to draw the chart properly, exit silently
     return;
   }
 
   let startAngle = -Math.PI / 2;
 
-  cats.forEach((cat, i) => {
-    const slice = (cat.count / total) * 2 * Math.PI;
-    const color = COLORS[i % COLORS.length];
-    const midAngle = startAngle + slice / 2;
+  slices.forEach((sliceData) => {
+    const sliceAngle = total > 0 ? (sliceData.value / total) * 2 * Math.PI : 0;
+    const color = sliceData.color;
 
     // Glow effect
     ctx.shadowBlur = 10;
@@ -1732,13 +2460,13 @@ function drawPieChart(categoryStats) {
     // Slice
     ctx.beginPath();
     ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, outerR, startAngle, startAngle + slice);
+    ctx.arc(cx, cy, outerR, startAngle, startAngle + sliceAngle);
     ctx.closePath();
     ctx.fillStyle = color;
     ctx.fill();
 
     ctx.shadowBlur = 0;
-    startAngle += slice;
+    startAngle += sliceAngle;
   });
 
   // Doughnut hole
@@ -1749,45 +2477,65 @@ function drawPieChart(categoryStats) {
 
   // Center label
   ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.font = `bold ${Math.round(outerR * 0.38)}px system-ui`;
+  ctx.font = `bold ${Math.round(outerR * 0.35)}px system-ui`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(total, cx, cy - 7);
-  ctx.font = `${Math.round(outerR * 0.2)}px system-ui`;
+  
+  const isCurrency = centerLabel.includes("€");
+  
+  let displayVal = "";
+  if (activeUnit === "pct") {
+    displayVal = "100 %";
+  } else {
+    const valToShow = centerValue !== null ? centerValue : total;
+    displayVal = isCurrency ? `${Math.round(valToShow)} €` : valToShow;
+  }
+  
+  ctx.fillText(displayVal, cx, cy - 7);
+  ctx.font = `${Math.round(outerR * 0.18)}px system-ui`;
   ctx.fillStyle = "rgba(255,255,255,0.4)";
-  ctx.fillText("unidades", cx, cy + outerR * 0.22);
+  ctx.fillText(centerLabel.replace(" €", ""), cx, cy + outerR * 0.22);
 
   // Legend
   const legendX = chartAreaWidth + 8;
-  const lineH = Math.min(22, (height - 16) / cats.length);
-  const startY = (height - lineH * cats.length) / 2;
+  const lineH = Math.min(25, (height - 16) / slices.length);
+  const startY = (height - lineH * slices.length) / 2;
 
-  cats.forEach((cat, i) => {
-    const color = COLORS[i % COLORS.length];
+  slices.forEach((sliceData, i) => {
     const y = startY + i * lineH + lineH / 2;
 
     // Color dot
     ctx.beginPath();
     ctx.arc(legendX + 6, y, 5, 0, 2 * Math.PI);
-    ctx.fillStyle = color;
+    ctx.fillStyle = sliceData.color;
     ctx.shadowBlur = 6;
-    ctx.shadowColor = color;
+    ctx.shadowColor = sliceData.color;
     ctx.fill();
     ctx.shadowBlur = 0;
 
     // Label
-    let label = cat.name.length > 13 ? cat.name.slice(0, 11) + "…" : cat.name;
+    let label = sliceData.name.length > 15 ? sliceData.name.slice(0, 13) + "…" : sliceData.name;
     ctx.fillStyle = "rgba(255,255,255,0.75)";
     ctx.font = "bold 10px system-ui";
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
     ctx.fillText(label, legendX + 15, y);
 
-    // Count
-    const pct = Math.round((cat.count / total) * 100);
+    // Count / Pct
+    const pctBase = percentBase !== null ? percentBase : total;
+    const pct = pctBase > 0 ? Math.round((sliceData.value / pctBase) * 100) : 0;
+    const formattedVal = isCurrency ? `${Math.round(sliceData.value)} €` : `${sliceData.value} ud`;
+    
+    let sublabel = "";
+    if (activeUnit === "pct") {
+      sublabel = `${pct}% · ${formattedVal}`;
+    } else {
+      sublabel = `${formattedVal} · ${pct}%`;
+    }
+    
     ctx.fillStyle = "rgba(255,255,255,0.4)";
     ctx.font = "9px monospace";
-    ctx.fillText(`${cat.count} ud · ${pct}%`, legendX + 15, y + 11);
+    ctx.fillText(sublabel, legendX + 15, y + 11);
   });
 }
 

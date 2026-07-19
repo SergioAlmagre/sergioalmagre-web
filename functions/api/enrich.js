@@ -197,8 +197,14 @@ Devuelve estrictamente este formato JSON:
     if (!grokRes.ok) {
       const errorText = await grokRes.text();
       console.error("Error al consultar el LLM:", errorText);
+      
+      let errMsg = `Error de la API de IA: ${grokRes.statusText || "Fallo en la consulta"}`;
+      if (grokRes.status === 429) {
+        errMsg = "Límite de peticiones de IA excedido (429). Por favor, espera un minuto antes de volver a intentarlo o revisa las cuotas/saldo de tus claves API en Groq o Tavily.";
+      }
+      
       return new Response(
-        JSON.stringify({ error: `Error de la API de IA: ${grokRes.statusText}` }),
+        JSON.stringify({ error: errMsg }),
         { status: grokRes.status, headers: { "Content-Type": "application/json" } }
       );
     }

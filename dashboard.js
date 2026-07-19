@@ -961,7 +961,14 @@ async function handleAnalyze(item) {
   try {
     const qty = item.cantidad || 1;
     const response = await fetch(`/api/enrich?title=${encodeURIComponent(fullName)}&cantidad=${qty}`);
-    if (!response.ok) throw new Error("Fallo en la API RAG de tasación");
+    if (!response.ok) {
+      let errMsg = "Fallo en la API RAG de tasación";
+      try {
+        const errData = await response.json();
+        if (errData && errData.error) errMsg = errData.error;
+      } catch (_) {}
+      throw new Error(errMsg);
+    }
     
     const data = await response.json();
     const enriched = {

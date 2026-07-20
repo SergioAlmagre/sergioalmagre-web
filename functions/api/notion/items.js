@@ -114,6 +114,8 @@ export async function onRequestGet(context) {
     let hasDescripcion = false;
     let hasImagenUrl = false;
     let hasNoVender = false;
+    let hasUnidadesVendidas = false;
+    let hasTotalIngresado = false;
 
     for (const key of Object.keys(properties)) {
       const norm = normalizeString(key);
@@ -126,6 +128,8 @@ export async function onRequestGet(context) {
       if (norm === "descripcion wallapop" && prop.type === "rich_text") hasDescripcion = true;
       if (norm === "imagen url" && (prop.type === "url" || prop.type === "rich_text")) hasImagenUrl = true;
       if (norm === "no vender" && prop.type === "checkbox") hasNoVender = true;
+      if (norm === "unidades vendidas" && prop.type === "number") hasUnidadesVendidas = true;
+      if (norm === "total ingresado" && prop.type === "number") hasTotalIngresado = true;
     }
 
     // 4. Si falta alguna columna de venta, crearla de forma automática
@@ -137,6 +141,8 @@ export async function onRequestGet(context) {
     if (!hasDescripcion) propertiesToCreate["Descripcion Wallapop"] = { rich_text: {} };
     if (!hasImagenUrl) propertiesToCreate["Imagen URL"] = { url: {} };
     if (!hasNoVender) propertiesToCreate["No vender"] = { checkbox: {} };
+    if (!hasUnidadesVendidas) propertiesToCreate["Unidades Vendidas"] = { number: { format: "number" } };
+    if (!hasTotalIngresado) propertiesToCreate["Total Ingresado"] = { number: { format: "euro" } };
 
     if (Object.keys(propertiesToCreate).length > 0) {
       console.log("Detectadas columnas faltantes. Creándolas en Notion:", Object.keys(propertiesToCreate));
@@ -289,7 +295,7 @@ export async function onRequestGet(context) {
           } else if (prop.type === "checkbox") {
             rawProperties[key] = prop.checkbox || false;
           } else if (prop.type === "number") {
-            rawProperties[key] = prop.number || 0;
+            rawProperties[key] = prop.number !== null && prop.number !== undefined ? prop.number : null;
           } else if (prop.type === "rich_text") {
             rawProperties[key] = prop.rich_text?.map((t) => t.plain_text).join("") || "";
           } else if (prop.type === "title") {
@@ -314,6 +320,19 @@ export async function onRequestGet(context) {
         const vendido = getCheckboxProp(page.properties, ["Vendido", "Sold"]);
         const noVender = getCheckboxProp(page.properties, ["No vender", "No_vender"]);
 
+        let unidadesVendidas = getNumberProp(page.properties, ["Unidades Vendidas", "UnidadesVendidas"]);
+        let totalIngresado = getNumberProp(page.properties, ["Total Ingresado", "TotalIngresado"]);
+
+        // Fallback para items antiguos marcados como Vendido (checkbox)
+        if (vendido) {
+          if (!unidadesVendidas || unidadesVendidas === 0) {
+            unidadesVendidas = 1;
+          }
+          if (!totalIngresado || totalIngresado === 0) {
+            totalIngresado = secondHandPrice || 0;
+          }
+        }
+
         return {
           id: page.id,
           title: originalTitle.trim(),
@@ -330,6 +349,8 @@ export async function onRequestGet(context) {
             publicar,
             vendido,
             noVender,
+            unidadesVendidas,
+            totalIngresado,
           },
           rawProperties,
         };
@@ -350,15 +371,22 @@ export async function onRequestGet(context) {
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
 
+      const rawCant = item.rawProperties["Cantidad"] ?? item.rawProperties["cantidad"] ?? item.rawProperties["Stock"] ?? item.rawProperties["stock"] ?? item.rawProperties["Unidades"] ?? item.rawProperties["unidades"];
+      const itemCant = (rawCant !== null && rawCant !== undefined && !isNaN(Number(rawCant)) && Number(rawCant) > 0) ? Number(rawCant) : 1;
+
       if (!groupedMap[groupKey]) {
         groupedMap[groupKey] = {
           ...item,
           itemIds: [item.id],
-          cantidad: 1,
+          cantidad: itemCant,
+          unidadesVendidas: item.enriched.unidadesVendidas || 0,
+          totalIngresado: item.enriched.totalIngresado || 0,
         };
       } else {
         const group = groupedMap[groupKey];
-        group.cantidad = (group.cantidad || 1) + 1;
+        group.cantidad = (group.cantidad || 0) + itemCant;
+        group.unidadesVendidas = (group.unidadesVendidas || 0) + (item.enriched.unidadesVendidas || 0);
+        group.totalIngresado = (group.totalIngresado || 0) + (item.enriched.totalIngresado || 0);
         group.itemIds.push(item.id);
 
         if (new Date(item.lastEdited) > new Date(group.lastEdited)) {

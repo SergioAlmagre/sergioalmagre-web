@@ -244,31 +244,25 @@
       </section>
 
       <section class="stats-grid">
-        <!-- Card 1 -->
-        <div class="stats-card">
-          <span class="stats-card-label">Total Modelos</span>
-          <span class="stats-card-value" id="stat-total-models">0</span>
-          <span class="stats-card-desc">Modelos únicos agrupados</span>
-        </div>
-        <!-- Card 2 -->
+        <!-- Card: Total Unidades (stock restante + vendidas) -->
         <div class="stats-card">
           <span class="stats-card-label">Total Unidades</span>
           <span class="stats-card-value" id="stat-total-units">0</span>
           <span class="stats-card-desc" id="stat-sold-units">0 vendidas</span>
         </div>
-        <!-- Card 3 -->
+        <!-- Card: Inversión Total (en stock activo) -->
         <div class="stats-card highlight-profit">
-          <span class="stats-card-label">Inversión Total</span>
+          <span class="stats-card-label">Inversión en Stock</span>
           <span class="stats-card-value" id="stat-total-cost">0 €</span>
-          <span class="stats-card-desc">Costo total de adquisición</span>
+          <span class="stats-card-desc" id="stat-recovered-cost">Recuperado: 0 €</span>
         </div>
-        <!-- Card 4 -->
+        <!-- Card: Ingresos Potenciales (stock restante) + ingresos reales -->
         <div class="stats-card highlight-success">
           <span class="stats-card-label">Ingresos Potenciales</span>
           <span class="stats-card-value" id="stat-total-revenue">0 €</span>
-          <span class="stats-card-desc" id="stat-expected-profit">Margen estimado: 0 €</span>
+          <span class="stats-card-desc" id="stat-real-income">Ingresado: 0 € · Neto: 0 €</span>
         </div>
-        <!-- Card 5 -->
+        <!-- Card: Valor Retail Total -->
         <div class="stats-card" style="border-color: rgba(59, 130, 246, 0.3);">
           <span class="stats-card-label">Valor Retail Total</span>
           <span class="stats-card-value" id="stat-total-retail" style="color: #3b82f6;">0 €</span>
@@ -283,10 +277,6 @@
           <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
               <h3 class="stats-sec-title" style="margin: 0;">// distribución_ingresos_por_categoría</h3>
-              <div class="chart-toggle-group" style="display: flex; gap: 2px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 2px;">
-                <button class="chart-toggle-btn active" id="btn-toggle-bar-val" style="background: var(--bg3); border: none; border-radius: 4px; color: var(--accent); font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.4rem; cursor: pointer; outline: none;">Val</button>
-                <button class="chart-toggle-btn" id="btn-toggle-bar-pct" style="background: transparent; border: none; border-radius: 4px; color: var(--text-dim); font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.4rem; cursor: pointer; outline: none;">%</button>
-              </div>
             </div>
             <div style="position: relative; height: 230px;">
               <canvas id="stats-chart" style="width: 100%; height: 100%; display: block;"></canvas>
@@ -296,10 +286,6 @@
           <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
               <h3 class="stats-sec-title" style="margin: 0;">// volumen_sin_vender_vs_vendido</h3>
-              <div class="chart-toggle-group" style="display: flex; gap: 2px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 2px;">
-                <button class="chart-toggle-btn active" id="btn-toggle-pie-units-val" style="background: var(--bg3); border: none; border-radius: 4px; color: var(--accent); font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.4rem; cursor: pointer; outline: none;">Val</button>
-                <button class="chart-toggle-btn" id="btn-toggle-pie-units-pct" style="background: transparent; border: none; border-radius: 4px; color: var(--text-dim); font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.4rem; cursor: pointer; outline: none;">%</button>
-              </div>
             </div>
             <div style="position: relative; height: 230px;">
               <canvas id="stats-pie-chart-units" style="width: 100%; height: 100%; display: block;"></canvas>
@@ -309,10 +295,6 @@
           <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
               <h3 class="stats-sec-title" style="margin: 0;">// inversión_vs_conseguido_por_ventas</h3>
-              <div class="chart-toggle-group" style="display: flex; gap: 2px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 2px;">
-                <button class="chart-toggle-btn active" id="btn-toggle-pie-finance-val" style="background: var(--bg3); border: none; border-radius: 4px; color: var(--accent); font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.4rem; cursor: pointer; outline: none;">Val</button>
-                <button class="chart-toggle-btn" id="btn-toggle-pie-finance-pct" style="background: transparent; border: none; border-radius: 4px; color: var(--text-dim); font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.4rem; cursor: pointer; outline: none;">%</button>
-              </div>
             </div>
             <div style="position: relative; height: 230px;">
               <canvas id="stats-pie-chart-finance" style="width: 100%; height: 100%; display: block;"></canvas>
@@ -476,6 +458,190 @@
     </div>
   </div>
 
-  <script src="dashboard.js?v=6"></script>
+  <!-- MODAL DE CREAR UN NUEVO ANUNCIO -->
+  <div id="add-item-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 650px;">
+      <div class="modal-body-padding">
+        <h3 class="flex items-center gap-2" style="font-size: 1.2rem; font-weight: 800; color: var(--accent);">
+          <svg style="width: 20px; height: 20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+          </svg>
+          Añadir Nuevo Anuncio
+        </h3>
+        <p class="modal-subtitle-text mt-1" style="font-size: 0.8rem;">
+          Crea un nuevo artículo en tu inventario de Notion. Puedes rellenar los datos manualmente o usar la IA para autocompletar la tasación en base al modelo.
+        </p>
+
+        <div style="max-height: 480px; overflow-y: auto; margin-top: 1.25rem; padding-right: 0.5rem;">
+          <!-- MODEL / TITLE -->
+          <div class="mb-4">
+            <label class="block text-label mb-1.5 font-bold">Nombre / Modelo del Producto *</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="text" id="add-item-title" placeholder="Ej: Sony Alpha 7 IV" class="modal-input" style="flex: 1;">
+              <button id="add-item-ai-btn" class="btn-ghost" style="padding: 0.6rem 1rem; display: flex; align-items: center; gap: 0.4rem; font-weight: 700; border: 1px solid var(--accent); color: var(--accent); white-space: nowrap;">
+                ✨ Autocompletar con IA
+              </button>
+            </div>
+          </div>
+
+          <!-- CATEGORY / BRAND -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-label mb-1.5 font-bold">Categoría (Naturaleza)</label>
+              <select id="add-item-category-select" class="modal-input"></select>
+              <input type="text" id="add-item-category-custom" placeholder="Especificar categoría..." class="modal-input hidden mt-2">
+            </div>
+            <div>
+              <label class="block text-label mb-1.5 font-bold">Fabricante</label>
+              <select id="add-item-brand-select" class="modal-input"></select>
+              <input type="text" id="add-item-brand-custom" placeholder="Especificar fabricante..." class="modal-input hidden mt-2">
+            </div>
+          </div>
+
+          <!-- PRICING -->
+          <div class="grid grid-cols-3 gap-4 mb-4">
+            <div>
+              <label class="block text-label mb-1.5 font-bold">Precio Compra (€)</label>
+              <input type="number" id="add-item-purchase" placeholder="Ej: 80" class="modal-input">
+            </div>
+            <div>
+              <label class="block text-label mb-1.5 font-bold">Precio Sugerido (€)</label>
+              <input type="number" id="add-item-sale" placeholder="Ej: 150" class="modal-input">
+            </div>
+            <div>
+              <label class="block text-label mb-1.5 font-bold">Precio Nuevo/Retail (€)</label>
+              <input type="number" id="add-item-retail" placeholder="Ej: 220" class="modal-input">
+            </div>
+          </div>
+
+          <!-- IMAGE URL & STOCK / PUBLICAR -->
+          <div class="grid grid-cols-3 gap-4 mb-4">
+            <div class="col-span-2" style="grid-column: span 2 / span 2;">
+              <label class="block text-label mb-1.5 font-bold">Imagen URL</label>
+              <input type="text" id="add-item-image" placeholder="https://ejemplo.com/foto.jpg" class="modal-input">
+            </div>
+            <div>
+              <label class="block text-label mb-1.5 font-bold">Cantidad (Stock)</label>
+              <input type="number" id="add-item-quantity" value="1" min="1" placeholder="Ej: 1" class="modal-input">
+            </div>
+          </div>
+
+          <!-- PUBLICADO STATUS -->
+          <div class="mb-4">
+            <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer; padding: 0.75rem 1rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; font-weight: 600; color: var(--text);">
+              <input type="checkbox" id="add-item-publicar" style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;">
+              <span>Publicar automáticamente (Visible en la web y catálogo)</span>
+            </label>
+          </div>
+
+          <!-- DESCRIPTION -->
+          <div class="mb-2">
+            <label class="block text-label mb-1.5 font-bold">Descripción (Wallapop / Web)</label>
+            <textarea id="add-item-description" placeholder="Aquí aparecerá la descripción atractiva generada por la IA o redactada por ti..." class="modal-input" style="height: 120px; resize: vertical;"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-actions-row mt-6" style="display: flex; justify-content: flex-end; gap: 0.8rem;">
+          <button id="add-item-cancel" class="btn-ghost">Cancelar</button>
+          <button id="add-item-save" class="btn-primary">Guardar Anuncio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL SELECCIÓN DE CAMPOS PARA ANALIZAR CON IA -->
+  <div id="ai-fields-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-body-padding">
+        <h3 class="flex items-center gap-2" style="font-size: 1.15rem; font-weight: 800; color: var(--accent);">
+          <svg style="width: 20px; height: 20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Campos a Autocompletar con IA
+        </h3>
+        <p id="ai-fields-modal-subtitle" class="modal-subtitle-text mt-1" style="font-size: 0.8rem; color: var(--text-dim);">
+          Selecciona qué información deseas que la IA genere o sobreescriba:
+        </p>
+
+        <div style="margin-top: 1.25rem; display: flex; flex-direction: column; gap: 0.65rem;">
+          <label style="display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.8rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text);">
+            <input type="checkbox" id="ai-field-title" checked style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;">
+            <div>
+              <div>Título de Venta Optimizado</div>
+              <div style="font-size: 0.7rem; color: var(--text-dim); font-weight: normal;">Nombre atractivo sugerido para la venta</div>
+            </div>
+          </label>
+
+          <label style="display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.8rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text);">
+            <input type="checkbox" id="ai-field-retailPrice" checked style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;">
+            <div>
+              <div>Precio Retail / Nuevo (€)</div>
+              <div style="font-size: 0.7rem; color: var(--text-dim); font-weight: normal;">Precio de referencia de producto nuevo</div>
+            </div>
+          </label>
+
+          <label style="display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.8rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text);">
+            <input type="checkbox" id="ai-field-secondHandPrice" checked style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;">
+            <div>
+              <div>Precio Sugerido Venta (€)</div>
+              <div style="font-size: 0.7rem; color: var(--text-dim); font-weight: normal;">Precio estimado para mercado de ocasión</div>
+            </div>
+          </label>
+
+          <label style="display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.8rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text);">
+            <input type="checkbox" id="ai-field-imageUrl" checked style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;">
+            <div>
+              <div>Imagen del Producto (URL)</div>
+              <div style="font-size: 0.7rem; color: var(--text-dim); font-weight: normal;">Enlace a la fotografía del producto</div>
+            </div>
+          </label>
+
+          <label style="display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.8rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text);">
+            <input type="checkbox" id="ai-field-description" checked style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;">
+            <div>
+              <div>Descripción Detallada</div>
+              <div style="font-size: 0.7rem; color: var(--text-dim); font-weight: normal;">Texto redactado para el anuncio</div>
+            </div>
+          </label>
+        </div>
+
+        <div class="modal-actions-row mt-6" style="display: flex; justify-content: flex-end; gap: 0.8rem;">
+          <button id="ai-fields-cancel" class="btn-ghost">Cancelar</button>
+          <button id="ai-fields-confirm" class="btn-primary">✨ Continuar y Analizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL DE VENTA RÁPIDA -->
+  <div id="sell-modal" class="modal-overlay hidden">
+    <div class="modal-box" style="max-width: 380px;">
+      <div class="modal-header">
+        <h2 class="modal-title">🛒 Registrar Venta</h2>
+        <button id="sell-modal-close" class="modal-close-btn" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 1.25rem 1.5rem;">
+        <p id="sell-modal-item-name" style="font-size:0.85rem; color:var(--text); font-weight:600; margin-bottom:1rem;"></p>
+        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+          <div>
+            <label style="font-size:0.75rem; color:var(--text-dim); display:block; margin-bottom:0.3rem;">Unidades a vender</label>
+            <input type="number" id="sell-units-input" class="form-control-input" min="1" value="1" style="width:100%; font-size:0.9rem; font-weight:700;">
+          </div>
+          <div>
+            <label style="font-size:0.75rem; color:var(--text-dim); display:block; margin-bottom:0.3rem;">Precio de venta por unidad (€)</label>
+            <input type="number" id="sell-price-input" class="form-control-input" min="0" step="0.01" style="width:100%; font-size:0.9rem;" placeholder="Precio sugerido por defecto">
+          </div>
+          <p id="sell-modal-summary" style="font-size:0.75rem; color:var(--text-dim); background:var(--bg3); border-radius:6px; padding:0.6rem 0.8rem;"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="sell-modal-cancel" class="btn-ghost">Cancelar</button>
+        <button id="sell-modal-confirm" class="btn-primary">✅ Confirmar Venta</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="dashboard.js?v=19"></script>
 </body>
 </html>

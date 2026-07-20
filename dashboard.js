@@ -197,6 +197,8 @@ const addItemPurchase = document.getElementById("add-item-purchase");
 const addItemSale = document.getElementById("add-item-sale");
 const addItemImage = document.getElementById("add-item-image");
 const addItemDescription = document.getElementById("add-item-description");
+const addItemQuantity = document.getElementById("add-item-quantity");
+const addItemPublicar = document.getElementById("add-item-publicar");
 
 // Tabs switching
 const tabBtns = document.querySelectorAll(".tab-btn");
@@ -562,10 +564,7 @@ function setupChartToggle(valBtnId, pctBtnId, key) {
   });
 }
 
-// Initialise chart mode toggles
-setupChartToggle("btn-toggle-bar-val", "btn-toggle-bar-pct", "categoryBar");
-setupChartToggle("btn-toggle-pie-units-val", "btn-toggle-pie-units-pct", "unitsPie");
-setupChartToggle("btn-toggle-pie-finance-val", "btn-toggle-pie-finance-pct", "financePie");
+// Initialise chart mode toggles - Removed switches, displaying both by default
 
 // Advanced filters logic
 const addFilterRuleBtn = document.getElementById("add-filter-rule-btn");
@@ -607,7 +606,7 @@ function renderFilterRules() {
 
     // Select column dropdown
     let colOptions = `<option value="">-- Seleccionar columna --</option>`;
-    Object.keys(notionSchema).sort((a,b)=>a.localeCompare(b)).forEach(col => {
+    Object.keys(notionSchema).sort((a,b)=>a.localeCompare(b, "es", { sensitivity: "base" })).forEach(col => {
       colOptions += `<option value="${col}" ${rule.column === col ? "selected" : ""}>${col}</option>`;
     });
 
@@ -685,7 +684,7 @@ function renderFilterRules() {
           const currentArr = Array.isArray(rule.value) ? rule.value : [];
           const dropBtn = document.createElement("button");
           dropBtn.className = "btn-multiselect-dropdown";
-          dropBtn.innerHTML = `<span>${currentArr.length > 0 ? `${currentArr.length} seleccionados` : "Todos"}</span><svg class="h-3 w-3 ml-2 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" /></svg>`;
+          dropBtn.innerHTML = `<span>${currentArr.length > 0 ? `${currentArr.length} seleccionados` : "Todos"}</span><svg style="width: 12px; height: 12px; min-width: 12px; min-height: 12px; flex-shrink: 0; margin-left: 0.5rem; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" /></svg>`;
           
           dropBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -702,8 +701,10 @@ function renderFilterRules() {
           if (activeRuleDropdown === rule.id) {
             const dropdownPanel = document.createElement("div");
             dropdownPanel.className = "multiselect-dropdown-panel";
+            dropdownPanel.addEventListener("click", (e) => e.stopPropagation());
             
-            schema.options.forEach(opt => {
+            const sortedOptions = [...schema.options].sort((a, b) => String(a).localeCompare(String(b), "es", { sensitivity: "base" }));
+            sortedOptions.forEach(opt => {
               const label = document.createElement("label");
               label.className = "multiselect-dropdown-option";
               
@@ -805,7 +806,7 @@ function renderStatsFilterRules() {
 
     // Select column dropdown
     let colOptions = `<option value="">-- Seleccionar columna --</option>`;
-    Object.keys(notionSchema).sort((a,b)=>a.localeCompare(b)).forEach(col => {
+    Object.keys(notionSchema).sort((a,b)=>a.localeCompare(b, "es", { sensitivity: "base" })).forEach(col => {
       colOptions += `<option value="${col}" ${rule.column === col ? "selected" : ""}>${col}</option>`;
     });
 
@@ -880,7 +881,7 @@ function renderStatsFilterRules() {
           const currentArr = Array.isArray(rule.value) ? rule.value : [];
           const dropBtn = document.createElement("button");
           dropBtn.className = "btn-multiselect-dropdown";
-          dropBtn.innerHTML = `<span>${currentArr.length > 0 ? `${currentArr.length} seleccionados` : "Todos"}</span><svg class="h-3 w-3 ml-2 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" /></svg>`;
+          dropBtn.innerHTML = `<span>${currentArr.length > 0 ? `${currentArr.length} seleccionados` : "Todos"}</span><svg style="width: 12px; height: 12px; min-width: 12px; min-height: 12px; flex-shrink: 0; margin-left: 0.5rem; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" /></svg>`;
           
           dropBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -897,8 +898,10 @@ function renderStatsFilterRules() {
           if (activeStatsRuleDropdown === rule.id) {
             const dropdownPanel = document.createElement("div");
             dropdownPanel.className = "multiselect-dropdown-panel";
+            dropdownPanel.addEventListener("click", (e) => e.stopPropagation());
             
-            schema.options.forEach(opt => {
+            const sortedOptions = [...schema.options].sort((a, b) => String(a).localeCompare(String(b), "es", { sensitivity: "base" }));
+            sortedOptions.forEach(opt => {
               const label = document.createElement("label");
               label.className = "multiselect-dropdown-option";
               
@@ -957,8 +960,11 @@ function renderStatsFilterRules() {
   });
 }
 
-// Global click to close active filter dropdowns
-document.addEventListener("click", () => {
+// Global click to close active filter dropdowns when clicking outside
+document.addEventListener("click", (e) => {
+  if (e.target.closest(".multiselect-dropdown-panel") || e.target.closest(".btn-multiselect-dropdown")) {
+    return;
+  }
   let changed = false;
   if (activeRuleDropdown !== null) {
     activeRuleDropdown = null;
@@ -1277,6 +1283,7 @@ function renderItemsList() {
             <span>Retail: <strong>${enrichedData.retailPrice || 0} €</strong></span>
             <span>|</span>
             <span>Stock: <strong style="color:var(--accent); background:rgba(167,139,250,0.1); padding:1px 6px; border-radius:4px; border:1px solid rgba(167,139,250,0.1);">${item.cantidad || 1}</strong></span>
+            ${item.unidadesVendidas > 0 ? `<span>|</span><span style="font-size:0.75rem; color:#10b981;">✓ ${item.unidadesVendidas} vendidas</span>` : ""}
             ${discountHtml ? `<span>|</span>${discountHtml}` : ""}
             ${profitHtml ? `<span>|</span>${profitHtml}` : ""}
           </div>
@@ -1309,6 +1316,9 @@ function renderItemsList() {
                 ${isAnalyzing ? "..." : `<svg style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:3px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Analizar`}
               </button>
             ` : ""}
+            <button class="btn-ghost" style="font-size:0.7rem; padding:0.4rem 0.7rem; border-radius:6px; color:#10b981; border-color:rgba(16,185,129,0.4);" data-action="sell-unit" title="Registrar venta de 1 unidad">
+              🛒 Vender
+            </button>
             <button class="btn-icon" data-action="copy-original-to-purchase" title="Copiar precio original a precio de compra" style="padding: 0.35rem; color: var(--accent);">
               <svg style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -1488,6 +1498,15 @@ function renderItemsList() {
       quickAnalyze.addEventListener("click", () => handleAnalyze(item));
     }
 
+    // Sell unit button
+    const sellBtn = card.querySelector('[data-action="sell-unit"]');
+    if (sellBtn) {
+      sellBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openSellModal(item);
+      });
+    }
+
     // Form expanded hooks
     if (isExpanded) {
       const formAnalyze = card.querySelector('[data-action="form-analyze"]');
@@ -1533,6 +1552,7 @@ function renderItemsList() {
       const saveBtn = card.querySelector('[data-action="save-notion"]');
       saveBtn.addEventListener("click", async () => {
         updateLocalFields();
+        expandedIds[item.id] = false;
         handleSave(item);
       });
 
@@ -1699,18 +1719,84 @@ function handleVendidoChange(item, isChecked) {
   }
 }
 
-sellModalConfirm.addEventListener("click", () => sellModalCallbacks.onConfirm?.());
-sellModalCancel.addEventListener("click", () => sellModalCallbacks.onCancel?.());
+// AI Fields selection modal logic
+const AI_FIELDS_STORAGE_KEY = "dashboard_ai_fields_prefs_v1";
+let aiFieldsCallbacks = { onConfirm: null, onCancel: null };
+
+function openAiFieldsModal(itemTitle, onConfirm) {
+  const modal = document.getElementById("ai-fields-modal");
+  const subtitle = document.getElementById("ai-fields-modal-subtitle");
+
+  const checkTitle = document.getElementById("ai-field-title");
+  const checkRetail = document.getElementById("ai-field-retailPrice");
+  const checkSale = document.getElementById("ai-field-secondHandPrice");
+  const checkImage = document.getElementById("ai-field-imageUrl");
+  const checkDesc = document.getElementById("ai-field-description");
+
+  // Load saved preferences
+  try {
+    const raw = localStorage.getItem(AI_FIELDS_STORAGE_KEY);
+    if (raw) {
+      const prefs = JSON.parse(raw);
+      if (typeof prefs.title === "boolean") checkTitle.checked = prefs.title;
+      if (typeof prefs.retailPrice === "boolean") checkRetail.checked = prefs.retailPrice;
+      if (typeof prefs.secondHandPrice === "boolean") checkSale.checked = prefs.secondHandPrice;
+      if (typeof prefs.imageUrl === "boolean") checkImage.checked = prefs.imageUrl;
+      if (typeof prefs.description === "boolean") checkDesc.checked = prefs.description;
+    }
+  } catch (_) {}
+
+  if (itemTitle) {
+    subtitle.textContent = `Selecciona qué campos deseas que la IA autocomplete o sobreescriba para "${itemTitle}":`;
+  } else {
+    subtitle.textContent = "Selecciona qué información deseas que la IA genere o sobreescriba:";
+  }
+
+  modal.classList.remove("hidden");
+
+  aiFieldsCallbacks.onConfirm = () => {
+    const selectedFields = {
+      title: checkTitle.checked,
+      retailPrice: checkRetail.checked,
+      secondHandPrice: checkSale.checked,
+      imageUrl: checkImage.checked,
+      description: checkDesc.checked
+    };
+
+    // Save preferences
+    try {
+      localStorage.setItem(AI_FIELDS_STORAGE_KEY, JSON.stringify(selectedFields));
+    } catch (_) {}
+
+    modal.classList.add("hidden");
+    if (onConfirm) onConfirm(selectedFields);
+  };
+
+  aiFieldsCallbacks.onCancel = () => {
+    modal.classList.add("hidden");
+  };
+}
+
+const aiFieldsConfirm = document.getElementById("ai-fields-confirm");
+const aiFieldsCancel = document.getElementById("ai-fields-cancel");
+if (aiFieldsConfirm) aiFieldsConfirm.addEventListener("click", () => aiFieldsCallbacks.onConfirm?.());
+if (aiFieldsCancel) aiFieldsCancel.addEventListener("click", () => aiFieldsCallbacks.onCancel?.());
 
 // Single AI analyze
-async function handleAnalyze(item) {
+function handleAnalyze(item) {
+  openAiFieldsModal(getFullItemName(item), (selectedFields) => {
+    executeAnalyze(item, selectedFields);
+  });
+}
+
+async function executeAnalyze(item, selectedFields) {
   const fullName = getFullItemName(item);
   analyzingIds[item.id] = true;
   renderItemsList();
 
   try {
     const qty = item.cantidad || 1;
-    const response = await fetch(`/api/enrich?title=${encodeURIComponent(fullName)}&cantidad=${qty}&model=${encodeURIComponent(selectedAIModel)}`);
+    const response = await fetch(`/api/enrich?title=${encodeURIComponent(fullName)}&cantidad=${qty}&model=${encodeURIComponent(selectedAIModel)}`, { credentials: "same-origin" });
     if (!response.ok) {
       let errMsg = "Fallo en la API RAG de tasación";
       try {
@@ -1721,32 +1807,43 @@ async function handleAnalyze(item) {
     }
     
     const data = await response.json();
+    
+    const updatedTitle = (selectedFields.title && data.title) ? data.title : item.enriched.title;
+    const updatedRetail = (selectedFields.retailPrice && typeof data.retailPrice === "number") ? data.retailPrice : (item.enriched.retailPrice || 0);
+    const updatedSale = (selectedFields.secondHandPrice && typeof data.secondHandPrice === "number") ? data.secondHandPrice : (item.enriched.secondHandPrice || 0);
+    const updatedImage = (selectedFields.imageUrl && data.imageUrl) ? data.imageUrl : (item.enriched.imageUrl || "");
+    const updatedDesc = (selectedFields.description && data.description) ? data.description : (item.enriched.description || "");
+
     const enriched = {
-      title: data.title || fullName,
-      retailPrice: data.retailPrice || 0,
-      secondHandPrice: data.secondHandPrice || 0,
-      savingsPercentage: data.retailPrice > 0 ? Math.round(((data.retailPrice - data.secondHandPrice) / data.retailPrice) * 100) : 0,
-      description: data.description || "",
-      imageUrl: data.imageUrl || "",
+      title: updatedTitle || fullName,
+      retailPrice: updatedRetail,
+      secondHandPrice: updatedSale,
+      savingsPercentage: updatedRetail > 0 ? Math.round(((updatedRetail - updatedSale) / updatedRetail) * 100) : 0,
+      description: updatedDesc,
+      imageUrl: updatedImage,
       publicar: item.enriched.publicar || false,
       vendido: item.enriched.vendido || false,
       noVender: item.enriched.noVender || false,
     };
 
+    // Build update payload only with selected fields
+    const updatePayload = {
+      itemId: item.id,
+      itemIds: item.itemIds || [item.id],
+      publicar: enriched.publicar,
+    };
+
+    if (selectedFields.title) updatePayload.title = enriched.title;
+    if (selectedFields.retailPrice) updatePayload.retailPrice = enriched.retailPrice;
+    if (selectedFields.secondHandPrice) updatePayload.secondHandPrice = enriched.secondHandPrice;
+    if (selectedFields.description) updatePayload.description = enriched.description;
+    if (selectedFields.imageUrl) updatePayload.imageUrl = enriched.imageUrl;
+
     // Auto save to Notion
     const saveRes = await fetch("/api/notion/update", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        itemId: item.id,
-        itemIds: item.itemIds || [item.id],
-        title: enriched.title,
-        retailPrice: enriched.retailPrice,
-        secondHandPrice: enriched.secondHandPrice,
-        description: enriched.description,
-        imageUrl: enriched.imageUrl,
-        publicar: enriched.publicar,
-      }),
+      body: JSON.stringify(updatePayload),
     });
 
     if (!saveRes.ok) throw new Error("Fallo al guardar tasación");
@@ -1836,16 +1933,14 @@ bulkEnrichBtn.addEventListener("click", () => {
     return;
   }
 
-  openConfirmModal(
-    "Autocompletar seleccionados",
-    `¿Deseas analizar secuencialmente con la IA los ${selectedItems.length} artículos seleccionados y guardarlos automáticamente en Notion?`,
-    async () => {
-      isBulkProcessing = true;
-      bulkCancel = false;
-      bulkProgressPanel.classList.remove("hidden");
-      bulkProgress = { current: 0, total: selectedItems.length };
-      updateBulkProgressUI();
+  openAiFieldsModal(`${selectedItems.length} artículos seleccionados`, (selectedFields) => {
+    isBulkProcessing = true;
+    bulkCancel = false;
+    bulkProgressPanel.classList.remove("hidden");
+    bulkProgress = { current: 0, total: selectedItems.length };
+    updateBulkProgressUI();
 
+    (async () => {
       for (let i = 0; i < selectedItems.length; i++) {
         if (bulkCancel) break;
         
@@ -1859,31 +1954,40 @@ bulkEnrichBtn.addEventListener("click", () => {
           const res = await fetch(`/api/enrich?title=${encodeURIComponent(fullName)}&cantidad=${qty}&model=${encodeURIComponent(selectedAIModel)}`);
           if (res.ok) {
             const data = await res.json();
+
+            const updatedTitle = (selectedFields.title && data.title) ? data.title : currentItem.enriched.title;
+            const updatedRetail = (selectedFields.retailPrice && typeof data.retailPrice === "number") ? data.retailPrice : (currentItem.enriched.retailPrice || 0);
+            const updatedSale = (selectedFields.secondHandPrice && typeof data.secondHandPrice === "number") ? data.secondHandPrice : (currentItem.enriched.secondHandPrice || 0);
+            const updatedImage = (selectedFields.imageUrl && data.imageUrl) ? data.imageUrl : (currentItem.enriched.imageUrl || "");
+            const updatedDesc = (selectedFields.description && data.description) ? data.description : (currentItem.enriched.description || "");
+
             const enriched = {
-              title: data.title || fullName,
-              retailPrice: data.retailPrice || 0,
-              secondHandPrice: data.secondHandPrice || 0,
-              savingsPercentage: data.retailPrice > 0 ? Math.round(((data.retailPrice - data.secondHandPrice) / data.retailPrice) * 100) : 0,
-              description: data.description || "",
-              imageUrl: data.imageUrl || "",
+              title: updatedTitle || fullName,
+              retailPrice: updatedRetail,
+              secondHandPrice: updatedSale,
+              savingsPercentage: updatedRetail > 0 ? Math.round(((updatedRetail - updatedSale) / updatedRetail) * 100) : 0,
+              description: updatedDesc,
+              imageUrl: updatedImage,
               publicar: currentItem.enriched.publicar || false,
               vendido: currentItem.enriched.vendido || false,
               noVender: currentItem.enriched.noVender || false,
             };
 
+            const updatePayload = {
+              itemId: currentItem.id,
+              itemIds: currentItem.itemIds || [currentItem.id],
+              publicar: enriched.publicar,
+            };
+            if (selectedFields.title) updatePayload.title = enriched.title;
+            if (selectedFields.retailPrice) updatePayload.retailPrice = enriched.retailPrice;
+            if (selectedFields.secondHandPrice) updatePayload.secondHandPrice = enriched.secondHandPrice;
+            if (selectedFields.description) updatePayload.description = enriched.description;
+            if (selectedFields.imageUrl) updatePayload.imageUrl = enriched.imageUrl;
+
             await fetch("/api/notion/update", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                itemId: currentItem.id,
-                itemIds: currentItem.itemIds || [currentItem.id],
-                title: enriched.title,
-                retailPrice: enriched.retailPrice,
-                secondHandPrice: enriched.secondHandPrice,
-                description: enriched.description,
-                imageUrl: enriched.imageUrl,
-                publicar: enriched.publicar,
-              }),
+              body: JSON.stringify(updatePayload),
             });
 
             currentItem.enriched = { ...enriched, isAnalyzed: true };
@@ -1900,8 +2004,8 @@ bulkEnrichBtn.addEventListener("click", () => {
       bulkProgressPanel.classList.add("hidden");
       showToast("Procesamiento masivo de IA finalizado.");
       applyFilters();
-    }
-  );
+    })();
+  });
 });
 
 function updateBulkProgressUI() {
@@ -1920,8 +2024,34 @@ function openConfigModal(item) {
   currentConfigItem = item;
   configPropertiesBody.innerHTML = "";
 
+  // 1. Siempre incluir la fila destacada de Cantidad / Stock al inicio
+  const currentQty = item.cantidad || 1;
+  const qtyTr = document.createElement("tr");
+  qtyTr.style.borderBottom = "1px solid var(--border)";
+  qtyTr.style.background = "rgba(59, 130, 246, 0.08)";
+
+  const qtyKeyTd = document.createElement("td");
+  qtyKeyTd.style.fontWeight = "700";
+  qtyKeyTd.style.fontSize = "0.75rem";
+  qtyKeyTd.style.padding = "0.6rem 0.8rem";
+  qtyKeyTd.style.verticalAlign = "middle";
+  qtyKeyTd.style.color = "var(--accent)";
+  qtyKeyTd.innerHTML = `📦 Cantidad (Stock) <span style="font-size:0.6rem; color:var(--text-dim); display:block; font-weight:normal; font-family:var(--font-mono); margin-top:0.15rem;">Unidades en stock</span>`;
+  qtyTr.appendChild(qtyKeyTd);
+
+  const qtyValTd = document.createElement("td");
+  qtyValTd.style.padding = "0.6rem 0.8rem";
+  qtyValTd.style.verticalAlign = "middle";
+  qtyValTd.innerHTML = `<input type="number" id="config-custom-cantidad-input" class="form-control-input" value="${currentQty}" min="1" style="font-size:0.8rem; font-weight:bold; padding:0.4rem 0.6rem; width:100%; border-color:var(--accent);">`;
+  qtyTr.appendChild(qtyValTd);
+
+  configPropertiesBody.appendChild(qtyTr);
+
   // Loop through all properties in notionSchema
-  Object.keys(notionSchema).sort((a,b)=>a.localeCompare(b)).forEach(col => {
+  Object.keys(notionSchema).sort((a,b)=>a.localeCompare(b, "es", { sensitivity: "base" })).forEach(col => {
+    // Avoid duplicating Cantidad/Unidades if already shown above
+    if (col.toLowerCase() === "cantidad" || col.toLowerCase() === "stock" || col.toLowerCase() === "unidades") return;
+
     const schema = notionSchema[col];
     const val = item.rawProperties[col];
     const isReadOnly = (schema.type === "formula" || schema.type === "relation" || schema.type === "rollup" || schema.type === "created_time" || schema.type === "last_edited_time");
@@ -1958,7 +2088,8 @@ function openConfigModal(item) {
     } else if (schema.type === "select" || schema.type === "status") {
       let options = `<option value="">-- Vacío --</option>`;
       if (schema.options) {
-        schema.options.forEach(opt => {
+        const sortedOptions = [...schema.options].sort((a, b) => String(a).localeCompare(String(b), "es", { sensitivity: "base" }));
+        sortedOptions.forEach(opt => {
           options += `<option value="${opt}" ${opt === val ? "selected" : ""}>${opt}</option>`;
         });
       }
@@ -2005,6 +2136,10 @@ configModalSave.addEventListener("click", async () => {
     }
   });
 
+  const customQtyInput = document.getElementById("config-custom-cantidad-input");
+  const newQty = customQtyInput ? (Math.max(1, Number(customQtyInput.value)) || 1) : (currentConfigItem.cantidad || 1);
+  rawProperties["Cantidad"] = newQty;
+
   configModalSave.textContent = "Guardando...";
   configModalSave.disabled = true;
 
@@ -2014,6 +2149,8 @@ configModalSave.addEventListener("click", async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         itemId: currentConfigItem.id,
+        itemIds: currentConfigItem.itemIds || [currentConfigItem.id],
+        cantidad: newQty,
         rawProperties
       })
     });
@@ -2073,31 +2210,57 @@ if (configModalDelete) {
   });
 }
 
-// Helper to populate category and brand select dropdowns from notionSchema options
+// Helper to populate category and brand select dropdowns from notionSchema options AND items
 function populateAddItemModalDropdowns() {
   if (!addItemCategorySelect || !addItemBrandSelect || !addItemCategoryCustom || !addItemBrandCustom) return;
 
-  // 1. Populate Naturaleza (Categoría)
-  const categorySchema = notionSchema["Naturaleza"];
-  let catOptions = `<option value="">-- Seleccionar categoría --</option>`;
-  if (categorySchema && categorySchema.options) {
-    categorySchema.options.sort((a,b)=>a.localeCompare(b)).forEach(opt => {
-      catOptions += `<option value="${opt}">${opt}</option>`;
+  const findSchemaOptions = (possibleNames) => {
+    const options = new Set();
+    const normPossibles = possibleNames.map(n => n.toLowerCase().trim());
+    
+    // 1. Check notionSchema options
+    for (const key of Object.keys(notionSchema || {})) {
+      if (normPossibles.includes(key.toLowerCase().trim())) {
+        const schema = notionSchema[key];
+        if (schema && Array.isArray(schema.options)) {
+          schema.options.forEach(opt => { if (opt) options.add(opt); });
+        }
+      }
+    }
+    
+    // 2. Check values present across all loaded items
+    (items || []).forEach(it => {
+      if (!it.rawProperties) return;
+      for (const key of Object.keys(it.rawProperties)) {
+        if (normPossibles.includes(key.toLowerCase().trim())) {
+          const val = it.rawProperties[key];
+          if (val && typeof val === "string" && val.trim() !== "") {
+            options.add(val.trim());
+          }
+        }
+      }
     });
-  }
+
+    return Array.from(options).sort((a, b) => a.localeCompare(b));
+  };
+
+  // 1. Populate Naturaleza (Categoría)
+  const categories = findSchemaOptions(["Naturaleza", "Categoría", "Categoria", "Nature"]);
+  let catOptions = `<option value="">-- Seleccionar categoría --</option>`;
+  categories.forEach(opt => {
+    catOptions += `<option value="${opt}">${opt}</option>`;
+  });
   catOptions += `<option value="__NEW__">+ Añadir nueva categoría...</option>`;
   addItemCategorySelect.innerHTML = catOptions;
   addItemCategoryCustom.classList.add("hidden");
   addItemCategoryCustom.value = "";
 
   // 2. Populate Fabricante (Brand)
-  const brandSchema = notionSchema["Fabricante"];
+  const brands = findSchemaOptions(["Fabricante", "Marca", "Brand", "Manufacturer"]);
   let brandOptions = `<option value="">-- Seleccionar fabricante --</option>`;
-  if (brandSchema && brandSchema.options) {
-    brandSchema.options.sort((a,b)=>a.localeCompare(b)).forEach(opt => {
-      brandOptions += `<option value="${opt}">${opt}</option>`;
-    });
-  }
+  brands.forEach(opt => {
+    brandOptions += `<option value="${opt}">${opt}</option>`;
+  });
   brandOptions += `<option value="__NEW__">+ Añadir nuevo fabricante...</option>`;
   addItemBrandSelect.innerHTML = brandOptions;
   addItemBrandCustom.classList.add("hidden");
@@ -2135,6 +2298,8 @@ if (addItemBtn) {
     addItemSale.value = "";
     addItemImage.value = "";
     addItemDescription.value = "";
+    if (addItemQuantity) addItemQuantity.value = "1";
+    if (addItemPublicar) addItemPublicar.checked = false;
     
     // Populate dropdowns from notionSchema
     populateAddItemModalDropdowns();
@@ -2146,6 +2311,88 @@ if (addItemBtn) {
 if (addItemCancel) {
   addItemCancel.addEventListener("click", () => {
     addItemModal.classList.add("hidden");
+  });
+}
+
+const addItemAiBtn = document.getElementById("add-item-ai-btn");
+if (addItemAiBtn) {
+  addItemAiBtn.addEventListener("click", () => {
+    const title = addItemTitle.value.trim();
+    if (!title) {
+      showToast("Escribe primero el nombre o modelo del producto para buscar.", "warning");
+      return;
+    }
+
+    openAiFieldsModal(title, async (selectedFields) => {
+      addItemAiBtn.disabled = true;
+      addItemAiBtn.textContent = "✨ Analizando...";
+      showToast("Buscando especificaciones y precios con IA...", "info");
+
+      try {
+        const url = `/api/enrich?title=${encodeURIComponent(title)}&model=${encodeURIComponent(selectedAIModel)}`;
+        const res = await fetch(url, { credentials: "same-origin" });
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Fallo al consultar la IA.");
+        }
+
+        const data = await res.json();
+        
+        // Auto-populate fields only if selected in modal
+        if (selectedFields.title && data.title) addItemTitle.value = data.title;
+        if (selectedFields.retailPrice && data.retailPrice) addItemRetail.value = data.retailPrice;
+        if (selectedFields.secondHandPrice && data.secondHandPrice) addItemSale.value = data.secondHandPrice;
+        if (selectedFields.imageUrl && data.imageUrl) addItemImage.value = data.imageUrl;
+        if (selectedFields.description && data.description) addItemDescription.value = data.description;
+
+        // Match Category and Brand automatically
+        if (data.title) {
+          const titleLower = data.title.toLowerCase();
+          
+          // Match brand (Fabricante)
+          let matchedBrand = "";
+          const brandSelectOptions = Array.from(addItemBrandSelect.options);
+          for (const opt of brandSelectOptions) {
+            if (opt.value && opt.value !== "__NEW__" && titleLower.includes(opt.value.toLowerCase())) {
+              matchedBrand = opt.value;
+              break;
+            }
+          }
+          if (matchedBrand) {
+            addItemBrandSelect.value = matchedBrand;
+            addItemBrandSelect.dispatchEvent(new Event("change"));
+          } else {
+            addItemBrandSelect.value = "";
+            addItemBrandSelect.dispatchEvent(new Event("change"));
+          }
+
+          // Match category (Naturaleza)
+          let matchedCat = "";
+          const catSelectOptions = Array.from(addItemCategorySelect.options);
+          for (const opt of catSelectOptions) {
+            if (opt.value && opt.value !== "__NEW__" && titleLower.includes(opt.value.toLowerCase())) {
+              matchedCat = opt.value;
+              break;
+            }
+          }
+          if (matchedCat) {
+            addItemCategorySelect.value = matchedCat;
+            addItemCategorySelect.dispatchEvent(new Event("change"));
+          } else {
+            addItemCategorySelect.value = "";
+            addItemCategorySelect.dispatchEvent(new Event("change"));
+          }
+        }
+
+        showToast("Datos autocompletados con IA correctamente.", "success");
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || "Error al autocompletar con IA.", "error");
+      } finally {
+        addItemAiBtn.disabled = false;
+        addItemAiBtn.textContent = "✨ Autocompletar con IA";
+      }
+    });
   });
 }
 
@@ -2178,6 +2425,8 @@ if (addItemSave) {
     const saleVal = addItemSale.value.trim();
     const imageVal = addItemImage.value.trim();
     const descVal = addItemDescription.value.trim();
+    const quantityVal = addItemQuantity ? (Math.max(1, Number(addItemQuantity.value)) || 1) : 1;
+    const publicarVal = addItemPublicar ? addItemPublicar.checked : false;
 
     addItemSave.textContent = "Guardando...";
     addItemSave.disabled = true;
@@ -2195,7 +2444,8 @@ if (addItemSave) {
           purchasePrice: purchaseVal === "" ? null : Number(purchaseVal),
           description: descVal,
           imageUrl: imageVal,
-          publicar: false,
+          publicar: publicarVal,
+          cantidad: quantityVal,
           vendido: false,
           noVender: false,
           rawProperties: {
@@ -2229,7 +2479,10 @@ function calculateStats() {
   
   const totalModels = activeItems.length;
   const totalUnits = activeItems.reduce((acc, it) => acc + (it.cantidad || 1), 0);
-  const soldUnits = activeItems.filter(it => it.enriched.vendido).reduce((acc, it) => acc + (it.cantidad || 1), 0);
+
+  // Real sales data from Notion columns "Unidades Vendidas" & "Total Ingresado"
+  const totalSoldUnits = activeItems.reduce((acc, it) => acc + (it.unidadesVendidas || 0), 0);
+  const totalRealIncome = activeItems.reduce((acc, it) => acc + (it.totalIngresado || 0), 0);
 
   let totalCost = 0;
   let totalRetail = 0;
@@ -2237,12 +2490,13 @@ function calculateStats() {
   const categoryStats = {};
 
   activeItems.forEach(item => {
-    // "suma de precios de compra o precio nuevo si éste no tiene precio de compra"
-    const cost = item.enriched.purchasePrice || item.enriched.retailPrice || 0;
+    const cost = item.enriched.purchasePrice || 0;
     const price = item.enriched.secondHandPrice || 0;
     const retail = item.enriched.retailPrice || 0;
     const qty = item.cantidad || 1;
+    const vendidas = item.unidadesVendidas || 0;
     
+    // Inversión sobre stock ACTUAL (unidades pendientes de vender)
     totalCost += cost * qty;
     totalRetail += retail * qty;
 
@@ -2261,20 +2515,49 @@ function calculateStats() {
     categoryStats[category].revenue += price * qty;
   });
 
-  // Potential Revenue (sum of all listed sale prices)
+  // Potential Revenue (stock restante)
   const totalRevenue = activeItems.reduce((acc, it) => acc + ((it.enriched.secondHandPrice || 0) * (it.cantidad || 1)), 0);
-  const expectedProfit = totalRevenue - totalCost;
+
+  // Inversión recuperada: coste por unidad × unidades ya vendidas (estimado)
+  const totalRecoveredCost = activeItems.reduce((acc, it) => {
+    const costPerUnit = it.enriched.purchasePrice || 0;
+    return acc + costPerUnit * (it.unidadesVendidas || 0);
+  }, 0);
+
+  // Beneficio neto real: lo ingresado - lo que nos costaron esas unidades
+  const netProfit = totalRealIncome - totalRecoveredCost;
 
   // Render quick kpi cards
-  statTotalModels.textContent = totalModels;
+  if (statTotalModels) {
+    statTotalModels.textContent = totalModels;
+  }
   statTotalUnits.textContent = totalUnits;
-  statSoldUnits.textContent = `${soldUnits} vendidas`;
+  if (statSoldUnits) {
+    statSoldUnits.textContent = totalSoldUnits > 0 
+      ? `${totalSoldUnits} vendidas · ${Math.round(totalRealIncome)} € ingresados`
+      : "Sin ventas registradas";
+  }
   statTotalCost.textContent = `${Math.round(totalCost)} €`;
+  const statRecoveredCost = document.getElementById("stat-recovered-cost");
+  if (statRecoveredCost) {
+    statRecoveredCost.textContent = totalRecoveredCost > 0 
+      ? `Recuperado: ${Math.round(totalRecoveredCost)} €` 
+      : "Recuperado: 0 €";
+  }
   statTotalRevenue.textContent = `${Math.round(totalRevenue)} €`;
+  const statRealIncome = document.getElementById("stat-real-income");
+  if (statRealIncome) {
+    if (totalRealIncome > 0) {
+      statRealIncome.textContent = `Ingresado: ${Math.round(totalRealIncome)} € · Neto: ${netProfit >= 0 ? "+" : ""}${Math.round(netProfit)} €`;
+      statRealIncome.style.color = netProfit >= 0 ? "#10b981" : "#f43f5e";
+    } else {
+      statRealIncome.textContent = "Sin ventas registradas";
+      statRealIncome.style.color = "";
+    }
+  }
   if (statTotalRetail) {
     statTotalRetail.textContent = `${Math.round(totalRetail)} €`;
   }
-  statExpectedProfit.textContent = `Margen estimado: ${Math.round(expectedProfit)} €`;
 
   // Render categories detailed breakdown table
   statsTableBody.innerHTML = "";
@@ -2300,20 +2583,19 @@ function calculateStats() {
   drawStatsChart(categoryStats);
 
   // Render Chart 2: Unsold vs Sold units doughnut
-  const unsoldUnits = Math.max(0, totalUnits - soldUnits);
+  const unsoldUnits = Math.max(0, totalUnits - totalSoldUnits);
   const slicesUnits = [
-    { name: "Vendidas", value: soldUnits, color: "#10b981" },
+    { name: "Vendidas", value: totalSoldUnits, color: "#10b981" },
     { name: "Sin Vender", value: unsoldUnits, color: "#a78bfa" }
   ];
-  drawGenericPieChart("stats-pie-chart-units", "unidades", slicesUnits, chartDisplayModes.unitsPie, totalUnits, totalUnits);
+  drawGenericPieChart("stats-pie-chart-units", "unidades", slicesUnits, "val", totalUnits, totalUnits);
 
-  // Render Chart 3: Total invested vs Realized sales earnings (€)
-  const totalEarned = activeItems.filter(it => it.enriched.vendido).reduce((acc, it) => acc + ((it.enriched.secondHandPrice || 0) * (it.cantidad || 1)), 0);
+  // Render Chart 3: Inversión en stock vs Ingresos reales (€)
   const slicesFinance = [
-    { name: "Inversión Total", value: totalCost, color: "#3b82f6" },
-    { name: "Conseguido (€)", value: totalEarned, color: "#10b981" }
+    { name: "Inversión en Stock", value: totalCost, color: "#3b82f6" },
+    { name: "Ingresado Real (€)", value: totalRealIncome, color: "#10b981" }
   ];
-  drawGenericPieChart("stats-pie-chart-finance", "total €", slicesFinance, chartDisplayModes.financePie, totalCost, totalCost);
+  drawGenericPieChart("stats-pie-chart-finance", "total €", slicesFinance, "val", totalCost, totalCost);
 }
 
 // Draw custom modern chart in canvas
@@ -2436,7 +2718,7 @@ function drawGenericPieChart(canvasId, centerLabel, slices, activeUnit = "val", 
   }
 
   // Layout: doughnut on the left, legend on the right
-  const legendWidth = 145;
+  const legendWidth = 175;
   const chartAreaWidth = Math.max(0, width - legendWidth);
   const cx = chartAreaWidth / 2;
   const cy = height / 2;
@@ -2475,67 +2757,180 @@ function drawGenericPieChart(canvasId, centerLabel, slices, activeUnit = "val", 
   ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--bg2").trim() || "#1a1a2e";
   ctx.fill();
 
-  // Center label
-  ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.font = `bold ${Math.round(outerR * 0.35)}px system-ui`;
+  // Center label - MUCH LARGER
+  ctx.fillStyle = "rgba(255,255,255,0.95)";
+  ctx.font = `bold ${Math.round(outerR * 0.42)}px system-ui`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   
   const isCurrency = centerLabel.includes("€");
   
-  let displayVal = "";
-  if (activeUnit === "pct") {
-    displayVal = "100 %";
-  } else {
-    const valToShow = centerValue !== null ? centerValue : total;
-    displayVal = isCurrency ? `${Math.round(valToShow)} €` : valToShow;
-  }
+  const valToShow = centerValue !== null ? centerValue : total;
+  const displayVal = isCurrency ? `${Math.round(valToShow)} €` : `${valToShow}`;
   
   ctx.fillText(displayVal, cx, cy - 7);
-  ctx.font = `${Math.round(outerR * 0.18)}px system-ui`;
-  ctx.fillStyle = "rgba(255,255,255,0.4)";
+  ctx.font = `bold ${Math.round(outerR * 0.22)}px system-ui`;
+  ctx.fillStyle = "rgba(255,255,255,0.5)";
   ctx.fillText(centerLabel.replace(" €", ""), cx, cy + outerR * 0.22);
 
   // Legend
-  const legendX = chartAreaWidth + 8;
-  const lineH = Math.min(25, (height - 16) / slices.length);
+  const legendX = chartAreaWidth + 10;
+  const lineH = Math.min(38, (height - 16) / slices.length);
   const startY = (height - lineH * slices.length) / 2;
 
   slices.forEach((sliceData, i) => {
     const y = startY + i * lineH + lineH / 2;
 
-    // Color dot
+    // Color dot - LARGER
     ctx.beginPath();
-    ctx.arc(legendX + 6, y, 5, 0, 2 * Math.PI);
+    ctx.arc(legendX + 8, y - 6, 8, 0, 2 * Math.PI);
     ctx.fillStyle = sliceData.color;
     ctx.shadowBlur = 6;
     ctx.shadowColor = sliceData.color;
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // Label
-    let label = sliceData.name.length > 15 ? sliceData.name.slice(0, 13) + "…" : sliceData.name;
-    ctx.fillStyle = "rgba(255,255,255,0.75)";
-    ctx.font = "bold 10px system-ui";
+    // Label - MUCH LARGER
+    let label = sliceData.name.length > 18 ? sliceData.name.slice(0, 16) + "…" : sliceData.name;
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    ctx.font = "bold 15px system-ui";
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    ctx.fillText(label, legendX + 15, y);
+    ctx.fillText(label, legendX + 22, y - 6);
 
-    // Count / Pct
+    // Count / Pct - MUCH LARGER
     const pctBase = percentBase !== null ? percentBase : total;
     const pct = pctBase > 0 ? Math.round((sliceData.value / pctBase) * 100) : 0;
     const formattedVal = isCurrency ? `${Math.round(sliceData.value)} €` : `${sliceData.value} ud`;
     
-    let sublabel = "";
-    if (activeUnit === "pct") {
-      sublabel = `${pct}% · ${formattedVal}`;
-    } else {
-      sublabel = `${formattedVal} · ${pct}%`;
-    }
+    // Always show both
+    const sublabel = `${formattedVal} · ${pct}%`;
     
-    ctx.fillStyle = "rgba(255,255,255,0.4)";
-    ctx.font = "9px monospace";
-    ctx.fillText(sublabel, legendX + 15, y + 11);
+    ctx.fillStyle = "rgba(255,255,255,0.6)";
+    ctx.font = "14px monospace";
+    ctx.fillText(sublabel, legendX + 22, y + 10);
+  });
+}
+
+// -------------------------------------------------------
+// SELL MODAL
+// -------------------------------------------------------
+let currentSellItem = null;
+
+function openSellModal(item) {
+  currentSellItem = item;
+  const sellModal = document.getElementById("sell-modal");
+  const sellModalItemName = document.getElementById("sell-modal-item-name");
+  const sellUnitsInput = document.getElementById("sell-units-input");
+  const sellPriceInput = document.getElementById("sell-price-input");
+  const sellModalSummary = document.getElementById("sell-modal-summary");
+
+  if (!sellModal) return;
+
+  sellModalItemName.textContent = `"${getFullItemName(item)}"`;
+
+  // Default: 1 unit at the suggested sale price
+  const suggestedPrice = item.enriched.secondHandPrice || 0;
+  sellUnitsInput.value = 1;
+  sellPriceInput.value = suggestedPrice || "";
+  sellPriceInput.placeholder = suggestedPrice > 0 ? `Sugerido: ${suggestedPrice} €` : "Precio de venta";
+
+  function updateSummary() {
+    const units = Math.max(1, parseInt(sellUnitsInput.value) || 1);
+    const price = parseFloat(sellPriceInput.value) || suggestedPrice || 0;
+    const total = units * price;
+    const cost = item.enriched.purchasePrice || 0;
+    const costTotal = units * cost;
+    const profit = total - costTotal;
+    const stockAfter = (item.cantidad || 1) - units;
+
+    sellModalSummary.innerHTML = `
+      <strong style="color:var(--text);">Resumen de la venta:</strong><br>
+      ${units} × ${price > 0 ? price + " €" : "? €"} = <strong style="color:#10b981;">${total > 0 ? Math.round(total) + " €" : "?"}</strong><br>
+      ${cost > 0 ? `Beneficio neto: <strong style="color:${profit >= 0 ? "#10b981" : "#f43f5e"}">${profit >= 0 ? "+" : ""}${Math.round(profit)} €</strong><br>` : ""}
+      Stock tras la venta: <strong style="color:${stockAfter >= 0 ? "var(--text)" : "#f43f5e"};">${Math.max(0, stockAfter)} ud</strong>
+      ${stockAfter < 0 ? `<br><span style="color:#f43f5e; font-size:0.7rem;">⚠️ No tienes suficiente stock</span>` : ""}
+    `;
+  }
+
+  updateSummary();
+  sellUnitsInput.addEventListener("input", updateSummary);
+  sellPriceInput.addEventListener("input", updateSummary);
+
+  sellModal.classList.remove("hidden");
+}
+
+// Sell modal button listeners
+document.getElementById("sell-modal-close")?.addEventListener("click", () => {
+  document.getElementById("sell-modal")?.classList.add("hidden");
+});
+document.getElementById("sell-modal-cancel")?.addEventListener("click", () => {
+  document.getElementById("sell-modal")?.classList.add("hidden");
+});
+
+const _sellModalConfirmBtn = document.getElementById("sell-modal-confirm");
+if (_sellModalConfirmBtn) {
+  _sellModalConfirmBtn.addEventListener("click", async () => {
+    if (!currentSellItem) return;
+    const item = currentSellItem;
+
+    const sellUnitsInput = document.getElementById("sell-units-input");
+    const sellPriceInput = document.getElementById("sell-price-input");
+    const units = Math.max(1, parseInt(sellUnitsInput.value) || 1);
+    const pricePerUnit = parseFloat(sellPriceInput.value) || item.enriched.secondHandPrice || 0;
+    const totalIncome = units * pricePerUnit;
+
+    const stockAfter = (item.cantidad || 1) - units;
+    if (stockAfter < 0) {
+      showToast(`Stock insuficiente. Tienes ${item.cantidad || 1} unidades.`, "error");
+      return;
+    }
+
+    if (sellModal) sellModal.classList.add("hidden");
+
+    // New accumulated totals
+    const newUnidadesVendidas = (item.unidadesVendidas || 0) + units;
+    const newTotalIngresado = (item.totalIngresado || 0) + totalIncome;
+    const newStock = stockAfter;
+
+    // Optimistic UI update
+    item.cantidad = newStock;
+    item.unidadesVendidas = newUnidadesVendidas;
+    item.totalIngresado = newTotalIngresado;
+    renderItemsList();
+    calculateStats();
+
+    try {
+      const response = await fetch("/api/notion/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          itemId: item.id,
+          itemIds: item.itemIds || [item.id],
+          cantidad: newStock,
+          unidadesVendidas: newUnidadesVendidas,
+          totalIngresado: newTotalIngresado,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Fallo al guardar en Notion");
+
+      showToast(
+        `✅ Vendida${units > 1 ? "s" : ""} ${units} ud de "${getFullItemName(item)}" por ${Math.round(totalIncome)} €`,
+        "success"
+      );
+    } catch (err) {
+      console.error(err);
+      // Revert on error
+      item.cantidad = (item.cantidad || 0) + units;
+      item.unidadesVendidas = (item.unidadesVendidas || 0) - units;
+      item.totalIngresado = (item.totalIngresado || 0) - totalIncome;
+      renderItemsList();
+      calculateStats();
+      showToast("Error al registrar la venta en Notion.", "error");
+    }
+
+    currentSellItem = null;
   });
 }
 

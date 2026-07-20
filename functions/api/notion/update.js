@@ -33,7 +33,7 @@ export async function onRequestPost(context) {
 
   try {
     const payload = await request.json();
-    const { itemId, itemIds, title, retailPrice, secondHandPrice, purchasePrice, description, imageUrl, publicar, vendido, noVender, rawProperties, archived, isCreate, itemTitle, cantidad } = payload;
+    const { itemId, itemIds, title, retailPrice, secondHandPrice, purchasePrice, description, imageUrl, publicar, vendido, noVender, rawProperties, archived, isCreate, itemTitle, cantidad, unidadesVendidas, totalIngresado } = payload;
 
     const idsToUpdate = Array.isArray(itemIds) ? itemIds : [itemId].filter(Boolean);
 
@@ -81,6 +81,10 @@ export async function onRequestPost(context) {
     let noVenderKey = "";
     let purchasePriceKey = "";
     let purchasePriceType = "";
+    let cantidadKey = "";
+    let cantidadType = "";
+    let unidadesVendidasKey = "";
+    let totalIngresadoKey = "";
 
     const saleTitlePossibles = ["titulo venta", "titulo_venta", "title venta"];
     const retailPricePossibles = ["precio original", "precio retail", "original price"];
@@ -91,6 +95,7 @@ export async function onRequestPost(context) {
     const vendidoPossibles = ["vendido", "sold"];
     const noVenderPossibles = ["no vender", "no_vender", "dont sell"];
     const purchasePricePossibles = ["precio compra", "precio_compra", "purchase price", "coste compra", "coste"];
+    const cantidadPossibles = ["cantidad", "stock", "unidades", "qty", "quantity"];
 
     for (const key of Object.keys(properties)) {
       const normKey = normalizeString(key);
@@ -117,6 +122,41 @@ export async function onRequestPost(context) {
       } else if (purchasePricePossibles.includes(normKey) && (prop.type === "number" || prop.type === "rich_text")) {
         purchasePriceKey = key;
         purchasePriceType = prop.type;
+      } else if (cantidadPossibles.includes(normKey) && (prop.type === "number" || prop.type === "rich_text")) {
+        cantidadKey = key;
+        cantidadType = prop.type;
+      } else if (normKey === "unidades vendidas" && prop.type === "number") {
+        unidadesVendidasKey = key;
+      } else if (normKey === "total ingresado" && prop.type === "number") {
+        totalIngresadoKey = key;
+      }
+    }
+
+    const targetCantidad = cantidad !== undefined ? cantidad : (rawProperties ? (rawProperties["Cantidad"] ?? rawProperties["cantidad"] ?? rawProperties["Stock"] ?? rawProperties["stock"] ?? rawProperties["Unidades"] ?? rawProperties["unidades"]) : undefined);
+
+    // Si la columna Cantidad no existe en la BD de Notion, la añadimos automáticamente vía PATCH a la base de datos
+    if (!cantidadKey && targetCantidad !== undefined) {
+      try {
+        const patchRes = await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${notionToken}`,
+            "Notion-Version": "2022-06-28",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            properties: {
+              "Cantidad": { number: {} }
+            }
+          })
+        });
+        if (patchRes.ok) {
+          cantidadKey = "Cantidad";
+          cantidadType = "number";
+          properties["Cantidad"] = { type: "number" };
+        }
+      } catch (patchErr) {
+        console.error("No se pudo parchear la columna Cantidad en la BD de Notion:", patchErr);
       }
     }
 
@@ -181,12 +221,30 @@ export async function onRequestPost(context) {
       }
     }
 
+    if (cantidadKey && targetCantidad !== undefined) {
+      const val = targetCantidad === null || isNaN(Number(targetCantidad)) ? 1 : Number(targetCantidad);
+      if (cantidadType === "rich_text") {
+        propertiesToUpdate[cantidadKey] = { rich_text: [{ text: { content: String(val) } }] };
+      } else {
+        propertiesToUpdate[cantidadKey] = { number: val };
+      }
+    }
+
+    if (unidadesVendidasKey && unidadesVendidas !== undefined) {
+      propertiesToUpdate[unidadesVendidasKey] = { number: Number(unidadesVendidas) || 0 };
+    }
+
+    if (totalIngresadoKey && totalIngresado !== undefined) {
+      propertiesToUpdate[totalIngresadoKey] = { number: Number(totalIngresado) || 0 };
+    }
+
     // 3.2 Procesar propiedades arbitrarias del configurador de columnas
     if (rawProperties && typeof rawProperties === "object") {
       for (const col of Object.keys(rawProperties)) {
         const val = rawProperties[col];
-        const prop = properties[col];
-        if (!prop) continue;
+        let propKey = Object.keys(properties).find(k => normalizeString(k) === normalizeString(col));
+        if (!propKey) continue;
+        const prop = properties[propKey];
 
         // Omitir columnas de solo lectura de Notion para evitar errores API
         if (prop.type === "formula" || prop.type === "relation" || prop.type === "rollup" || prop.type === "created_time" || prop.type === "last_edited_time") {
@@ -194,24 +252,24 @@ export async function onRequestPost(context) {
         }
 
         if (prop.type === "checkbox") {
-          propertiesToUpdate[col] = { checkbox: !!val };
+          propertiesToUpdate[propKey] = { checkbox: !!val };
         } else if (prop.type === "number") {
-          propertiesToUpdate[col] = { number: val === "" || val === null || isNaN(Number(val)) ? null : Number(val) };
+          propertiesToUpdate[propKey] = { number: val === "" || val === null || isNaN(Number(val)) ? null : Number(val) };
         } else if (prop.type === "select") {
-          propertiesToUpdate[col] = { select: val ? { name: String(val) } : null };
+          propertiesToUpdate[propKey] = { select: val ? { name: String(val) } : null };
         } else if (prop.type === "status") {
-          propertiesToUpdate[col] = { status: val ? { name: String(val) } : null };
+          propertiesToUpdate[propKey] = { status: val ? { name: String(val) } : null };
         } else if (prop.type === "multi_select") {
           const arr = Array.isArray(val) ? val : (val ? [String(val)] : []);
-          propertiesToUpdate[col] = { multi_select: arr.map(name => ({ name })) };
+          propertiesToUpdate[propKey] = { multi_select: arr.map(name => ({ name })) };
         } else if (prop.type === "url") {
-          propertiesToUpdate[col] = { url: val || null };
+          propertiesToUpdate[propKey] = { url: val || null };
         } else if (prop.type === "rich_text") {
-          propertiesToUpdate[col] = { rich_text: [{ text: { content: String(val || "") } }] };
+          propertiesToUpdate[propKey] = { rich_text: [{ text: { content: String(val || "") } }] };
         } else if (prop.type === "title") {
-          propertiesToUpdate[col] = { title: [{ text: { content: String(val || "") } }] };
+          propertiesToUpdate[propKey] = { title: [{ text: { content: String(val || "") } }] };
         } else if (prop.type === "date") {
-          propertiesToUpdate[col] = { date: val ? { start: String(val) } : null };
+          propertiesToUpdate[propKey] = { date: val ? { start: String(val) } : null };
         }
       }
     }
@@ -238,17 +296,7 @@ export async function onRequestPost(context) {
         title: [{ text: { content: itemTitle || "Nuevo Artículo" } }]
       };
 
-      // Si existe columna de cantidad, establecer valor inicial
-      let cantidadKey = "";
-      for (const key of Object.keys(properties)) {
-        if (normalizeString(key) === "cantidad" && properties[key].type === "number") {
-          cantidadKey = key;
-          break;
-        }
-      }
-      if (cantidadKey) {
-        propertiesToUpdate[cantidadKey] = { number: Number(cantidad || 1) };
-      }
+      // La cantidad ya se habrá establecido en la sección 3.1 si cantidadKey existe
 
       const createResponse = await fetch(`https://api.notion.com/v1/pages`, {
         method: "POST",

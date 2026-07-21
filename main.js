@@ -100,7 +100,8 @@ const observer = new IntersectionObserver((entries) => {
     if (entry.isIntersecting) {
       navLinks.forEach(link => {
         link.style.color = '';
-        if (link.getAttribute('href') === '#' + entry.target.id) {
+        const href = link.getAttribute('href');
+        if (href === '#' + entry.target.id || (entry.target.id === 'play' && href === '/devtrek')) {
           link.style.color = 'var(--accent)';
         }
       });
@@ -168,7 +169,7 @@ if (triggerBtn) {
 const launchBtn = document.querySelector('.st-btn-launch-game');
 if (launchBtn) {
   launchBtn.addEventListener('click', (e) => {
-    openGame();
+    window.location.href = '/devtrek';
   });
 }
 
@@ -176,7 +177,7 @@ const outputBody = document.getElementById('terminal-output');
 if (outputBody) {
   outputBody.addEventListener('click', (e) => {
     if (e.target.id === 'terminal-play-hint' || e.target.closest('#terminal-play-hint')) {
-      openGame();
+      window.location.href = '/devtrek';
     } else if (e.target.id === 'terminal-admin-hint' || e.target.closest('#terminal-admin-hint')) {
       window.location.href = '/login.html';
     }

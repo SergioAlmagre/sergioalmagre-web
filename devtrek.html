@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dev Enterprise — Sergio Almagre</title>
+  <meta name="description" content="Juego arcade Dev Enterprise. Tactical Patrol & Salvage." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+</head>
+<body style="background: #020617; overflow: hidden; height: 100vh;">
+
+  <!-- NAV -->
+  <nav class="nav st-ignore-canvas">
+    <span class="nav-logo" onclick="window.location.href='/'" style="cursor: pointer;">sergioalmagre<span class="accent">.</span>com</span>
+    <ul class="nav-links">
+      <li><a href="/#about">about</a></li>
+      <li><a href="/#stack">stack</a></li>
+      <li><a href="/#projects">projects</a></li>
+      <li><a href="/#experience">experience</a></li>
+      <li><a href="/devtrek" class="accent">play</a></li>
+      <li><a href="/#contact">contact</a></li>
+      <li><a href="/preowned.html">pre-owned</a></li>
+    </ul>
+  </nav>
+
+  <!-- RETRO ARCADE CONTAINER -->
+  <div class="st-modal" id="st-arcade-modal" style="position: fixed; top: 73px; bottom: 0; left: 0; right: 0; z-index: 10; font-family: var(--font-mono);">
+    <div class="st-scanline"></div>
+    
+    <div class="st-root">
+      <button class="st-modal-close st-ignore-canvas" id="st-modal-close-btn" title="Volver al portfolio">⬅ VOLVER</button>
+      <button type="button" class="st-mobile-shoot-btn st-ignore-canvas">⚡</button>
+      <canvas class="st-canvas"></canvas>
+      
+      <!-- HUD de juego -->
+      <div class="st-hud st-hidden st-ignore-canvas">
+        <div class="st-hud-row">
+          <div class="st-hud-left">
+            <h1 class="st-title">DEV ENTERPRISE</h1>
+            <p class="st-hud-mini">Registro: NCC-1701</p>
+            <p class="st-hud-mini st-hud-status">Estado: Patrulla inercial activa</p>
+            <div class="st-shield-row">
+              <span class="st-hud-mini">Escudos:</span>
+              <div class="st-shield-track">
+                <div class="st-shield-fill st-shield-full" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="st-hud-right">
+            <div class="st-hud-controls">
+              <button type="button" class="st-icon-btn st-btn-mute" title="Silenciar todo">🔊</button>
+              <button type="button" class="st-icon-btn st-btn-pause" title="Pausar partida (P / Esc)">⏸</button>
+              <span class="st-alert-led"></span>
+              <span class="st-alert-text">CONDICIÓN VERDE</span>
+            </div>
+            <p class="st-hud-mini">Inercia: gravedad cero</p>
+            <p class="st-score">Puntos: 0</p>
+            <p class="st-threat-label">Amenaza: baja</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menú principal -->
+      <div class="st-intro-overlay st-intro-overlay-menu st-hidden">
+        <div class="st-instructions-card st-ignore-canvas">
+          <h1 class="st-title">DEV ENTERPRISE</h1>
+          <p class="st-hud-mini" style="margin-bottom: 18px;">Tactical Patrol & Salvage</p>
+
+          <div class="st-menu-actions">
+            <button type="button" class="st-btn st-btn-primary st-btn-new">Nueva partida</button>
+            <button type="button" class="st-btn st-btn-secondary st-btn-scores">Puntuaciones</button>
+          </div>
+
+          <ul class="st-instructions-list">
+            <li><strong>🖱️ Clic derecho (mantener):</strong> propulsar hacia el cursor (deriva inercial con fricción casi nula).</li>
+            <li><strong>🔥 Clic izquierdo (pulsación):</strong> disparar fáseres tácticos de 360º en dirección de tu puntero.</li>
+            <li><strong>⚡ Mantener pulsado (1s a 9s):</strong> carga el súper cañón de 360°. ¡Escala proyectiles progresivos de N1 a N5 y multiplica el daño x2, x3, x4 y x5 de N6 a N9!</li>
+            <li><strong>☄️ Mantener pulsado (10s):</strong> carga la ¡bomba atómica cuántica! Arrasa con todo en la pantalla.</li>
+            <li><strong>💾 Rescata reliquias retro (halo verde):</strong> flotan desde el exterior. ¡Restablecen escudos al 100%!</li>
+            <li><strong>⏸️ Pausa la partida:</strong> pulsa [P], [Esc] o el panel superior.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Puntuaciones -->
+      <div class="st-intro-overlay st-intro-overlay-scores st-hidden">
+        <div class="st-instructions-card st-ignore-canvas">
+          <h1 class="st-title">Puntuaciones</h1>
+          <div class="st-history-container"></div>
+          <button type="button" class="st-btn st-btn-secondary st-btn-back" style="margin-top: 16px;">Volver al menú</button>
+        </div>
+      </div>
+
+      <!-- Fin de partida -->
+      <div class="st-gameover-overlay st-hidden">
+        <div class="st-instructions-card st-ignore-canvas" style="max-width: 520px; text-align: center;">
+          <h2 class="st-gameover-title">Sistemas colapsados</h2>
+          <p class="st-hud-mini" style="margin-bottom: 15px;">La Dev Enterprise ha sufrido daños estructurales críticos.</p>
+
+          <div class="st-trophy-card">
+            <p class="st-trophy-label">Trofeo de la misión</p>
+            <p class="st-trophy-score">0 puntos</p>
+            <div class="st-trophy-details">
+              <span class="st-trophy-date">📅 --</span>
+              <span class="st-trophy-time">⏱️ --</span>
+              <span class="st-trophy-threat">🚨 CONDICIÓN VERDE</span>
+            </div>
+            <p class="st-hud-mini" style="margin-top: 10px;">
+              Haz una captura de pantalla de este trofeo para compartirlo con tus compañeros.
+            </p>
+          </div>
+
+          <div class="st-menu-actions" style="margin-top: 20px;">
+            <button type="button" class="st-btn st-btn-primary st-btn-restart">Reiniciar patrulla</button>
+            <button type="button" class="st-btn st-btn-secondary st-btn-menu-back">Volver al menú</button>
+          </div>
+
+          <div class="st-history-container" style="margin-top: 20px; text-align: left;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js?v=4"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const container = document.getElementById('st-arcade-modal');
+      const gameInstance = new window.DevGame(container);
+
+      // Handle close/back button
+      const closeBtn = document.getElementById('st-modal-close-btn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          window.location.href = '/';
+        });
+      }
+
+      // Esc key to go back if not in active gameplay
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (gameInstance && (gameInstance.phase === 'menu' || gameInstance.phase === 'gameover' || gameInstance.phase === 'scores')) {
+            window.location.href = '/';
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

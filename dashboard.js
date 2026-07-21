@@ -162,13 +162,13 @@ const toastContainer = document.getElementById("toast-container");
 
 // Modals
 const sellPriceModal = document.getElementById("sell-price-modal");
-const sellModalItemName = document.getElementById("sell-modal-item-name");
-const sellModalPurchasePrice = document.getElementById("sell-modal-purchase-price");
-const sellModalSalePrice = document.getElementById("sell-modal-sale-price");
-const sellModalSuggestedPriceWrap = document.getElementById("sell-modal-suggested-price-wrap");
-const sellModalSuggestedPrice = document.getElementById("sell-modal-suggested-price");
-const sellModalCancel = document.getElementById("sell-modal-cancel");
-const sellModalConfirm = document.getElementById("sell-modal-confirm");
+const sellPriceModalItemName = document.getElementById("sell-price-modal-item-name");
+const sellPriceModalPurchasePrice = document.getElementById("sell-modal-purchase-price");
+const sellPriceModalSalePrice = document.getElementById("sell-modal-sale-price");
+const sellPriceModalSuggestedPriceWrap = document.getElementById("sell-price-modal-suggested-price-wrap");
+const sellPriceModalSuggestedPrice = document.getElementById("sell-price-modal-suggested-price");
+const sellPriceModalCancel = document.getElementById("sell-price-modal-cancel");
+const sellPriceModalConfirm = document.getElementById("sell-price-modal-confirm");
 
 const generalConfirmModal = document.getElementById("general-confirm-modal");
 const confirmModalTitle = document.getElementById("confirm-modal-title");
@@ -1640,23 +1640,23 @@ function handleVendidoChange(item, isChecked) {
     const defaultCost = item.enriched.purchasePrice || 0;
     const defaultSale = item.enriched.secondHandPrice || 0;
     
-    sellModalItemName.textContent = `"${getFullItemName(item)}"`;
-    sellModalPurchasePrice.value = defaultCost;
-    sellModalSalePrice.value = defaultSale;
+    sellPriceModalItemName.textContent = `"${getFullItemName(item)}"`;
+    sellPriceModalPurchasePrice.value = defaultCost;
+    sellPriceModalSalePrice.value = defaultSale;
 
     if (item.enriched.retailPrice > 0) {
-      sellModalSuggestedPriceWrap.classList.remove("hidden");
-      sellModalSuggestedPrice.textContent = `${item.enriched.secondHandPrice} €`;
+      sellPriceModalSuggestedPriceWrap.classList.remove("hidden");
+      sellPriceModalSuggestedPrice.textContent = `${item.enriched.secondHandPrice} €`;
     } else {
-      sellModalSuggestedPriceWrap.classList.add("hidden");
+      sellPriceModalSuggestedPriceWrap.classList.add("hidden");
     }
 
     sellPriceModal.classList.remove("hidden");
 
     sellModalCallbacks.onConfirm = async () => {
       sellPriceModal.classList.add("hidden");
-      const cost = Number(sellModalPurchasePrice.value) || 0;
-      const sale = Number(sellModalSalePrice.value) || 0;
+      const cost = Number(sellPriceModalPurchasePrice.value) || 0;
+      const sale = Number(sellPriceModalSalePrice.value) || 0;
 
       // Update state
       item.enriched.purchasePrice = cost;
@@ -2861,12 +2861,17 @@ function openSellModal(item) {
 }
 
 // Sell modal button listeners
-document.getElementById("sell-modal-close")?.addEventListener("click", () => {
-  document.getElementById("sell-modal")?.classList.add("hidden");
-});
 document.getElementById("sell-modal-cancel")?.addEventListener("click", () => {
   document.getElementById("sell-modal")?.classList.add("hidden");
 });
+
+// sell-price-modal button listeners (callback-based, for vendido checkbox)
+if (sellPriceModalCancel) {
+  sellPriceModalCancel.addEventListener("click", () => sellModalCallbacks.onCancel?.());
+}
+if (sellPriceModalConfirm) {
+  sellPriceModalConfirm.addEventListener("click", () => sellModalCallbacks.onConfirm?.());
+}
 
 const _sellModalConfirmBtn = document.getElementById("sell-modal-confirm");
 if (_sellModalConfirmBtn) {

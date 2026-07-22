@@ -74,30 +74,21 @@
         </div>
       </div>
 
-      <!-- Precios -->
-      <div class="filter-group price-range">
-        <div class="price-input-col">
-          <label for="min-price">Precio Mín (€)</label>
-          <input type="number" id="min-price" placeholder="Mín">
-        </div>
-        <div class="price-input-col">
-          <label for="max-price">Precio Máx (€)</label>
-          <input type="number" id="max-price" placeholder="Máx">
-        </div>
-      </div>
-
-      <!-- Categoría -->
+      <!-- Vista: Lista / Categorías -->
       <div class="filter-group">
-        <label for="category-select">Categoría</label>
-        <select id="category-select">
-          <option value="">Todas las categorías</option>
-        </select>
+        <label>Vista</label>
+        <div class="view-toggle">
+          <button id="view-list-btn" class="view-toggle-btn" data-view="list">Lista</button>
+          <button id="view-categories-btn" class="view-toggle-btn active" data-view="categories">Categorías</button>
+        </div>
       </div>
 
       <!-- Ordenar -->
       <div class="filter-group">
         <label for="sort-select">Ordenar por</label>
         <select id="sort-select">
+          <option value="alpha-asc">Nombre: A-Z</option>
+          <option value="alpha-desc">Nombre: Z-A</option>
           <option value="recent">Más recientes</option>
           <option value="price-asc">Precio: menor a mayor</option>
           <option value="price-desc">Precio: mayor a menor</option>
@@ -122,8 +113,13 @@
       <p>No se encontraron artículos que coincidan con los filtros aplicados.</p>
     </div>
 
-    <!-- PRODUCTS GRID -->
+    <!-- PRODUCTS GRID (List View) -->
     <section id="products-grid" class="products-grid hidden">
+      <!-- Se inyecta dinámicamente con JS -->
+    </section>
+
+    <!-- CATEGORIES GRID (Category View) -->
+    <section id="categories-grid" class="categories-grid hidden">
       <!-- Se inyecta dinámicamente con JS -->
     </section>
 

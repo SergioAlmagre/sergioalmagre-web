@@ -42,6 +42,7 @@
       <div class="dash-tabs">
         <button class="tab-btn active" id="tab-inventario-btn" data-tab="inventario-tab">Inventario</button>
         <button class="tab-btn" id="tab-stats-btn" data-tab="stats-tab">Estadísticas</button>
+        <button class="tab-btn" id="tab-categories-btn" data-tab="categories-tab">Categorías</button>
         <button class="tab-btn" id="tab-config-btn" data-tab="config-tab">Configuración</button>
       </div>
     </header>
@@ -326,7 +327,63 @@
       </div>
     </div>
 
-    <!-- TAB 3: CONFIGURACIÓN -->
+    <!-- TAB 3: CATEGORÍAS -->
+    <div id="categories-tab" class="tab-content hidden">
+      <section class="dash-actions" style="margin-top: 1.5rem;">
+        <div class="dash-categories-header">
+          <h2>// gestión_de_categorías</h2>
+          <p style="font-size: 0.8rem; color: var(--text-dim); margin: 0;">
+            Selecciona la imagen representativa de cada categoría. Esta imagen se mostrará en la vista de categorías de la página pública.
+          </p>
+        </div>
+      </section>
+
+      <div id="dash-categories-loader" class="loader">
+        <div class="spinner"></div>
+        <p>Cargando categorías...</p>
+      </div>
+
+      <div id="dash-categories-error" class="alert-box error hidden"></div>
+
+      <div id="dash-categories-grid" class="dash-categories-grid hidden">
+        <div class="categories-grid">
+          <!-- Se inyecta dinámicamente con JS -->
+        </div>
+      </div>
+
+      <!-- Modal for picking category image -->
+      <div id="category-image-picker-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 650px;">
+          <div class="modal-body-padding">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <h3 class="flex items-center gap-2" style="font-size: 1.2rem; font-weight: 800; color: var(--accent); margin: 0;">
+                  <svg style="width: 20px; height: 20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Imagen de categoría
+                </h3>
+                <p class="modal-subtitle-text mt-1" style="font-size: 0.8rem;">
+                  Selecciona la imagen que representará a <strong id="category-picker-name" class="accent"></strong> en la vista pública.
+                </p>
+              </div>
+              <button id="category-picker-close" class="btn-ghost" style="padding: 0.3rem 0.6rem; font-size: 1.2rem; line-height: 1;">&times;</button>
+            </div>
+
+            <div id="category-image-picker-grid" class="category-image-picker-grid">
+              <!-- Se inyecta dinámicamente -->
+            </div>
+
+            <div class="modal-actions-row mt-4" style="display: flex; justify-content: flex-end; gap: 0.8rem;">
+              <button id="category-picker-cancel" class="btn-ghost">Cancelar</button>
+              <button id="category-picker-save" class="btn-primary" disabled>Guardar selección</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: CONFIGURACIÓN -->
     <div id="config-tab" class="tab-content hidden">
       <section style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); max-width: 600px; margin: 1.5rem auto; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
         <h3 class="accent" style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">

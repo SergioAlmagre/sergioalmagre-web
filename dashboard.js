@@ -2941,3 +2941,242 @@ if (_sellModalConfirmBtn) {
 
 // Initial fetch
 fetchNotionItems();
+
+// -------------------------------------------------------
+// CATEGORIES MANAGEMENT (Tab 3)
+// -------------------------------------------------------
+let dashCategoriesData = null;
+let dashCategoriesConfig = {};
+let selectedCategoryForPicker = null;
+let selectedPickerImage = null;
+
+const dashCategoriesGrid = document.getElementById("dash-categories-grid");
+const dashCategoriesLoader = document.getElementById("dash-categories-loader");
+const dashCategoriesError = document.getElementById("dash-categories-error");
+const categoryImagePickerModal = document.getElementById("category-image-picker-modal");
+const categoryPickerName = document.getElementById("category-picker-name");
+const categoryPickerGrid = document.getElementById("category-image-picker-grid");
+const categoryPickerSave = document.getElementById("category-picker-save");
+const categoryPickerCancel = document.getElementById("category-picker-cancel");
+const categoryPickerClose = document.getElementById("category-picker-close");
+
+async function loadDashCategories() {
+  if (!dashCategoriesLoader || !dashCategoriesGrid) return;
+
+  dashCategoriesLoader.classList.remove("hidden");
+  dashCategoriesGrid.classList.add("hidden");
+  if (dashCategoriesError) dashCategoriesError.classList.add("hidden");
+
+  try {
+    // Get categories from API (public endpoint)
+    const response = await fetch("/api/public/category-images");
+    if (!response.ok) throw new Error("No se pudieron cargar las categorías.");
+
+    const data = await response.json();
+    dashCategoriesData = data.categories || [];
+    dashCategoriesConfig = data.configJson || {};
+
+    renderDashCategories();
+    dashCategoriesLoader.classList.add("hidden");
+    dashCategoriesGrid.classList.remove("hidden");
+  } catch (err) {
+    console.error(err);
+    dashCategoriesLoader.classList.add("hidden");
+    if (dashCategoriesError) {
+      dashCategoriesError.textContent = err.message || "Error al cargar categorías.";
+      dashCategoriesError.classList.remove("hidden");
+    }
+  }
+}
+
+function renderDashCategories() {
+  if (!dashCategoriesGrid) return;
+  const grid = dashCategoriesGrid.querySelector(".categories-grid");
+  if (!grid) return;
+
+  grid.innerHTML = "";
+
+  if (!dashCategoriesData || dashCategoriesData.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;">
+      <h3>No hay categorías disponibles</h3>
+      <p>Crea artículos con el campo "Naturaleza" asignado para ver las categorías aquí.</p>
+    </div>`;
+    return;
+  }
+
+  dashCategoriesData.forEach(cat => {
+    const card = document.createElement("div");
+    card.className = "dash-category-card";
+
+    const imgHtml = cat.imageUrl
+      ? `<img src="${cat.imageUrl}" alt="${cat.name}" loading="lazy">`
+      : `<svg class="no-image-placeholder" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="32" height="32">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+         </svg>`;
+
+    card.innerHTML = `
+      <div class="category-card-img-wrap">
+        ${imgHtml}
+        <div class="edit-overlay">
+          <button class="edit-category-img-btn" data-category="${cat.name}">Editar imagen</button>
+        </div>
+      </div>
+      <div class="category-card-body">
+        <h3 class="category-card-name">${cat.name}</h3>
+        <span class="category-card-count">${cat.itemCount} artículo${cat.itemCount !== 1 ? "s" : ""}</span>
+      </div>
+    `;
+
+    // Edit button handler
+    const editBtn = card.querySelector(".edit-category-img-btn");
+    editBtn.addEventListener("click", () => openCategoryImagePicker(cat));
+
+    grid.appendChild(card);
+  });
+}
+
+function openCategoryImagePicker(cat) {
+  selectedCategoryForPicker = cat;
+  selectedPickerImage = cat.imageUrl || "";
+
+  if (categoryPickerName) {
+    categoryPickerName.textContent = cat.name;
+  }
+
+  // Build image options grid from all images in the category
+  const images = cat.images && cat.images.length > 0 ? cat.images : [];
+
+  if (categoryPickerGrid) {
+    categoryPickerGrid.innerHTML = "";
+
+    if (images.length === 0) {
+      categoryPickerGrid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-dim);">
+          <p>Esta categoría no tiene imágenes disponibles.</p>
+          <p style="font-size: 0.75rem;">Añade imágenes a los artículos de esta categoría primero.</p>
+        </div>
+      `;
+    } else {
+      images.forEach(imgUrl => {
+        const option = document.createElement("div");
+        option.className = `category-image-option ${imgUrl === selectedPickerImage ? "selected" : ""}`;
+
+        option.innerHTML = `
+          <img src="${imgUrl}" alt="Opción de imagen" loading="lazy">
+          <div class="check-mark">✓</div>
+        `;
+
+        option.addEventListener("click", () => {
+          // Deselect all
+          categoryPickerGrid.querySelectorAll(".category-image-option").forEach(el => el.classList.remove("selected"));
+          option.classList.add("selected");
+          selectedPickerImage = imgUrl;
+          if (categoryPickerSave) categoryPickerSave.disabled = false;
+        });
+
+        categoryPickerGrid.appendChild(option);
+      });
+    }
+  }
+
+  if (categoryPickerSave) {
+    categoryPickerSave.disabled = images.length === 0;
+  }
+
+  if (categoryImagePickerModal) {
+    categoryImagePickerModal.classList.remove("hidden");
+  }
+}
+
+async function saveCategoryImage() {
+  if (!selectedCategoryForPicker || !selectedPickerImage) return;
+
+  if (categoryPickerSave) {
+    categoryPickerSave.textContent = "Guardando...";
+    categoryPickerSave.disabled = true;
+  }
+
+  try {
+    const response = await fetch("/api/category-images", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        category: selectedCategoryForPicker.name,
+        imageUrl: selectedPickerImage,
+      }),
+    });
+
+    if (!response.ok) {
+      const errData = await response.json();
+      throw new Error(errData.error || "Error al guardar");
+    }
+
+    showToast(`Imagen de "${selectedCategoryForPicker.name}" actualizada.`, "success");
+
+    // Update local data
+    if (dashCategoriesData) {
+      const idx = dashCategoriesData.findIndex(c => c.name === selectedCategoryForPicker.name);
+      if (idx >= 0) {
+        dashCategoriesData[idx].imageUrl = selectedPickerImage;
+      }
+    }
+    dashCategoriesConfig[selectedCategoryForPicker.name] = selectedPickerImage;
+
+    // Close modal and re-render
+    if (categoryImagePickerModal) categoryImagePickerModal.classList.add("hidden");
+    renderDashCategories();
+  } catch (err) {
+    console.error(err);
+    showToast(err.message || "Error al guardar la imagen.", "error");
+  } finally {
+    if (categoryPickerSave) {
+      categoryPickerSave.textContent = "Guardar selección";
+      categoryPickerSave.disabled = false;
+    }
+  }
+}
+
+// Category picker modal listeners
+if (categoryPickerSave) {
+  categoryPickerSave.addEventListener("click", saveCategoryImage);
+}
+
+if (categoryPickerCancel) {
+  categoryPickerCancel.addEventListener("click", () => {
+    if (categoryImagePickerModal) categoryImagePickerModal.classList.add("hidden");
+  });
+}
+
+if (categoryPickerClose) {
+  categoryPickerClose.addEventListener("click", () => {
+    if (categoryImagePickerModal) categoryImagePickerModal.classList.add("hidden");
+  });
+}
+
+// Close picker modal on overlay click
+if (categoryImagePickerModal) {
+  categoryImagePickerModal.addEventListener("click", (e) => {
+    if (e.target === categoryImagePickerModal) {
+      categoryImagePickerModal.classList.add("hidden");
+    }
+  });
+}
+
+// Add categories tab activation to the tab switching logic
+const tabCategoriesBtn = document.getElementById("tab-categories-btn");
+if (tabCategoriesBtn) {
+  tabCategoriesBtn.addEventListener("click", function categoriesTabHandler() {
+    // Load categories data after a short delay for the tab animation
+    setTimeout(() => {
+      if (!dashCategoriesData) {
+        loadDashCategories();
+      } else {
+        if (dashCategoriesLoader) dashCategoriesLoader.classList.add("hidden");
+        if (dashCategoriesError) dashCategoriesError.classList.add("hidden");
+        renderDashCategories();
+        dashCategoriesGrid.classList.remove("hidden");
+      }
+    }, 100);
+  });
+}
+

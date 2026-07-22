@@ -167,6 +167,7 @@ export async function onRequestGet(context) {
         const publicar = getCheckboxProp(page.properties, ["Publicar", "Publicar Web"]);
         const vendido = getCheckboxProp(page.properties, ["Vendido", "Sold"]);
         const noVender = getCheckboxProp(page.properties, ["No vender", "No_vender"]);
+        const pageCantidad = getNumberProp(page.properties, ["Cantidad", "Stock", "Unidades", "Qty", "Quantity"]);
 
         const parts = [];
         if (naturaleza) parts.push(naturaleza);
@@ -185,6 +186,7 @@ export async function onRequestGet(context) {
           publicar,
           vendido,
           noVender,
+          pageCantidad,
           lastEdited: page.last_edited_time,
           naturaleza,
         };
@@ -203,11 +205,11 @@ export async function onRequestGet(context) {
       if (!groupedMap[groupKey]) {
         groupedMap[groupKey] = {
           ...item,
-          cantidad: 1,
+          cantidad: item.pageCantidad > 0 ? item.pageCantidad : 1,
         };
       } else {
         const group = groupedMap[groupKey];
-        group.cantidad = (group.cantidad || 1) + 1;
+        group.cantidad += item.pageCantidad > 0 ? item.pageCantidad : 1;
         
         if (new Date(item.lastEdited) > new Date(group.lastEdited)) {
           group.lastEdited = item.lastEdited;

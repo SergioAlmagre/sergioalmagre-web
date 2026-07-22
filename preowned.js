@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("search-input");
-  const minPriceInput = document.getElementById("min-price");
-  const maxPriceInput = document.getElementById("max-price");
-  const categorySelect = document.getElementById("category-select");
   const sortSelect = document.getElementById("sort-select");
   
   const loader = document.getElementById("loader");
@@ -23,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let items = [];
   let filteredItems = [];
+  let activeCategory = "";
 
   // Fetch items
   async function fetchItems() {
@@ -40,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
       items = data.items || [];
       
-      populateCategories();
       applyFilters();
     } catch (error) {
       console.error(error);
@@ -51,30 +48,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Populate categories list
-  function populateCategories() {
-    const categories = new Set();
-    items.forEach(item => {
-      if (item.naturaleza) {
-        categories.add(item.naturaleza);
-      }
-    });
-
-    categorySelect.innerHTML = '<option value="">Todas las categorías</option>';
-    categories.forEach(cat => {
-      const option = document.createElement("option");
-      option.value = cat;
-      option.textContent = cat;
-      categorySelect.appendChild(option);
-    });
-  }
-
   // Apply filters and sort
   function applyFilters() {
     const query = searchInput.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const minVal = minPriceInput.value === "" ? -Infinity : parseFloat(minPriceInput.value);
-    const maxVal = maxPriceInput.value === "" ? Infinity : parseFloat(maxPriceInput.value);
-    const category = categorySelect.value;
     const sortBy = sortSelect.value;
 
     filteredItems = items.filter(item => {
@@ -82,11 +58,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const descClean = (item.description || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       
       const matchesSearch = titleClean.includes(query) || descClean.includes(query);
-      const matchesCategory = category === "" || item.naturaleza === category;
-      const matchesMin = item.secondHandPrice >= minVal;
-      const matchesMax = item.secondHandPrice <= maxVal;
+      const matchesCategory = activeCategory === "" || item.naturaleza === activeCategory;
 
-      return matchesSearch && matchesCategory && matchesMin && matchesMax;
+      return matchesSearch && matchesCategory;
     });
 
     // Sort
@@ -94,6 +68,10 @@ document.addEventListener("DOMContentLoaded", () => {
       filteredItems.sort((a, b) => a.secondHandPrice - b.secondHandPrice);
     } else if (sortBy === "price-desc") {
       filteredItems.sort((a, b) => b.secondHandPrice - a.secondHandPrice);
+    } else if (sortBy === "alpha-asc") {
+      filteredItems.sort((a, b) => a.title.localeCompare(b.title, "es"));
+    } else if (sortBy === "alpha-desc") {
+      filteredItems.sort((a, b) => b.title.localeCompare(a.title, "es"));
     } else {
       // default: recent (lastEdited descending)
       filteredItems.sort((a, b) => new Date(b.lastEdited) - new Date(a.lastEdited));
@@ -107,13 +85,21 @@ document.addEventListener("DOMContentLoaded", () => {
     productsGrid.innerHTML = "";
     
     if (filteredItems.length === 0) {
-      emptyState.classList.remove("hidden");
+      if (currentView === "list") {
+        emptyState.classList.remove("hidden");
+      }
       productsGrid.classList.add("hidden");
       return;
     }
 
     emptyState.classList.add("hidden");
-    productsGrid.classList.remove("hidden");
+    
+    // Only show products grid if we're in list view
+    if (currentView === "list") {
+      productsGrid.classList.remove("hidden");
+    } else {
+      productsGrid.classList.add("hidden");
+    }
 
     filteredItems.forEach(item => {
       const card = document.createElement("div");
@@ -131,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ? `<span class="dto-badge">-${item.savingsPercentage}% DTO.</span>`
         : "";
 
-      // Qty badge
+      // Qty badge (on image)
       const qtyBadgeHtml = item.cantidad > 1
         ? `<span class="qty-badge">${item.cantidad} UDS.</span>`
         : "";
@@ -140,6 +126,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const retailPriceHtml = item.retailPrice > 0
         ? `<span class="product-retail-price">${item.retailPrice} €</span>`
         : "";
+
+      // Stock info
+      const stockHtml = item.cantidad > 1
+        ? `<span class="product-stock">${item.cantidad} uds. en stock</span>`
+        : `<span class="product-stock">1 ud. en stock</span>`;
 
       card.innerHTML = `
         <div class="product-img-wrap">
@@ -154,6 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
               ${retailPriceHtml}
             </div>
             <h3 class="product-name">${item.title}</h3>
+            <div class="product-stock-row">${stockHtml}</div>
             <p class="product-desc">${item.description || "Sin descripción disponible."}</p>
           </div>
           <div class="product-footer">
@@ -211,11 +203,111 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.style.overflow = ""; // Enable scrolling
   }
 
-  // Setup listeners
+  // View toggle
+  const viewListBtn = document.getElementById("view-list-btn");
+  const viewCategoriesBtn = document.getElementById("view-categories-btn");
+  const categoriesGrid = document.getElementById("categories-grid");
+  let currentView = "categories"; // "list" or "categories"
+  let categoriesData = null;
+
+  // Fetch categories data from API
+  async function fetchCategories() {
+    try {
+      const response = await fetch("/api/public/category-images");
+      if (!response.ok) throw new Error("No se pudieron cargar las categorías.");
+      const data = await response.json();
+      categoriesData = data.categories || [];
+      return categoriesData;
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
+  }
+
+  function renderCategories() {
+    if (!categoriesData || categoriesData.length === 0) {
+      categoriesGrid.innerHTML = `<div class="empty-state"><h3>No hay categorías disponibles</h3></div>`;
+      categoriesGrid.classList.remove("hidden");
+      return;
+    }
+
+    categoriesGrid.innerHTML = "";
+
+    categoriesData.forEach(cat => {
+      const card = document.createElement("div");
+      card.className = "category-card";
+      card.dataset.category = cat.name;
+
+      const imgHtml = cat.imageUrl
+        ? `<img src="${cat.imageUrl}" alt="${cat.name}" loading="lazy">`
+        : `<svg class="no-image-placeholder" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="36" height="36">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+           </svg>`;
+
+      card.innerHTML = `
+        <div class="category-card-img-wrap">
+          ${imgHtml}
+        </div>
+        <div class="category-card-body">
+          <h3 class="category-card-name">${cat.name}</h3>
+          <span class="category-card-count">${cat.itemCount} artículo${cat.itemCount !== 1 ? "s" : ""}</span>
+        </div>
+      `;
+
+      // Click to filter by this category
+      card.addEventListener("click", () => {
+        activeCategory = cat.name;
+        // Set sort to alphabetical A-Z
+        sortSelect.value = "alpha-asc";
+        // Switch to list view
+        switchView("list");
+        applyFilters();
+      });
+
+      categoriesGrid.appendChild(card);
+    });
+  }
+
+  function switchView(view) {
+    currentView = view;
+    if (view === "list") {
+      productsGrid.classList.remove("hidden");
+      categoriesGrid.classList.add("hidden");
+      viewListBtn.classList.add("active");
+      viewCategoriesBtn.classList.remove("active");
+      sortSelect.disabled = false;
+      sortSelect.style.opacity = "1";
+      sortSelect.style.pointerEvents = "auto";
+      // Show loader if items haven't loaded yet
+      if (items.length === 0) {
+        loader.classList.remove("hidden");
+        productsGrid.classList.add("hidden");
+      }
+      renderItems();
+    } else {
+      productsGrid.classList.add("hidden");
+      categoriesGrid.classList.remove("hidden");
+      viewListBtn.classList.remove("active");
+      viewCategoriesBtn.classList.add("active");
+      sortSelect.disabled = true;
+      sortSelect.style.opacity = "0.4";
+      sortSelect.style.pointerEvents = "none";
+      // Load categories if needed
+      if (!categoriesData) {
+        categoriesGrid.innerHTML = `<div class="loader"><div class="spinner"></div><p>Cargando categorías...</p></div>`;
+        fetchCategories().then(() => {
+          renderCategories();
+        });
+      } else {
+        renderCategories();
+      }
+    }
+  }
+
+  viewListBtn.addEventListener("click", () => switchView("list"));
+  viewCategoriesBtn.addEventListener("click", () => switchView("categories"));
+
   searchInput.addEventListener("input", applyFilters);
-  minPriceInput.addEventListener("input", applyFilters);
-  maxPriceInput.addEventListener("input", applyFilters);
-  categorySelect.addEventListener("change", applyFilters);
   sortSelect.addEventListener("change", applyFilters);
   
   closeModalBtn.addEventListener("click", closeModal);
@@ -232,6 +324,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Init
+  // Init - default view is categories
+  // Hide main loader since categories view is shown by default
+  loader.classList.add("hidden");
+  productsGrid.classList.add("hidden");
+  categoriesGrid.classList.remove("hidden");
+  viewListBtn.classList.remove("active");
+  viewCategoriesBtn.classList.add("active");
+  sortSelect.disabled = true;
+  sortSelect.style.opacity = "0.4";
+  sortSelect.style.pointerEvents = "none";
+  categoriesGrid.innerHTML = `<div class="loader"><div class="spinner"></div><p>Cargando categorías...</p></div>`;
+  
+  // Fetch items in background (for list view)
   fetchItems();
+  
+  // Fetch and show categories immediately
+  fetchCategories().then(() => {
+    renderCategories();
+  });
 });

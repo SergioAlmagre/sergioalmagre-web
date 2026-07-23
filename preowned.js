@@ -294,7 +294,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sortSelect.style.pointerEvents = "none";
       // Load categories if needed
       if (!categoriesData) {
-        categoriesGrid.innerHTML = `<div class="loader"><div class="spinner"></div><p>Cargando categorías...</p></div>`;
+        categoriesGrid.innerHTML = `<div class="loader"><p>Cargando categorías...</p></div>`;
         fetchCategories().then(() => {
           renderCategories();
         });
@@ -325,8 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Init - default view is categories
-  // Hide main loader since categories view is shown by default
-  loader.classList.add("hidden");
+  // The main loader (#loader) is shown by fetchItems(), that's the only spinner we need
   productsGrid.classList.add("hidden");
   categoriesGrid.classList.remove("hidden");
   viewListBtn.classList.remove("active");
@@ -334,9 +333,8 @@ document.addEventListener("DOMContentLoaded", () => {
   sortSelect.disabled = true;
   sortSelect.style.opacity = "0.4";
   sortSelect.style.pointerEvents = "none";
-  categoriesGrid.innerHTML = `<div class="loader"><div class="spinner"></div><p>Cargando categorías...</p></div>`;
   
-  // Fetch items in background (for list view)
+  // Fetch items in background (for list view) — shows the main loader
   fetchItems();
   
   // Fetch and show categories immediately

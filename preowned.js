@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let items = [];
   let filteredItems = [];
   let activeCategory = "";
+  let searchTriggeredView = false; // track if search auto-switched to list
 
   // Fetch items
   async function fetchItems() {
@@ -304,10 +305,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  viewListBtn.addEventListener("click", () => switchView("list"));
-  viewCategoriesBtn.addEventListener("click", () => switchView("categories"));
+  viewListBtn.addEventListener("click", () => {
+    searchTriggeredView = false;
+    switchView("list");
+  });
+  viewCategoriesBtn.addEventListener("click", () => {
+    searchTriggeredView = false;
+    switchView("categories");
+  });
 
-  searchInput.addEventListener("input", applyFilters);
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.trim();
+    
+    // If user types and we're in categories view → auto-switch to list
+    if (query.length > 0 && currentView === "categories") {
+      searchTriggeredView = true;
+      switchView("list");
+    }
+    
+    // If user cleared search and we had auto-switched → restore categories
+    if (query.length === 0 && searchTriggeredView) {
+      searchTriggeredView = false;
+      switchView("categories");
+      return; // switchView already calls renderCategories, no need for applyFilters
+    }
+    
+    applyFilters();
+  });
   sortSelect.addEventListener("change", applyFilters);
   
   closeModalBtn.addEventListener("click", closeModal);

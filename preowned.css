@@ -607,6 +607,24 @@
     padding: 0.15rem 0.35rem !important;
   }
 
+  /* Categories grid: 2 columns on mobile */
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  .categories-grid .category-card-body {
+    padding: 0.6rem 0.8rem !important;
+  }
+
+  .categories-grid .category-card-name {
+    font-size: 0.8rem !important;
+  }
+
+  .categories-grid .category-card-count {
+    font-size: 0.65rem !important;
+  }
+
   /* Dashboard Compact Horizontal List Row Layout */
   .dash-card-header {
     flex-direction: row !important;
@@ -2290,6 +2308,651 @@
 
 .dash-category-card .category-card-count {
   font-size: 0.7rem;
+}
+
+/* ── HAMBURGER MENU ──────────────────────────── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 4px;
+  z-index: 200;
+  transition: border-color 0.2s;
+}
+
+.nav-hamburger:hover {
+  border-color: var(--accent);
+}
+
+.nav-hamburger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text-dim);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease, background 0.25s;
+}
+
+.nav-hamburger.open span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+  background: var(--accent);
+}
+
+.nav-hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-hamburger.open span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+  background: var(--accent);
+}
+
+/* ── MOBILE RESPONSIVE — DASHBOARD ──────────── */
+
+/* Tablet & small screens */
+@media (max-width: 1024px) {
+  .dashboard-container {
+    padding: 0 1.5rem;
+  }
+
+  .dash-title {
+    font-size: 1.5rem;
+  }
+
+  .dash-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    width: 100%;
+  }
+
+  .dash-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-btn {
+    white-space: nowrap;
+    font-size: 0.72rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .stats-charts-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .stats-card-value {
+    font-size: 1.5rem;
+  }
+
+  .dash-categories-grid .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+
+  .category-image-picker-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  /* ── Hamburger ── */
+  .nav-hamburger {
+    display: flex;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 75%;
+    max-width: 300px;
+    height: 100vh;
+    flex-direction: column;
+    background: rgba(10, 10, 15, 0.98);
+    backdrop-filter: blur(16px);
+    border-left: 1px solid var(--border);
+    padding: 5rem 2rem 2rem;
+    gap: 1.5rem;
+    transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 150;
+    display: flex;
+  }
+
+  .nav-links.nav-open {
+    right: 0;
+  }
+
+  .nav-links a {
+    font-size: 0.9rem;
+  }
+
+  /* ── Dashboard Container ── */
+  .dashboard-container {
+    margin: 5.5rem auto 4rem;
+    padding: 0 1rem;
+  }
+
+  .dash-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .dash-title {
+    font-size: 1.3rem;
+  }
+
+  .dash-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .dash-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+
+  .tab-btn {
+    font-size: 0.68rem;
+    padding: 0.35rem 0.6rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── Actions Bar ── */
+  .dash-actions {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .dash-quick-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .dash-quick-filters button,
+  .dash-quick-filters select {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bulk-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* ── Stats Bar ── */
+  .dash-stats-bar {
+    font-size: 0.65rem;
+    padding: 0.5rem 0.75rem;
+    gap: 0.4rem;
+  }
+
+  .dash-stats-bar .divider {
+    display: none;
+  }
+
+  .dash-stats-bar span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  /* ── Filter Constructor ── */
+  .filter-constructor-section {
+    padding: 0.75rem;
+  }
+
+  .filter-constructor-header h3 {
+    font-size: 0.65rem;
+  }
+
+  .filter-rule-row {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .filter-rule-row select,
+  .filter-rule-row input[type="text"] {
+    width: 100%;
+    font-size: 0.7rem;
+  }
+
+  .btn-multiselect-dropdown {
+    min-width: auto;
+    width: 100%;
+    font-size: 0.7rem;
+  }
+
+  .multiselect-dropdown-panel {
+    width: 100%;
+    left: 0;
+  }
+
+  /* ── Discount Filter ── */
+  .discount-range-labels {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .discount-range-track-wrap {
+    width: 100%;
+  }
+
+  .discount-range-badge {
+    font-size: 0.65rem;
+    min-width: 36px;
+  }
+
+  /* ── Items List ── */
+  .items-list-container {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .items-list-header {
+    font-size: 0.65rem;
+    padding: 0.4rem 0.5rem;
+  }
+
+  .items-list {
+    padding: 0.4rem;
+    gap: 0.4rem;
+  }
+
+  .dash-card-item {
+    min-height: auto;
+  }
+
+  .dash-card-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .dash-card-header-wrapper {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    min-height: auto !important;
+  }
+
+  .dash-card-left {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .dash-card-img-wrap {
+    width: 100% !important;
+    height: 140px !important;
+    flex-shrink: 0 !important;
+    align-self: auto;
+  }
+
+  .dash-card-info {
+    flex: none !important;
+    padding: 0.5rem 0.75rem !important;
+    min-width: 0 !important;
+  }
+
+  .dash-card-title-text {
+    font-size: 0.95rem !important;
+    white-space: normal !important;
+  }
+
+  .dash-card-meta {
+    font-size: 0.62rem !important;
+    margin-top: 0.3rem !important;
+    margin-bottom: 0.3rem !important;
+    gap: 0.3rem !important;
+    flex-wrap: wrap !important;
+  }
+
+  .dash-card-metrics {
+    font-size: 0.68rem !important;
+    margin-top: 0.1rem !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.2rem !important;
+  }
+
+  .dash-card-right {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.4rem !important;
+    padding: 0.5rem 0.75rem !important;
+    flex-shrink: 0 !important;
+    flex-wrap: wrap !important;
+  }
+
+  .dash-card-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+  }
+
+  .dash-card-actions {
+    justify-content: flex-end;
+  }
+
+  .dash-control-label {
+    font-size: 0.6rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  /* ── Expanded Card ── */
+  .expanded-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0.75rem 0 0 0;
+  }
+
+  .expanded-grid-inputs {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .edit-image-frame {
+    aspect-ratio: 16/9;
+  }
+
+  .form-group-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .form-actions-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-copy-buttons {
+    flex-wrap: wrap;
+  }
+
+  .checkboxes-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* ── Stats ── */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .stats-card {
+    padding: 1rem;
+  }
+
+  .stats-card-value {
+    font-size: 1.25rem;
+  }
+
+  .stats-card-label {
+    font-size: 0.6rem;
+  }
+
+  .stats-card-desc {
+    font-size: 0.68rem;
+  }
+
+  .stats-charts-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .stats-charts-grid > div {
+    padding: 1rem !important;
+  }
+
+  .stats-sec-title {
+    font-size: 0.75rem;
+  }
+
+  /* ── Stats Table ── */
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .dash-table {
+    font-size: 0.72rem;
+  }
+
+  .dash-table th,
+  .dash-table td {
+    padding: 0.6rem 0.6rem;
+    white-space: nowrap;
+  }
+
+  /* ── Categories ── */
+  .dash-categories-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .dash-categories-header h2 {
+    font-size: 1rem;
+  }
+
+  .dash-categories-grid .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+
+  .category-card-body {
+    padding: 0.6rem 0.8rem;
+  }
+
+  .category-card-name {
+    font-size: 0.8rem;
+  }
+
+  .category-image-picker-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.6rem;
+  }
+
+  /* ── Config Tab ── */
+  #config-tab section {
+    max-width: 100% !important;
+    margin: 1rem 0 !important;
+    padding: 1.25rem !important;
+  }
+
+  #config-tab select {
+    font-size: 0.78rem;
+  }
+
+  /* ── Bulk Progress ── */
+  .bulk-progress-panel {
+    padding: 0.8rem 1rem;
+  }
+
+  .bulk-progress-header {
+    font-size: 0.7rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+
+  .btn-cancel {
+    width: 100%;
+    text-align: center;
+  }
+
+  .progress-status {
+    font-size: 0.65rem;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 0 0.75rem;
+    margin: 5rem auto 3rem;
+  }
+
+  .dash-title {
+    font-size: 1.1rem;
+  }
+
+  .tab-btn {
+    font-size: 0.62rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .stats-card-value {
+    font-size: 1.1rem;
+  }
+
+  .dash-categories-grid .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .dash-card-img-wrap {
+    height: 120px !important;
+  }
+
+  .dash-card-title-text {
+    font-size: 0.85rem !important;
+  }
+
+  .dash-card-info {
+    padding: 0.4rem 0.6rem !important;
+  }
+
+  .dash-card-right {
+    padding: 0.4rem 0.6rem !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .dash-card-actions {
+    justify-content: flex-end !important;
+  }
+
+  .dash-table th,
+  .dash-table td {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.65rem;
+  }
+
+  .form-group-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-body-padding {
+    padding: 1.25rem;
+  }
+
+  .modal-card {
+    max-height: 95vh;
+  }
+
+  .modal-actions-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modal-actions-row button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ── Add Item Modal ── */
+  #add-item-modal .grid-cols-2,
+  #add-item-modal .grid-cols-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  #add-item-modal [style*="grid-column: span 2"] {
+    grid-column: span 1 !important;
+  }
+
+  #add-item-modal .flex-wrap {
+    flex-direction: column;
+  }
+
+  #add-item-modal .flex-wrap button {
+    width: 100%;
+  }
+
+  /* ── Sell Price Modal ── */
+  #sell-price-modal .grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Item Config Modal ── */
+  #item-config-modal .modal-card {
+    max-width: 100% !important;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  #item-config-modal [style*="flex-shrink: 0"] {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  #item-config-modal [style*="flex-shrink: 0"] > div {
+    width: 100%;
+    justify-content: center;
+  }
+
+  #item-config-modal [style*="flex-shrink: 0"] button {
+    flex: 1;
+  }
+
+  /* ── AI Fields Modal ── */
+  #ai-fields-modal .modal-card {
+    max-width: 100% !important;
+    margin: 0 0.5rem;
+  }
+
+  /* ── General Confirm Modal ── */
+  #general-confirm-modal .modal-card {
+    margin: 0 0.75rem;
+  }
+
+  /* ── Sell Modal ── */
+  #sell-modal .modal-box {
+    max-width: 100% !important;
+    margin: 0 0.75rem;
+  }
+
+  /* ── Toast ── */
+  .toast-container {
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+  }
+
+  .toast {
+    min-width: auto;
+    font-size: 0.72rem;
+    padding: 0.7rem 1rem;
+  }
 }
 
 

@@ -503,6 +503,7 @@ ul { list-style: none; }
 /* ── RESPONSIVE ──────────────────────────────────────── */
 @media (max-width: 640px) {
   .nav-links { display: none; }
+  .admin-body-bg .nav-links { display: flex; }
   .timeline-item { grid-template-columns: 1fr; gap: 0.5rem; }
   .timeline-meta { flex-direction: row; align-items: center; }
   .hero { padding: 6rem 1.5rem 3rem; }

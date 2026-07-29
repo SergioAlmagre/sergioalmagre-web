@@ -2345,42 +2345,46 @@ if (addItemAiBtn) {
         if (selectedFields.imageUrl && data.imageUrl) addItemImage.value = data.imageUrl;
         if (selectedFields.description && data.description) addItemDescription.value = data.description;
 
-        // Match Category and Brand automatically
+        // Match Category and Brand automatically (only if user hasn't chosen "__NEW__")
         if (data.title) {
           const titleLower = data.title.toLowerCase();
           
-          // Match brand (Fabricante)
-          let matchedBrand = "";
-          const brandSelectOptions = Array.from(addItemBrandSelect.options);
-          for (const opt of brandSelectOptions) {
-            if (opt.value && opt.value !== "__NEW__" && titleLower.includes(opt.value.toLowerCase())) {
-              matchedBrand = opt.value;
-              break;
+          // Match brand (Fabricante) — skip if user is adding a new custom brand
+          if (addItemBrandSelect.value !== "__NEW__") {
+            let matchedBrand = "";
+            const brandSelectOptions = Array.from(addItemBrandSelect.options);
+            for (const opt of brandSelectOptions) {
+              if (opt.value && opt.value !== "__NEW__" && titleLower.includes(opt.value.toLowerCase())) {
+                matchedBrand = opt.value;
+                break;
+              }
             }
-          }
-          if (matchedBrand) {
-            addItemBrandSelect.value = matchedBrand;
-            addItemBrandSelect.dispatchEvent(new Event("change"));
-          } else {
-            addItemBrandSelect.value = "";
-            addItemBrandSelect.dispatchEvent(new Event("change"));
+            if (matchedBrand) {
+              addItemBrandSelect.value = matchedBrand;
+              addItemBrandSelect.dispatchEvent(new Event("change"));
+            } else {
+              addItemBrandSelect.value = "";
+              addItemBrandSelect.dispatchEvent(new Event("change"));
+            }
           }
 
-          // Match category (Naturaleza)
-          let matchedCat = "";
-          const catSelectOptions = Array.from(addItemCategorySelect.options);
-          for (const opt of catSelectOptions) {
-            if (opt.value && opt.value !== "__NEW__" && titleLower.includes(opt.value.toLowerCase())) {
-              matchedCat = opt.value;
-              break;
+          // Match category (Naturaleza) — skip if user is adding a new custom category
+          if (addItemCategorySelect.value !== "__NEW__") {
+            let matchedCat = "";
+            const catSelectOptions = Array.from(addItemCategorySelect.options);
+            for (const opt of catSelectOptions) {
+              if (opt.value && opt.value !== "__NEW__" && titleLower.includes(opt.value.toLowerCase())) {
+                matchedCat = opt.value;
+                break;
+              }
             }
-          }
-          if (matchedCat) {
-            addItemCategorySelect.value = matchedCat;
-            addItemCategorySelect.dispatchEvent(new Event("change"));
-          } else {
-            addItemCategorySelect.value = "";
-            addItemCategorySelect.dispatchEvent(new Event("change"));
+            if (matchedCat) {
+              addItemCategorySelect.value = matchedCat;
+              addItemCategorySelect.dispatchEvent(new Event("change"));
+            } else {
+              addItemCategorySelect.value = "";
+              addItemCategorySelect.dispatchEvent(new Event("change"));
+            }
           }
         }
 

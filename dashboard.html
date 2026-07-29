@@ -18,7 +18,12 @@
   <!-- NAV -->
   <nav class="nav">
     <span class="nav-logo" onclick="window.location.href='/'" style="cursor: pointer;">sergioalmagre<span class="accent">.</span>com</span>
-    <ul class="nav-links">
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Menú de navegación">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
       <li><a href="/#about">about</a></li>
       <li><a href="/#stack">stack</a></li>
       <li><a href="/#projects">projects</a></li>
@@ -710,5 +715,25 @@
   </div>
 
   <script src="dashboard.js?v=19"></script>
+  <script>
+    // Hamburger menu toggle for mobile
+    document.addEventListener('DOMContentLoaded', function() {
+      const hamburger = document.getElementById('nav-hamburger');
+      const navLinks = document.getElementById('nav-links');
+      if (hamburger && navLinks) {
+        hamburger.addEventListener('click', function() {
+          hamburger.classList.toggle('open');
+          navLinks.classList.toggle('nav-open');
+        });
+        // Close menu when a link is clicked
+        navLinks.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', function() {
+            hamburger.classList.remove('open');
+            navLinks.classList.remove('nav-open');
+          });
+        });
+      }
+    });
+  </script>
 </body>
 </html>

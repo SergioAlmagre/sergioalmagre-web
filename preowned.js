@@ -15,6 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
       return "";
     }
   };
+  const slugify = (value) => String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "articulo";
   const searchInput = document.getElementById("search-input");
   const sortSelect = document.getElementById("sort-select");
   
@@ -197,9 +204,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function openModal(item, { updateUrl = true } = {}) {
     if (updateUrl && item.id) {
       const itemUrl = new URL("/preowned", window.location.origin);
-      itemUrl.searchParams.set("item", item.id);
+      itemUrl.searchParams.set("item", slugify(item.title));
       // Bump this when preview metadata changes so WhatsApp does not reuse an old card.
-      itemUrl.searchParams.set("v", "2");
+      itemUrl.searchParams.set("v", "3");
       history.pushState(
         {
           ...(history.state || {}),
@@ -269,7 +276,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function syncItemFromUrl() {
     const itemId = new URLSearchParams(window.location.search).get("item");
-    const item = itemId ? items.find((candidate) => candidate.id === itemId) : null;
+    const item = itemId
+      ? items.find((candidate) => candidate.id === itemId || slugify(candidate.title) === itemId)
+      : null;
 
     if (item) {
       openModal(item, { updateUrl: false });

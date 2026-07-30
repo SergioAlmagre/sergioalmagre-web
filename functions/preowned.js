@@ -1,6 +1,6 @@
 const SITE_NAME = "Sergio Almagre";
 const FALLBACK_IMAGE = "/favicon.png";
-const SHARE_VERSION = "2";
+const SHARE_VERSION = "3";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -22,6 +22,16 @@ function absoluteUrl(value, requestUrl) {
   } catch (_) {
     return new URL(FALLBACK_IMAGE, requestUrl).href;
   }
+}
+
+function slugify(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "articulo";
 }
 
 function cleanDescription(value, item) {
@@ -54,11 +64,15 @@ function replaceOrInsertMeta(html, key, content) {
 function addItemMetadata(html, item, requestUrl) {
   const title = item.title || "Material audiovisual de segunda mano";
   const description = cleanDescription(item.description, item);
-  const image = item.imageUrl
-    ? new URL(`/api/public/item-image?item=${encodeURIComponent(item.id)}`, requestUrl).href
-    : absoluteUrl("", requestUrl);
+  let image = absoluteUrl("", requestUrl);
+  if (item.imageUrl) {
+    const imageUrl = new URL("/api/public/item-image", requestUrl);
+    imageUrl.searchParams.set("item", slugify(item.title));
+    imageUrl.searchParams.set("v", SHARE_VERSION);
+    image = imageUrl.href;
+  }
   const itemUrlObject = new URL("/preowned", requestUrl);
-  itemUrlObject.searchParams.set("item", item.id);
+  itemUrlObject.searchParams.set("item", slugify(item.title));
   itemUrlObject.searchParams.set("v", SHARE_VERSION);
   const itemUrl = itemUrlObject.href;
 
@@ -102,10 +116,10 @@ async function getBasePage(context) {
 }
 
 export async function onRequestGet(context) {
-  const itemId = new URL(context.request.url).searchParams.get("item");
+  const itemKey = new URL(context.request.url).searchParams.get("item");
   const basePageResponse = await getBasePage(context);
 
-  if (!itemId) {
+  if (!itemKey) {
     return basePageResponse;
   }
 
@@ -114,7 +128,9 @@ export async function onRequestGet(context) {
     if (!itemsResponse.ok) return basePageResponse;
 
     const data = await itemsResponse.json();
-    const item = (data.items || []).find((candidate) => candidate.id === itemId);
+    const item = (data.items || []).find((candidate) => (
+      candidate.id === itemKey || slugify(candidate.title) === itemKey
+    ));
     if (!item) return basePageResponse;
 
     const html = await basePageResponse.text();

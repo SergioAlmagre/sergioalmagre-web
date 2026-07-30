@@ -1,5 +1,17 @@
+function slugify(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "articulo";
+}
+
 function getImageUrl(items, itemId) {
-  const item = (items || []).find((candidate) => candidate.id === itemId);
+  const item = (items || []).find((candidate) => (
+    candidate.id === itemId || slugify(candidate.title) === itemId
+  ));
   if (!item?.imageUrl) return "";
 
   try {
@@ -26,7 +38,7 @@ export async function onRequestGet(context) {
 
     const imageResponse = await fetch(imageUrl, {
       headers: {
-        Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        Accept: "image/jpeg,image/png,image/*;q=0.8",
         "User-Agent": "Mozilla/5.0 (compatible; SergioAlmagrePreview/1.0)",
       },
     });

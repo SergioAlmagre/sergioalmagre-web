@@ -274,6 +274,67 @@ export async function onRequestPost(context) {
       }
     }
 
+    // 3.2b Crear en el esquema de Notion las opciones nuevas de los campos
+    // select/multi_select antes de guardar la página que las utiliza.
+    const schemaOptionsToAdd = {};
+    if (rawProperties && typeof rawProperties === "object") {
+      for (const col of Object.keys(rawProperties)) {
+        const value = rawProperties[col];
+        const propKey = Object.keys(properties).find(k => normalizeString(k) === normalizeString(col));
+        if (!propKey) continue;
+
+        const prop = properties[propKey];
+        if (prop.type !== "select" && prop.type !== "multi_select") continue;
+
+        const values = prop.type === "multi_select"
+          ? (Array.isArray(value) ? value : (value ? [value] : []))
+          : (value ? [value] : []);
+        const existingOptions = prop[prop.type]?.options || [];
+        const existingNames = new Set(existingOptions.map(option => normalizeString(option.name)));
+        const addedNames = new Set();
+        const newNames = values
+          .map(option => String(option || "").trim())
+          .filter(option => {
+            const normalized = normalizeString(option);
+            if (!option || option.includes(",") || existingNames.has(normalized) || addedNames.has(normalized)) return false;
+            addedNames.add(normalized);
+            return true;
+          });
+
+        if (newNames.length > 0) {
+          schemaOptionsToAdd[propKey] = {
+            [prop.type]: {
+              options: [
+                ...existingOptions,
+                ...newNames.map(name => ({ name })),
+              ],
+            },
+          };
+        }
+      }
+    }
+
+    if (Object.keys(schemaOptionsToAdd).length > 0) {
+      const schemaPatchResponse = await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${notionToken}`,
+          "Notion-Version": "2022-06-28",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ properties: schemaOptionsToAdd }),
+      });
+
+      if (!schemaPatchResponse.ok) {
+        const errorDetails = await schemaPatchResponse.text();
+        console.error("No se pudieron crear las nuevas opciones en Notion:", errorDetails);
+        return new Response(
+          JSON.stringify({ error: "No se pudieron crear las nuevas opciones en Notion." }),
+          { status: schemaPatchResponse.status, headers: { "Content-Type": "application/json" } }
+        );
+      }
+    }
+
     // 3.3 Si es creación de un nuevo registro
     if (isCreate === true) {
       let primaryTitleKey = "";

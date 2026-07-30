@@ -2140,7 +2140,62 @@ function openConfigModal(item) {
           options += `<option value="${opt.replace(/"/g, "&quot;")}" ${opt === val ? "selected" : ""}>${opt}</option>`;
         });
       }
-      valTd.innerHTML = `<select class="config-val-input" data-col="${col}" style="background:var(--bg3); border:1px solid var(--border); border-radius:4px; color:var(--text); font-size:0.75rem; padding:0.35rem 0.6rem; outline:none; width:100%;"><option value="">-- Vacío --</option>${options}</select>`;
+      const canAddOption = schema.type === "select";
+      valTd.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:0.4rem;">
+          <select class="config-val-input" data-col="${col}" style="background:var(--bg3); border:1px solid var(--border); border-radius:4px; color:var(--text); font-size:0.75rem; padding:0.35rem 0.6rem; outline:none; width:100%;">${options}</select>
+          ${canAddOption ? `
+            <button type="button" class="config-add-option-btn" style="align-self:flex-start; background:none; border:0; padding:0; color:var(--accent); font-size:0.7rem; cursor:pointer;">
+              + Añadir nuevo valor
+            </button>
+            <div class="config-new-option-row hidden" style="display:flex; gap:0.35rem;">
+              <input type="text" class="config-new-option-input" placeholder="Nuevo valor..." style="flex:1; min-width:0; background:var(--bg3); border:1px solid var(--border); border-radius:4px; color:var(--text); font-size:0.75rem; padding:0.35rem 0.6rem;">
+              <button type="button" class="config-confirm-option-btn btn-ghost" style="font-size:0.7rem; padding:0.35rem 0.55rem;">Añadir</button>
+            </div>
+          ` : `<span style="font-size:0.65rem; color:var(--text-dim);">Las opciones de estado se gestionan desde Notion.</span>`}
+        </div>
+      `;
+
+      if (canAddOption) {
+        const addOptionBtn = valTd.querySelector(".config-add-option-btn");
+        const newOptionRow = valTd.querySelector(".config-new-option-row");
+        const newOptionInput = valTd.querySelector(".config-new-option-input");
+        const confirmOptionBtn = valTd.querySelector(".config-confirm-option-btn");
+        const selectInput = valTd.querySelector(".config-val-input");
+
+        const confirmNewOption = () => {
+          const newValue = newOptionInput.value.trim();
+          if (!newValue) return;
+          if (newValue.includes(",")) {
+            showToast("Las opciones no pueden contener comas.", "warning");
+            return;
+          }
+
+          const existingOption = Array.from(selectInput.options).find(
+            option => option.value.toLocaleLowerCase() === newValue.toLocaleLowerCase()
+          );
+          if (existingOption) {
+            selectInput.value = existingOption.value;
+          } else {
+            selectInput.add(new Option(newValue, newValue, true, true));
+          }
+
+          newOptionInput.value = "";
+          newOptionRow.classList.add("hidden");
+        };
+
+        addOptionBtn.addEventListener("click", () => {
+          newOptionRow.classList.remove("hidden");
+          newOptionInput.focus();
+        });
+        confirmOptionBtn.addEventListener("click", confirmNewOption);
+        newOptionInput.addEventListener("keydown", event => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            confirmNewOption();
+          }
+        });
+      }
     } else if (schema.type === "multi_select") {
       // Input text of comma separated values for multi select
       const currentList = Array.isArray(val) ? val : [];

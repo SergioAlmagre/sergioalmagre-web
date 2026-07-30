@@ -1,6 +1,6 @@
 const SITE_NAME = "Sergio Almagre";
 const FALLBACK_IMAGE = "/favicon.png";
-const SHARE_VERSION = "3";
+const SHARE_VERSION = "4";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -66,10 +66,10 @@ function addItemMetadata(html, item, requestUrl) {
   const description = cleanDescription(item.description, item);
   let image = absoluteUrl("", requestUrl);
   if (item.imageUrl) {
-    const imageUrl = new URL("/api/public/item-image", requestUrl);
-    imageUrl.searchParams.set("item", slugify(item.title));
-    imageUrl.searchParams.set("v", SHARE_VERSION);
-    image = imageUrl.href;
+    image = new URL(
+      `/api/public/item-image/${encodeURIComponent(slugify(item.title))}.jpg`,
+      requestUrl
+    ).href;
   }
   const itemUrlObject = new URL("/preowned", requestUrl);
   itemUrlObject.searchParams.set("item", slugify(item.title));

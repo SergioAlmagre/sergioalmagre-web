@@ -1,5 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
   const t = (key, vars) => window.I18n ? window.I18n.t(key, vars) : key;
+  const escapeHtml = (value) => String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+  const safeImageUrl = (value) => {
+    if (!value) return "";
+    try {
+      const url = new URL(value, window.location.origin);
+      return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+    } catch (_) {
+      return "";
+    }
+  };
   const searchInput = document.getElementById("search-input");
   const sortSelect = document.getElementById("sort-select");
   
@@ -106,10 +121,15 @@ document.addEventListener("DOMContentLoaded", () => {
     filteredItems.forEach(item => {
       const card = document.createElement("div");
       card.className = "product-card";
+      card.setAttribute("role", "button");
+      card.tabIndex = 0;
+      const title = escapeHtml(item.title);
+      const description = escapeHtml(item.description || t("store.noDescription"));
+      const imageUrl = safeImageUrl(item.imageUrl);
       
       // Image html
-      const imgHtml = item.imageUrl 
-        ? `<img src="${item.imageUrl}" alt="${item.title}" loading="lazy">`
+      const imgHtml = imageUrl
+        ? `<img src="${escapeHtml(imageUrl)}" alt="${title}" loading="lazy">`
         : `<svg class="no-image-placeholder" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="36" height="36">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
            </svg>`;
@@ -146,9 +166,9 @@ document.addEventListener("DOMContentLoaded", () => {
               <span class="product-price">${item.secondHandPrice} €</span>
               ${retailPriceHtml}
             </div>
-            <h3 class="product-name">${item.title}</h3>
+            <h3 class="product-name">${title}</h3>
             <div class="product-stock-row">${stockHtml}</div>
-            <p class="product-desc">${item.description || t("store.noDescription")}</p>
+            <p class="product-desc">${description}</p>
           </div>
           <div class="product-footer">
             <span>${new Date(item.lastEdited).toLocaleDateString()}</span>
@@ -159,7 +179,14 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
 
-      card.addEventListener("click", () => openModal(item));
+      const activateCard = () => openModal(item);
+      card.addEventListener("click", activateCard);
+      card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          activateCard();
+        }
+      });
       productsGrid.appendChild(card);
     });
   }
@@ -185,8 +212,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Image
-    modalImageContainer.innerHTML = item.imageUrl 
-      ? `<img src="${item.imageUrl}" alt="${item.title}">`
+    const imageUrl = safeImageUrl(item.imageUrl);
+    modalImageContainer.innerHTML = imageUrl
+      ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.title)}">`
       : `<svg class="no-image-placeholder" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="48" height="48" style="opacity:0.3">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
          </svg>`;
@@ -211,6 +239,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const categoriesGrid = document.getElementById("categories-grid");
   let currentView = "categories"; // "list" or "categories"
   let categoriesData = null;
+
+  // Keep catalogue view changes in the browser history so Back returns to
+  // categories before leaving the pre-owned page.
+  const categoryFromUrl = new URLSearchParams(window.location.search).get("category") || "";
+  const initialCatalogueView = categoryFromUrl ? "list" : "categories";
+  if (categoryFromUrl) {
+    activeCategory = categoryFromUrl;
+    currentView = "list";
+  }
+  const initialHistoryState = history.state || {};
+  if (initialHistoryState.preownedView !== initialCatalogueView || initialHistoryState.category !== categoryFromUrl) {
+    history.replaceState({ ...initialHistoryState, preownedView: initialCatalogueView, category: categoryFromUrl }, "", window.location.href);
+  }
+
+  function pushCatalogueView(view, category = "") {
+    const url = new URL(window.location.href);
+    if (category) url.searchParams.set("category", category);
+    else url.searchParams.delete("category");
+    history.pushState({ preownedView: view, category }, "", url.href);
+  }
 
   // Fetch categories data from API
   async function fetchCategories() {
@@ -238,10 +286,14 @@ document.addEventListener("DOMContentLoaded", () => {
     categoriesData.forEach(cat => {
       const card = document.createElement("div");
       card.className = "category-card";
+      card.setAttribute("role", "button");
+      card.tabIndex = 0;
       card.dataset.category = cat.name;
+      const categoryName = escapeHtml(cat.name);
+      const imageUrl = safeImageUrl(cat.imageUrl);
 
-      const imgHtml = cat.imageUrl
-        ? `<img src="${cat.imageUrl}" alt="${cat.name}" loading="lazy">`
+      const imgHtml = imageUrl
+        ? `<img src="${escapeHtml(imageUrl)}" alt="${categoryName}" loading="lazy">`
         : `<svg class="no-image-placeholder" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="36" height="36">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
            </svg>`;
@@ -251,19 +303,27 @@ document.addEventListener("DOMContentLoaded", () => {
           ${imgHtml}
         </div>
         <div class="category-card-body">
-          <h3 class="category-card-name">${cat.name}</h3>
+          <h3 class="category-card-name">${categoryName}</h3>
             <span class="category-card-count">${cat.itemCount === 1 ? t("store.unit", { count: cat.itemCount }) : t("store.units", { count: cat.itemCount })}</span>
         </div>
       `;
 
       // Click to filter by this category
-      card.addEventListener("click", () => {
+      const activateCategory = () => {
         activeCategory = cat.name;
+        pushCatalogueView("list", cat.name);
         // Set sort to alphabetical A-Z
         sortSelect.value = "alpha-asc";
         // Switch to list view
         switchView("list");
         applyFilters();
+      };
+      card.addEventListener("click", activateCategory);
+      card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          activateCategory();
+        }
       });
 
       categoriesGrid.appendChild(card);
@@ -315,6 +375,19 @@ document.addEventListener("DOMContentLoaded", () => {
     switchView("categories");
   });
 
+  window.addEventListener("popstate", (event) => {
+    const state = event.state || {};
+    activeCategory = state.preownedView === "list" ? (state.category || "") : "";
+    searchTriggeredView = false;
+    if (state.preownedView === "list") {
+      sortSelect.value = "alpha-asc";
+      switchView("list");
+    } else {
+      switchView("categories");
+    }
+    applyFilters();
+  });
+
   searchInput.addEventListener("input", () => {
     const query = searchInput.value.trim();
     
@@ -354,15 +427,20 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCategories();
   });
 
-  // Init - default view is categories
+  // Init - default view is categories, unless a category was shared in the URL
   // The main loader (#loader) is shown by fetchItems(), that's the only spinner we need
-  productsGrid.classList.add("hidden");
-  categoriesGrid.classList.remove("hidden");
-  viewListBtn.classList.remove("active");
-  viewCategoriesBtn.classList.add("active");
-  sortSelect.disabled = true;
-  sortSelect.style.opacity = "0.4";
-  sortSelect.style.pointerEvents = "none";
+  if (initialCatalogueView === "list") {
+    sortSelect.value = "alpha-asc";
+    switchView("list");
+  } else {
+    productsGrid.classList.add("hidden");
+    categoriesGrid.classList.remove("hidden");
+    viewListBtn.classList.remove("active");
+    viewCategoriesBtn.classList.add("active");
+    sortSelect.disabled = true;
+    sortSelect.style.opacity = "0.4";
+    sortSelect.style.pointerEvents = "none";
+  }
   
   // Fetch items in background (for list view) — shows the main loader
   fetchItems();

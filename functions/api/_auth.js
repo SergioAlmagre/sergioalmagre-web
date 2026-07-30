@@ -1,8 +1,10 @@
 export const SESSION_COOKIE_NAME = "session_token";
-const DEFAULT_SECRET = "temp-dev-session-secret-change-me-in-production";
-
 function getSecretKey(env) {
-  return env.SESSION_SECRET?.trim().replace(/^["']|["']$/g, "") || DEFAULT_SECRET;
+  const secret = env.SESSION_SECRET?.trim().replace(/^["']|["']$/g, "");
+  if (!secret) {
+    throw new Error("SESSION_SECRET is not configured");
+  }
+  return secret;
 }
 
 async function getCryptoKey(secret) {

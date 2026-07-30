@@ -8,6 +8,9 @@
   <meta name="description" data-i18n-content="index.description" content="Portfolio y CV de Sergio Almagre, desarrollador backend especializado en Cloud, automatización, APIs REST robustas y flujos de trabajo avanzados." />
   <meta name="keywords" content="Sergio Almagre, Backend Developer, desarrollador backend, Cloud, Azure, AWS, Google Cloud, Node.js, Express, .NET, Terraform, automatización" />
   <link rel="canonical" href="https://www.sergioalmagre.com/" />
+  <link rel="alternate" hreflang="en" href="https://www.sergioalmagre.com/?lang=en" />
+  <link rel="alternate" hreflang="es" href="https://www.sergioalmagre.com/?lang=es" />
+  <link rel="alternate" hreflang="x-default" href="https://www.sergioalmagre.com/" />
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
@@ -20,7 +23,7 @@
   <meta property="twitter:card" content="summary" />
   <meta property="twitter:url" content="https://www.sergioalmagre.com/" />
   <meta property="twitter:title" content="Sergio Almagre — Backend Developer" />
-  <meta property="twitter:description" content="Portfolio y CV de Sergio Almagre, desarrollador backend especializado en Cloud, automatización y APIs REST." />
+  <meta property="twitter:description" data-i18n-content="index.description" content="Portfolio y CV de Sergio Almagre, desarrollador backend especializado en Cloud, automatización y APIs REST." />
   <meta property="twitter:image" content="https://www.sergioalmagre.com/favicon.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -30,6 +33,24 @@
     rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=4" />
   <link rel="icon" type="image/png" href="favicon.png" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Sergio Almagre",
+      "url": "https://www.sergioalmagre.com/",
+      "jobTitle": "Backend Developer",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Almagro",
+        "addressCountry": "ES"
+      },
+      "sameAs": [
+        "https://github.com/SergioAlmagre",
+        "https://linkedin.com/in/sergioalmagre"
+      ]
+    }
+  </script>
 </head>
 
 <body>
@@ -79,7 +100,8 @@
 
       <div class="hero-cta">
         <a href="#experience" class="btn-primary" data-i18n="index.viewExperience">View Experience</a>
-        <a href="https://github.com/SergioAlmagre" target="_blank" class="btn-ghost">GitHub ↗</a>
+        <a href="#contact" class="btn-ghost" data-i18n="index.contactMe">Contact me</a>
+        <a href="https://github.com/SergioAlmagre" target="_blank" rel="noopener noreferrer" class="btn-ghost">GitHub ↗</a>
       </div>
     </div>
 
@@ -332,24 +354,20 @@
   <section class="section" id="contact">
     <p class="section-label">// contact</p>
     <h2 class="section-title" data-i18n="index.letsTalk">Let's talk</h2>
-    <p class="contact-sub" data-i18n="index.contactSub">Open to backend, cloud and automation roles. Based in Ciudad Real, Spain.</p>
+    <p class="contact-sub" data-i18n="index.contactSub">Open to backend, cloud and automation roles. Based in Almagro, Spain.</p>
 
     <div class="contact-links">
       <a href="mailto:info@sergioalmagre.com" class="contact-card">
         <span class="contact-icon">✉</span>
         <span class="contact-label">info@sergioalmagre.com</span>
       </a>
-      <a href="https://linkedin.com/in/sergioalmagre" target="_blank" class="contact-card">
+      <a href="https://linkedin.com/in/sergioalmagre" target="_blank" rel="noopener noreferrer" class="contact-card">
         <span class="contact-icon">in</span>
         <span class="contact-label">linkedin.com/in/sergioalmagre</span>
       </a>
-      <a href="https://github.com/SergioAlmagre" target="_blank" class="contact-card">
+      <a href="https://github.com/SergioAlmagre" target="_blank" rel="noopener noreferrer" class="contact-card">
         <span class="contact-icon">⌥</span>
         <span class="contact-label">github.com/SergioAlmagre</span>
-      </a>
-      <a href="https://www.sergioalmagre.com" target="_blank" class="contact-card">
-        <span class="contact-icon">↗</span>
-        <span class="contact-label">www.sergioalmagre.com</span>
       </a>
     </div>
   </section>
@@ -364,7 +382,7 @@
       <a href="#contact" style="color: inherit; text-decoration: underline;">contact</a> · 
       <a href="/preowned.html" style="color: inherit; text-decoration: underline;">pre-owned</a>
     </div>
-    <span>Sergio Almagre · Ciudad Real, España</span>
+    <span>Sergio Almagre · Almagro, España</span>
   </footer>
 
   <!-- RETRO ARCADE MODAL (EASTER EGG) -->

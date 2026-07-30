@@ -34,6 +34,10 @@ function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
 
+async function waitUntilVisible() {
+  while (document.hidden) await sleep(500);
+}
+
 async function typeSequence(seq) {
   // Clear
   cmdEl.textContent = '';
@@ -42,11 +46,13 @@ async function typeSequence(seq) {
 
   // Type command
   for (let i = 0; i < seq.cmd.length; i++) {
+    await waitUntilVisible();
     cmdEl.textContent += seq.cmd[i];
     await sleep(55 + Math.random() * 35);
   }
 
   await sleep(350);
+  await waitUntilVisible();
 
   // Show output
   outputEl.innerHTML = window.I18n ? window.I18n.t(seq.outputKey) : '';
@@ -56,6 +62,7 @@ async function typeSequence(seq) {
 
   // Erase command
   while (cmdEl.textContent.length > 0) {
+    await waitUntilVisible();
     cmdEl.textContent = cmdEl.textContent.slice(0, -1);
     await sleep(28);
   }
@@ -67,13 +74,20 @@ async function typeSequence(seq) {
 async function runLoop() {
   await sleep(800);
   while (true) {
+    await waitUntilVisible();
     const seq = sequences[seqIndex % sequences.length];
     await typeSequence(seq);
     seqIndex++;
   }
 }
 
-runLoop();
+const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+if (reducedMotion) {
+  cmdEl.textContent = 'cat profile.json';
+  outputEl.innerHTML = window.I18n ? window.I18n.t('terminal.profile') : '';
+} else {
+  runLoop();
+}
 
 // Smooth active nav link highlight on scroll
 const sections = document.querySelectorAll('section[id], .section[id]');

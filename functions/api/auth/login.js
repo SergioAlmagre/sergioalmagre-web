@@ -18,7 +18,7 @@ export async function onRequestPost(context) {
     if (password === adminPassword) {
       const token = await createSessionToken(env);
       
-      const secure = env.NODE_ENV === "production" ? "Secure;" : "";
+      const secure = new URL(request.url).protocol === "https:" ? "Secure;" : "";
       const cookie = `${SESSION_COOKIE_NAME}=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}; ${secure}`;
       
       return new Response(

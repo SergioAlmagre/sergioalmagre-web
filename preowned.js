@@ -198,6 +198,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (updateUrl && item.id) {
       const itemUrl = new URL("/preowned", window.location.origin);
       itemUrl.searchParams.set("item", item.id);
+      // Bump this when preview metadata changes so WhatsApp does not reuse an old card.
+      itemUrl.searchParams.set("v", "2");
       history.pushState(
         {
           ...(history.state || {}),

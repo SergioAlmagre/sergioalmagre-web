@@ -1,5 +1,6 @@
 const SITE_NAME = "Sergio Almagre";
 const FALLBACK_IMAGE = "/favicon.png";
+const SHARE_VERSION = "2";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -23,21 +24,25 @@ function absoluteUrl(value, requestUrl) {
   }
 }
 
-function cleanDescription(value) {
+function cleanDescription(value, item) {
   const description = String(value || "").replace(/\s+/g, " ").trim();
-  return description || "Artículo audiovisual de segunda mano disponible en Sergio Almagre.";
+  if (description) return description;
+
+  const price = Number(item?.secondHandPrice);
+  return price > 0
+    ? `${item.title} disponible de segunda mano por ${price} € en Sergio Almagre.`
+    : "Artículo audiovisual de segunda mano disponible en Sergio Almagre.";
 }
 
-function replaceOrInsertMeta(html, attributes, content) {
+function replaceOrInsertMeta(html, key, content) {
   const escapedContent = escapeHtml(content);
-  const attributePattern = attributes
-    .map((attribute) => attribute.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-    .join("|");
+  const attributePattern = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const tagPattern = new RegExp(
     `<meta\\s+(?:property|name)=[\\\"'](?:${attributePattern})[\\\"'][^>]*>\\s*`,
     "gi"
   );
-  const tag = `<meta property="${attributes[0]}" content="${escapedContent}" />\n`;
+  const attributeName = key === "description" || key.startsWith("twitter:") ? "name" : "property";
+  const tag = `<meta ${attributeName}="${key}" content="${escapedContent}" />\n`;
 
   if (tagPattern.test(html)) {
     return html.replace(tagPattern, tag);
@@ -48,31 +53,36 @@ function replaceOrInsertMeta(html, attributes, content) {
 
 function addItemMetadata(html, item, requestUrl) {
   const title = item.title || "Material audiovisual de segunda mano";
-  const description = cleanDescription(item.description);
-  const image = absoluteUrl(item.imageUrl, requestUrl);
-  const itemUrl = new URL(`/preowned?item=${encodeURIComponent(item.id)}`, requestUrl).href;
+  const description = cleanDescription(item.description, item);
+  const image = item.imageUrl
+    ? new URL(`/api/public/item-image?item=${encodeURIComponent(item.id)}`, requestUrl).href
+    : absoluteUrl("", requestUrl);
+  const itemUrlObject = new URL("/preowned", requestUrl);
+  itemUrlObject.searchParams.set("item", item.id);
+  itemUrlObject.searchParams.set("v", SHARE_VERSION);
+  const itemUrl = itemUrlObject.href;
 
   let result = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)} — ${SITE_NAME}</title>`);
 
   const metadata = [
-    [["description"], description],
-    [["og:type"], "product"],
-    [["og:url"], itemUrl],
-    [["og:title"], title],
-    [["og:description"], description],
-    [["og:image"], image],
-    [["og:image:alt"], title],
-    [["og:site_name"], SITE_NAME],
-    [["twitter:card"], "summary_large_image"],
-    [["twitter:url"], itemUrl],
-    [["twitter:title"], title],
-    [["twitter:description"], description],
-    [["twitter:image"], image],
-    [["twitter:image:alt"], title],
+    ["description", description],
+    ["og:type", "product"],
+    ["og:url", itemUrl],
+    ["og:title", title],
+    ["og:description", description],
+    ["og:image", image],
+    ["og:image:alt", title],
+    ["og:site_name", SITE_NAME],
+    ["twitter:card", "summary_large_image"],
+    ["twitter:url", itemUrl],
+    ["twitter:title", title],
+    ["twitter:description", description],
+    ["twitter:image", image],
+    ["twitter:image:alt", title],
   ];
 
-  for (const [attributes, content] of metadata) {
-    result = replaceOrInsertMeta(result, attributes, content);
+  for (const [key, content] of metadata) {
+    result = replaceOrInsertMeta(result, key, content);
   }
 
   return result;

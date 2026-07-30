@@ -1,6 +1,6 @@
 const SITE_NAME = "Sergio Almagre";
 const FALLBACK_IMAGE = "/favicon.png";
-const SHARE_VERSION = "4";
+const SHARE_VERSION = "5";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -85,6 +85,8 @@ function addItemMetadata(html, item, requestUrl) {
     ["og:title", title],
     ["og:description", description],
     ["og:image", image],
+    ["og:image:secure_url", image],
+    ["og:image:type", "image/jpeg"],
     ["og:image:alt", title],
     ["og:site_name", SITE_NAME],
     ["twitter:card", "summary_large_image"],

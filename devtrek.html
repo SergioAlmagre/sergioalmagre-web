@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
   <title data-i18n="index.arcadeTitle">Dev Enterprise — Sergio Almagre</title>
   <link rel="canonical" href="https://www.sergioalmagre.com/devtrek" />
-  <link rel="alternate" hreflang="en" href="https://www.sergioalmagre.com/devtrek?lang=en" />
-  <link rel="alternate" hreflang="es" href="https://www.sergioalmagre.com/devtrek?lang=es" />
+  <link rel="alternate" hreflang="en" href="https://www.sergioalmagre.com/en/devtrek" />
+  <link rel="alternate" hreflang="es" href="https://www.sergioalmagre.com/es/devtrek" />
   <link rel="alternate" hreflang="x-default" href="https://www.sergioalmagre.com/devtrek" />
   <meta name="description" data-i18n-content="index.arcadeDescription" content="Juego arcade Dev Enterprise. Tactical Patrol & Salvage." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -141,7 +142,7 @@
       const closeBtn = document.getElementById('st-modal-close-btn');
       if (closeBtn) {
         closeBtn.addEventListener('click', () => {
-          window.location.href = '/';
+          window.location.href = window.I18n?.url('/') || '/';
         });
       }
 
@@ -149,7 +150,7 @@
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           if (gameInstance && (gameInstance.phase === 'menu' || gameInstance.phase === 'gameover' || gameInstance.phase === 'scores')) {
-            window.location.href = '/';
+          window.location.href = window.I18n?.url('/') || '/';
           }
         }
       });

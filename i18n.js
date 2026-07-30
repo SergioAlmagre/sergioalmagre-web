@@ -384,8 +384,22 @@
   function detectLocale() {
     const queryLocale = new URLSearchParams(window.location.search).get("lang");
     if (supported.includes(queryLocale)) return queryLocale;
+    const pathLocale = window.location.pathname.split("/").filter(Boolean)[0];
+    if (supported.includes(pathLocale)) return pathLocale;
     const browserLocales = navigator.languages?.length ? navigator.languages : [navigator.language];
     return normalizeLocale(browserLocales.find(Boolean));
+  }
+
+  function localizedUrl(target) {
+    const pathLocale = window.location.pathname.split("/").filter(Boolean)[0];
+    if (!supported.includes(pathLocale)) return target;
+    const prefix = `/${pathLocale}`;
+    if (target === "/") return prefix;
+    if (target === "/devtrek") return `${prefix}/devtrek`;
+    if (target === "/preowned.html" || target === "preowned.html") return `${prefix}/preowned`;
+    if (target === "/login.html") return `${prefix}/login`;
+    if (target.startsWith("/#")) return `${prefix}${target.slice(1)}`;
+    return target;
   }
 
   function getValue(key) {
@@ -425,6 +439,18 @@
       const key = element.classList.contains("admin-link") ? "store.adminAccess" : footerKeys[index];
       if (key) element.textContent = translate(key);
     });
+    document.querySelectorAll("a[href]").forEach((link) => {
+      link.setAttribute("href", localizedUrl(link.getAttribute("href")));
+    });
+    const logo = document.querySelector(".nav-logo");
+    const pathLocale = window.location.pathname.split("/").filter(Boolean)[0];
+    if (logo && supported.includes(pathLocale)) {
+      logo.onclick = () => { window.location.href = localizedUrl("/"); };
+    }
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical && supported.includes(pathLocale)) {
+      canonical.href = `${window.location.origin}${window.location.pathname}`;
+    }
 
   }
 
@@ -438,6 +464,7 @@
   window.I18n = {
     get locale() { return locale; },
     t: translate,
+    url: localizedUrl,
     setLocale,
     apply: applyTranslations,
   };

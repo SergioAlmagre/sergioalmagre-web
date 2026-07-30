@@ -131,15 +131,37 @@ fadeEls.forEach(el => {
 
 // ── RETRO ARCADE INTEGRATION (EASTER EGG) ───────────
 let gameInstance = null;
+let gameScriptPromise = null;
 
-function openGame() {
+function loadGameScript() {
+  if (window.DevGame) return Promise.resolve();
+  if (gameScriptPromise) return gameScriptPromise;
+
+  gameScriptPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'game.js?v=5';
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('Could not load the game module.'));
+    document.head.appendChild(script);
+  });
+
+  return gameScriptPromise;
+}
+
+async function openGame() {
   const modal = document.getElementById('st-arcade-modal');
   if (!modal) return;
   modal.classList.remove('st-hidden');
   document.body.style.overflow = 'hidden';
 
   if (!gameInstance) {
-    gameInstance = new window.DevGame(modal);
+    try {
+      await loadGameScript();
+      gameInstance = new window.DevGame(modal);
+    } catch (error) {
+      console.error(error);
+      closeGame();
+    }
   }
 }
 
@@ -167,7 +189,7 @@ if (triggerBtn) {
 const launchBtn = document.querySelector('.st-btn-launch-game');
 if (launchBtn) {
   launchBtn.addEventListener('click', (e) => {
-    window.location.href = '/devtrek';
+        window.location.href = window.I18n?.url('/devtrek') || '/devtrek';
   });
 }
 
@@ -175,9 +197,9 @@ const outputBody = document.getElementById('terminal-output');
 if (outputBody) {
   outputBody.addEventListener('click', (e) => {
     if (e.target.id === 'terminal-play-hint' || e.target.closest('#terminal-play-hint')) {
-      window.location.href = '/devtrek';
+      window.location.href = window.I18n?.url('/devtrek') || '/devtrek';
     } else if (e.target.id === 'terminal-admin-hint' || e.target.closest('#terminal-admin-hint')) {
-      window.location.href = '/login.html';
+      window.location.href = window.I18n?.url('/login.html') || '/login.html';
     }
   });
 }

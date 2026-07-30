@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const t = (key, vars) => window.I18n ? window.I18n.t(key, vars) : key;
   const searchInput = document.getElementById("search-input");
   const sortSelect = document.getElementById("sort-select");
   
@@ -33,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const response = await fetch("/api/public/items");
       if (!response.ok) {
-        throw new Error("No se pudo cargar el catálogo de Notion. Por favor, inténtalo de nuevo.");
+        throw new Error(t("store.fetchError"));
       }
 
       const data = await response.json();
@@ -42,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
       applyFilters();
     } catch (error) {
       console.error(error);
-      errorMessage.textContent = error.message || "Error al conectar con el servidor.";
+      errorMessage.textContent = error.message || t("store.fetchError");
       errorMessage.classList.remove("hidden");
     } finally {
       loader.classList.add("hidden");
@@ -115,12 +116,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Savings badge
       const savingsBadgeHtml = item.savingsPercentage > 0
-        ? `<span class="dto-badge">-${item.savingsPercentage}% DTO.</span>`
+        ? `<span class="dto-badge">${t("store.savings", { percentage: item.savingsPercentage })}</span>`
         : "";
 
       // Qty badge (on image)
       const qtyBadgeHtml = item.cantidad > 1
-        ? `<span class="qty-badge">${item.cantidad} UDS.</span>`
+        ? `<span class="qty-badge">${t("store.units", { count: item.cantidad })}</span>`
         : "";
 
       // Retail price HTML
@@ -130,8 +131,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Stock info
       const stockHtml = item.cantidad > 1
-        ? `<span class="product-stock">${item.cantidad} uds. en stock</span>`
-        : `<span class="product-stock">1 ud. en stock</span>`;
+        ? `<span class="product-stock">${t("store.inStock", { count: item.cantidad })}</span>`
+        : `<span class="product-stock">${t("store.inStockOne")}</span>`;
 
       card.innerHTML = `
         <div class="product-img-wrap">
@@ -147,12 +148,12 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
             <h3 class="product-name">${item.title}</h3>
             <div class="product-stock-row">${stockHtml}</div>
-            <p class="product-desc">${item.description || "Sin descripción disponible."}</p>
+            <p class="product-desc">${item.description || t("store.noDescription")}</p>
           </div>
           <div class="product-footer">
             <span>${new Date(item.lastEdited).toLocaleDateString()}</span>
             <span class="product-view-btn">
-              Ver detalles <span>&rarr;</span>
+              ${t("store.details")} <span>&rarr;</span>
             </span>
           </div>
         </div>
@@ -166,7 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Modal actions
   function openModal(item) {
     modalTitle.textContent = item.title;
-    modalDescription.textContent = item.description || "Sin descripción disponible.";
+    modalDescription.textContent = item.description || t("store.noDescription");
     modalSecondhandPrice.textContent = `${item.secondHandPrice} €`;
     
     if (item.retailPrice > 0) {
@@ -177,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (item.savingsPercentage > 0) {
-      modalDtoBadge.textContent = `Ahorras ${item.savingsPercentage}%`;
+      modalDtoBadge.textContent = t("store.savings", { percentage: item.savingsPercentage });
       modalDtoBadge.classList.remove("hidden");
     } else {
       modalDtoBadge.classList.add("hidden");
@@ -191,8 +192,8 @@ document.addEventListener("DOMContentLoaded", () => {
          </svg>`;
 
     // Email contact button href setup
-    const subject = encodeURIComponent(`Interés en artículo: ${item.title}`);
-    const emailBody = encodeURIComponent(`Hola Sergio,\n\nEstoy interesado en adquirir el artículo "${item.title}" listado en tu web por ${item.secondHandPrice} €.\n\nPor favor, confírmame disponibilidad.\n\nUn saludo.`);
+    const subject = encodeURIComponent(t("store.subject", { title: item.title }));
+    const emailBody = encodeURIComponent(t("store.emailBody", { title: item.title, price: item.secondHandPrice }));
     modalEmailBtn.href = `mailto:info@sergioalmagre.com?subject=${subject}&body=${emailBody}`;
 
     detailModal.classList.remove("hidden");
@@ -215,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function fetchCategories() {
     try {
       const response = await fetch("/api/public/category-images");
-      if (!response.ok) throw new Error("No se pudieron cargar las categorías.");
+      if (!response.ok) throw new Error(t("store.fetchError"));
       const data = await response.json();
       categoriesData = data.categories || [];
       return categoriesData;
@@ -227,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderCategories() {
     if (!categoriesData || categoriesData.length === 0) {
-      categoriesGrid.innerHTML = `<div class="empty-state"><h3>No hay categorías disponibles</h3></div>`;
+        categoriesGrid.innerHTML = `<div class="empty-state"><h3>${t("store.noCategories")}</h3></div>`;
       categoriesGrid.classList.remove("hidden");
       return;
     }
@@ -251,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <div class="category-card-body">
           <h3 class="category-card-name">${cat.name}</h3>
-          <span class="category-card-count">${cat.itemCount} artículo${cat.itemCount !== 1 ? "s" : ""}</span>
+            <span class="category-card-count">${cat.itemCount === 1 ? t("store.unit", { count: cat.itemCount }) : t("store.units", { count: cat.itemCount })}</span>
         </div>
       `;
 
@@ -295,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sortSelect.style.pointerEvents = "none";
       // Load categories if needed
       if (!categoriesData) {
-        categoriesGrid.innerHTML = `<div class="loader"><p>Cargando categorías...</p></div>`;
+        categoriesGrid.innerHTML = `<div class="loader"><p>${t("store.loadingCategories")}</p></div>`;
         fetchCategories().then(() => {
           renderCategories();
         });
@@ -348,6 +349,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  window.addEventListener("languagechange", () => {
+    renderItems();
+    renderCategories();
+  });
+
   // Init - default view is categories
   // The main loader (#loader) is shown by fetchItems(), that's the only spinner we need
   productsGrid.classList.add("hidden");
@@ -364,5 +370,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Fetch and show categories immediately
   fetchCategories().then(() => {
     renderCategories();
+    // Si estamos en vista de categorías, ocultamos el loader en cuanto
+    // las categorías están listas, sin esperar a que terminen los items.
+    if (currentView === "categories") {
+      loader.classList.add("hidden");
+    }
   });
 });

@@ -68,6 +68,7 @@ ul { list-style: none; }
 
 .nav-links a:hover { color: var(--accent); }
 
+
 /* ── ACCENT ──────────────────────────────────────────── */
 .accent  { color: var(--accent); }
 .accent-p { color: var(--accent); }

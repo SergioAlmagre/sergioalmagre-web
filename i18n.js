@@ -1,0 +1,446 @@
+/* Lightweight i18n for the static portfolio.
+ * The initial locale follows the browser's preferred language (es-* => Spanish,
+ * everything else => English). There is no visible language switcher.
+ */
+(function () {
+  const translations = {
+    en: {
+      common: {
+        about: "about",
+        stack: "stack",
+        projects: "projects",
+        experience: "experience",
+        play: "play",
+        contact: "contact",
+        preowned: "pre-owned",
+        language: "Language",
+        spanish: "Español",
+        english: "English",
+      },
+      index: {
+        title: "Sergio Almagre — Backend Developer",
+        description: "Portfolio and CV of Sergio Almagre, a backend developer specialized in Cloud, automation, robust REST APIs and advanced workflows.",
+        hello: "// hello world",
+        role: "Backend Developer <span class=\"dim\">·</span> Cloud <span class=\"dim\">·</span> Automation",
+        summary: "I build and operate backend services, automate processes and improve observability.<br>Comfortable in hybrid environments — on-premise, Azure, AWS — across multi-language stacks.<br>Actively integrating AI agent workflows and LLM tooling into day-to-day development.",
+        viewExperience: "View Experience",
+        coreStack: "// core_tech_stack",
+        workWith: "What I work with",
+        languages: "Languages",
+        cloudDevops: "Cloud & DevOps",
+        dataObservability: "Data & Observability",
+        aiAgents: "AI & Agents",
+        active: "active",
+        masterCybersecurity: "Cybersecurity Master's Degree",
+        projectsLabel: "// projects",
+        built: "What I've built",
+        commercialProduct: "commercial product",
+        soloDev: "solo dev",
+        multiCertification: "auladex.com — multi-certification exam platform",
+        live: "Live ↗",
+        projectTagline: "Full-stack certification platform with a tokenized economy, AI-driven content pipeline, and real-time community — designed, built, and operated by one developer.",
+        apiHandlers: "API route handlers",
+        automatedTests: "automated tests",
+        automationScripts: "automation scripts",
+        sharedContracts: "shared contracts",
+        lazyViews: "lazy-loaded views",
+        frontendModules: "frontend modules",
+        aiPipeline: "AI content pipeline",
+        aiPipelineText: "demand-driven course generation via OpenAI in waves of 30 questions. Users vote; when demand crosses a threshold, jobs are created and executed automatically through a full lifecycle: <code>draft → validation → active</code>.",
+        tokenEconomy: "Tokenized economy (off-chain)",
+        tokenEconomyText: "token ALX earned by completing simulations and streaks. Multi-path acquisition via Stripe EUR, Bitcoin Lightning (OpenNode) and Web3 Polygon. P2P transfers with 1% automatic social scholarship donation and 3% APY staking.",
+        mastery: "Algorithmic mastery per question",
+        masteryText: "state machine per question (<code>not_seen → in_progress → mastered/weak</code>) computed from accuracy, consistency, and attempt history. Real adaptive logic, not a simple percentage.",
+        multiProvider: "Multi-provider, multi-exam",
+        multiProviderText: "Microsoft (AZ-900 through AZ-400), Docker, HashiCorp and Cambridge English. Provider-agnostic: adding a new certification requires only a catalog entry and a question bank.",
+        rbac: "RBAC with numeric priority inheritance",
+        rbacText: "<code>admin(400) &gt; operator(350) &gt; business(300) &gt; student(100)</code>. Role enforcement at the route layer; every write sealed with SHA-256 payload hashing for cryptographic idempotency.",
+        architecture: "// architecture",
+        experienceLabel: "// experience",
+        worked: "Where I've worked",
+        present: "present",
+        experienceAltia: "Building backend services and APIs following Clean Architecture. Automating operational tasks with PowerShell, maintaining CI/CD pipelines in Azure DevOps, and deploying infrastructure as code via Terraform. Developed monitoring systems and KPI dashboards for cloud and on-premise environments.",
+        intern: "Backend Developer Intern",
+        experienceGamereactor: "Migrated a relational MySQL database to a document model in MongoDB. Implemented adaptive streaming with Nginx + MPEG-DASH and built an automatic VTT subtitle system to improve platform accessibility.",
+        interactiveTerminal: "// interactive_terminal",
+        arcadeTitle: "Dev Arcade Simulator",
+        arcadeDescription: "A tactical, inertia-based arcade spaceship game integrated directly into the portfolio. Pilot the ship, destroy meteors with phaser shots and particle cannons, and restore your shields by collecting retro relics.",
+        launchSimulation: "🕹️ START SIMULATION",
+        letsTalk: "Let's talk",
+        contactSub: "Open to backend, cloud and automation roles. Based in Ciudad Real, Spain.",
+        city: "Sergio Almagre · Ciudad Real, Spain",
+      },
+      terminal: {
+        profile: `<span class="comment">{</span>\n  <span class="key">"name"</span>:     <span class="val">"Sergio Almagre"</span>,\n  <span class="key">"role"</span>:     <span class="val">"Backend Developer"</span>,\n  <span class="key">"stack"</span>:    <span class="val2">["C#", ".NET", "Azure", "Terraform"]</span>,\n  <span class="key">"open_to"</span>: <span class="val">"backend / cloud / automation"</span>\n<span class="comment">}</span>`,
+        git: `<span class="val">a3f2c1d</span> <span class="comment">feat: implement monitoring KPI pipeline</span>\n<span class="val">8e91b0a</span> <span class="comment">infra: terraform modules for azure deploy</span>\n<span class="val">c54d7f3</span> <span class="comment">refactor: clean architecture migration</span>`,
+        pods: `<span class="comment">NAMESPACE     NAME                    STATUS</span>\n<span class="val">production</span>    api-backend-7d9f        <span class="val">Running</span>\n<span class="val">monitoring</span>    kpi-collector-2xk9      <span class="val">Running</span>\n<span class="val">infra</span>         cicd-runner-p8s1        <span class="val">Running</span>`,
+        mission: `<span class="val">INITIALIZING MISSION SIMULATOR...</span>\n<span class="comment">Ship:   USS Dev Enterprise (NCC-1701)</span>\n<span class="comment">Status: Tactical patrol ready.</span>\n<span class="val" id="terminal-play-hint" style="color: #00d4ff; text-shadow: 0 0 10px rgba(0, 212, 255, 0.4); cursor: pointer; text-decoration: underline;">[ CLICK HERE OR RUN 'play' TO PILOT SHIP ]</span>`,
+        inventory: `<span class="val">CONNECTING TO PRE-OWNED DATABASE...</span>\n<span class="comment">Status: Online. database loaded.</span>\n<span class="comment">System: Edge worker ready.</span>\n<span class="val2" id="terminal-admin-hint" style="color: #a78bfa; text-shadow: 0 0 10px rgba(167, 139, 250, 0.4); cursor: pointer; text-decoration: underline;">[ CLICK HERE TO MANAGE INVENTORY ]</span>`,
+      },
+      store: {
+        title: "Pre-owned — Sergio Almagre",
+        description: "Exclusive catalog of second-hand audiovisual equipment. Cameras, lenses and accessories.",
+        hero: "// pre-owned_store",
+        material: "Equipment",
+        audiovisual: "Audiovisual",
+        subtitle: "Exclusive catalog of second-hand audiovisual equipment in excellent condition.",
+        searchLabel: "Search item",
+        searchPlaceholder: "Camera, lens, accessories...",
+        view: "View",
+        list: "List",
+        categories: "Categories",
+        sort: "Sort by",
+        alphaAsc: "Name: A–Z",
+        alphaDesc: "Name: Z–A",
+        recent: "Most recent",
+        priceAsc: "Price: low to high",
+        priceDesc: "Price: high to low",
+        loading: "Loading catalog...",
+        fetchError: "Could not load the catalog. Please try again.",
+        noItems: "No items available",
+        noMatches: "No items matched the applied filters.",
+        closeModal: "Close modal",
+        specs: "// specifications_and_details",
+        acquiring: "How can I buy this item?",
+        saleText: "This equipment is for sale. Email me with the item you are interested in so we can arrange the details:",
+        contactEmail: "Contact by Email",
+        adminAccess: "Administrator Access",
+        noDescription: "No description available.",
+        details: "View details",
+        savings: "You save {{percentage}}%",
+        units: "{{count}} units",
+        unit: "{{count}} unit",
+        inStock: "{{count}} units in stock",
+        inStockOne: "1 unit in stock",
+        subject: "Interest in item: {{title}}",
+        emailBody: "Hello Sergio,\n\nI am interested in buying the item \"{{title}}\" listed on your website for {{price}} €.\n\nPlease confirm availability.\n\nBest regards.",
+        noCategories: "No categories available",
+        loadingCategories: "Loading categories...",
+      },
+      game: {
+        back: "⬅ BACK",
+        backTitle: "Back to portfolio",
+        registry: "Registry: NCC-1701",
+        patrolActive: "Status: Inertial patrol active",
+        shields: "Shields:",
+        mute: "Mute all",
+        pause: "Pause game (P / Esc)",
+        inertia: "Inertia: zero gravity",
+        score: "Score: {{score}}",
+        threatLow: "Threat: low",
+        patrol: "Tactical Patrol & Salvage",
+        newGame: "New game",
+        scores: "Scores",
+        rightClick: "Right click (hold):",
+        rightClickText: "thrust towards the cursor (inertial drift with almost no friction).",
+        leftClick: "Left click (press):",
+        leftClickText: "fire 360° tactical phasers in the direction of your pointer.",
+        charge: "Hold (1s to 9s):",
+        chargeText: "charge the 360° super cannon. Progressive N1–N5 projectiles and x2, x3, x4 and x5 damage from N6 to N9!",
+        atomic: "Hold (10s):",
+        atomicText: "charge the quantum atomic bomb! Clear everything on screen.",
+        relics: "Rescue retro relics (green halo):",
+        relicsText: "they float in from outside. Restore shields to 100%!",
+        pauseInstruction: "Pause the game:",
+        pauseInstructionText: "press [P], [Esc] or the top panel.",
+        instruction1: "🖱️ <strong>Right click (hold):</strong> thrust towards the cursor (inertial drift with almost no friction).",
+        instruction2: "🔥 <strong>Left click (press):</strong> fire 360° tactical phasers in the direction of your pointer.",
+        instruction3: "⚡ <strong>Hold (1s to 9s):</strong> charge the 360° super cannon. Progressive N1–N5 projectiles and x2, x3, x4 and x5 damage from N6 to N9!",
+        instruction4: "☄️ <strong>Hold (10s):</strong> charge the quantum atomic bomb! Clear everything on screen.",
+        instruction5: "💾 <strong>Rescue retro relics (green halo):</strong> they float in from outside. Restore shields to 100%!",
+        instruction6: "⏸️ <strong>Pause the game:</strong> press [P], [Esc] or the top panel.",
+        gameover: "Systems collapsed",
+        damage: "The Dev Enterprise has suffered critical structural damage.",
+        trophy: "Mission trophy",
+        points: "{{score}} points",
+        pointsHeader: "Points",
+        screenshot: "Take a screenshot of this trophy to share it with your crewmates.",
+        restart: "Restart patrol",
+        backMenu: "Back to menu",
+        previousGames: "Previous games",
+        bestScore: "best score: {{score}} pts",
+        noSavedGames: "There are no saved games yet.",
+        date: "Date",
+        duration: "Duration",
+        threat: "Threat",
+        statusGreen: "GREEN CONDITION",
+        statusYellow: "YELLOW CONDITION",
+        statusOrange: "ORANGE CONDITION",
+        statusRed: "RED CONDITION",
+        statusPurple: "PURPLE CONDITION",
+        statusBlack: "BLACK CONDITION",
+        threatModerate: "Threat: moderate",
+        threatHigh: "Threat: high (super meteors)",
+        threatCritical: "Threat: critical",
+        threatExtreme: "Threat: extreme (apocalyptic zone)",
+        threatSingularity: "Threat: singularity / active invasion",
+        paused: "Systems paused",
+        channeling: "[ CHANNELING: N{{level}} ]",
+        atomicReady: "⚠ [ ATOMIC BOMB READY! ] ⚠",
+        superCannon: "⚡ [ SUPER CANNON DAMAGE x{{multiplier}} ] ⚡",
+      },
+      login: {
+        title: "Admin Access — Sergio Almagre",
+        password: "Administrator Password",
+        submit: "Log In",
+        wrongPassword: "Incorrect password.",
+        loginError: "Error while trying to log in.",
+      },
+    },
+    es: {
+      common: {
+        about: "sobre mí",
+        stack: "stack",
+        projects: "proyectos",
+        experience: "experiencia",
+        play: "jugar",
+        contact: "contacto",
+        preowned: "segunda mano",
+        language: "Idioma",
+        spanish: "Español",
+        english: "English",
+      },
+      index: {
+        title: "Sergio Almagre — Desarrollador Backend",
+        description: "Portfolio y CV de Sergio Almagre, desarrollador backend especializado en Cloud, automatización, APIs REST robustas y flujos de trabajo avanzados.",
+        hello: "// hola mundo",
+        role: "Desarrollador Backend <span class=\"dim\">·</span> Cloud <span class=\"dim\">·</span> Automatización",
+        summary: "Construyo y opero servicios backend, automatizo procesos y mejoro la observabilidad.<br>Me desenvuelvo en entornos híbridos — on-premise, Azure y AWS — con stacks multilenguaje.<br>Integro activamente flujos de agentes de IA y herramientas LLM en el desarrollo diario.",
+        viewExperience: "Ver experiencia",
+        coreStack: "// stack_tecnológico_principal",
+        workWith: "Con qué trabajo",
+        languages: "Lenguajes",
+        cloudDevops: "Cloud y DevOps",
+        dataObservability: "Datos y observabilidad",
+        aiAgents: "IA y agentes",
+        active: "activo",
+        masterCybersecurity: "Máster en Ciberseguridad",
+        projectsLabel: "// proyectos",
+        built: "Lo que he construido",
+        commercialProduct: "producto comercial",
+        soloDev: "desarrollador único",
+        multiCertification: "auladex.com — plataforma de exámenes multi-certificación",
+        live: "En producción ↗",
+        projectTagline: "Plataforma full-stack de certificaciones con economía tokenizada, pipeline de contenido impulsado por IA y comunidad en tiempo real — diseñada, construida y operada por un único desarrollador.",
+        apiHandlers: "handlers de rutas API",
+        automatedTests: "tests automatizados",
+        automationScripts: "scripts de automatización",
+        sharedContracts: "contratos compartidos",
+        lazyViews: "vistas lazy-loaded",
+        frontendModules: "módulos frontend",
+        aiPipeline: "Pipeline de contenido IA",
+        aiPipelineText: "<strong>Pipeline de contenido IA</strong> — generación de cursos bajo demanda mediante OpenAI en oleadas de 30 preguntas. Los usuarios votan; al superar la demanda un umbral, los trabajos se crean y ejecutan automáticamente durante todo su ciclo: <code>borrador → validación → activo</code>.",
+        tokenEconomy: "Economía tokenizada (off-chain)",
+        tokenEconomyText: "<strong>Economía tokenizada (off-chain)</strong> — token ALX obtenido al completar simulaciones y rachas. Adquisición por Stripe EUR, Bitcoin Lightning (OpenNode) y Web3 Polygon. Transferencias P2P con donación social automática del 1% y staking al 3% APY.",
+        mastery: "Dominio algorítmico por pregunta",
+        masteryText: "<strong>Dominio algorítmico por pregunta</strong> — máquina de estados por pregunta (<code>no_vista → en_progreso → dominada/débil</code>) calculada a partir de precisión, consistencia e historial de intentos. Lógica adaptativa real, no un simple porcentaje.",
+        multiProvider: "Multi-proveedor, multi-examen",
+        multiProviderText: "<strong>Multi-proveedor, multi-examen</strong> — Microsoft (de AZ-900 a AZ-400), Docker, HashiCorp y Cambridge English. Agnóstica del proveedor: añadir una certificación requiere solo una entrada de catálogo y un banco de preguntas.",
+        rbac: "RBAC con herencia de prioridad numérica",
+        rbacText: "<strong>RBAC con herencia de prioridad numérica</strong> — <code>admin(400) &gt; operator(350) &gt; business(300) &gt; student(100)</code>. Roles aplicados en la capa de rutas; cada escritura queda sellada con hash SHA-256 para garantizar idempotencia criptográfica.",
+        architecture: "// arquitectura",
+        experienceLabel: "// experiencia",
+        worked: "Dónde he trabajado",
+        present: "actualidad",
+        experienceAltia: "Construcción de servicios backend y APIs siguiendo Clean Architecture. Automatización de tareas operativas con PowerShell, mantenimiento de pipelines CI/CD en Azure DevOps y despliegue de infraestructura como código mediante Terraform. Desarrollo de sistemas de monitorización y dashboards KPI para entornos cloud y on-premise.",
+        intern: "Desarrollador Backend en prácticas",
+        experienceGamereactor: "Migración de una base de datos relacional MySQL a un modelo documental en MongoDB. Implementación de streaming adaptativo con Nginx + MPEG-DASH y creación de un sistema automático de subtítulos VTT para mejorar la accesibilidad de la plataforma.",
+        interactiveTerminal: "// terminal_interactivo",
+        arcadeTitle: "Simulador Arcade Dev",
+        arcadeDescription: "Un minijuego arcade táctico e inercial de naves espaciales integrado directamente en el portfolio. Pilota la nave, destruye meteoros con disparos y cañones de partículas, y restaura tus escudos recogiendo reliquias retro.",
+        launchSimulation: "🕹️ INICIAR SIMULACIÓN",
+        letsTalk: "Hablemos",
+        contactSub: "Abierto a oportunidades backend, cloud y automatización. Vivo en Ciudad Real, España.",
+        city: "Sergio Almagre · Ciudad Real, España",
+      },
+      terminal: {
+        profile: `<span class="comment">{</span>\n  <span class="key">"name"</span>:       <span class="val">"Sergio Almagre"</span>,\n  <span class="key">"role"</span>:       <span class="val">"Desarrollador Backend"</span>,\n  <span class="key">"stack"</span>:      <span class="val2">["C#", ".NET", "Azure", "Terraform"]</span>,\n  <span class="key">"disponible"</span>: <span class="val">"backend / cloud / automatización"</span>\n<span class="comment">}</span>`,
+        git: `<span class="val">a3f2c1d</span> <span class="comment">feat: implementar pipeline de KPIs de monitorización</span>\n<span class="val">8e91b0a</span> <span class="comment">infra: módulos Terraform para despliegue en Azure</span>\n<span class="val">c54d7f3</span> <span class="comment">refactor: migración a Clean Architecture</span>`,
+        pods: `<span class="comment">NAMESPACE     NAME                    ESTADO</span>\n<span class="val">producción</span>    api-backend-7d9f        <span class="val">Ejecutándose</span>\n<span class="val">monitorización</span> kpi-collector-2xk9      <span class="val">Ejecutándose</span>\n<span class="val">infra</span>         cicd-runner-p8s1        <span class="val">Ejecutándose</span>`,
+        mission: `<span class="val">INICIALIZANDO SIMULADOR DE MISIÓN...</span>\n<span class="comment">Nave:    USS Dev Enterprise (NCC-1701)</span>\n<span class="comment">Estado:  Patrulla táctica preparada.</span>\n<span class="val" id="terminal-play-hint" style="color: #00d4ff; text-shadow: 0 0 10px rgba(0, 212, 255, 0.4); cursor: pointer; text-decoration: underline;">[ HAZ CLIC O EJECUTA 'play' PARA PILOTAR ]</span>`,
+        inventory: `<span class="val">CONECTANDO CON LA BASE DE DATOS DE SEGUNDA MANO...</span>\n<span class="comment">Estado:  En línea. Base de datos cargada.</span>\n<span class="comment">Sistema: Worker Edge listo.</span>\n<span class="val2" id="terminal-admin-hint" style="color: #a78bfa; text-shadow: 0 0 10px rgba(167, 139, 250, 0.4); cursor: pointer; text-decoration: underline;">[ HAZ CLIC PARA GESTIONAR EL INVENTARIO ]</span>`,
+      },
+      store: {
+        title: "Segunda mano — Sergio Almagre",
+        description: "Catálogo exclusivo de material audiovisual de segunda mano. Cámaras, objetivos y accesorios.",
+        hero: "// tienda_segunda_mano",
+        material: "Material",
+        audiovisual: "Audiovisual",
+        subtitle: "Catálogo exclusivo de material audiovisual de segunda mano en excelente estado.",
+        searchLabel: "Buscar artículo",
+        searchPlaceholder: "Cámara, objetivo, accesorios...",
+        view: "Vista",
+        list: "Lista",
+        categories: "Categorías",
+        sort: "Ordenar por",
+        alphaAsc: "Nombre: A–Z",
+        alphaDesc: "Nombre: Z–A",
+        recent: "Más recientes",
+        priceAsc: "Precio: menor a mayor",
+        priceDesc: "Precio: mayor a menor",
+        loading: "Cargando catálogo...",
+        fetchError: "No se pudo cargar el catálogo. Por favor, inténtalo de nuevo.",
+        noItems: "No hay artículos disponibles",
+        noMatches: "No se encontraron artículos que coincidan con los filtros aplicados.",
+        closeModal: "Cerrar modal",
+        specs: "// especificaciones_y_detalles",
+        acquiring: "¿Cómo adquirir este artículo?",
+        saleText: "Este material está a la venta. Escríbeme por email indicando el artículo en el que estás interesado para coordinar los detalles:",
+        contactEmail: "Contactar por Email",
+        adminAccess: "Acceso Administrador",
+        noDescription: "Sin descripción disponible.",
+        details: "Ver detalles",
+        savings: "Ahorras {{percentage}}%",
+        units: "{{count}} uds.",
+        unit: "{{count}} ud.",
+        inStock: "{{count}} uds. en stock",
+        inStockOne: "1 ud. en stock",
+        subject: "Interés en artículo: {{title}}",
+        emailBody: "Hola Sergio,\n\nEstoy interesado en adquirir el artículo \"{{title}}\" listado en tu web por {{price}} €.\n\nPor favor, confírmame disponibilidad.\n\nUn saludo.",
+        noCategories: "No hay categorías disponibles",
+        loadingCategories: "Cargando categorías...",
+      },
+      game: {
+        back: "⬅ VOLVER",
+        backTitle: "Volver al portfolio",
+        registry: "Registro: NCC-1701",
+        patrolActive: "Estado: Patrulla inercial activa",
+        shields: "Escudos:",
+        mute: "Silenciar todo",
+        pause: "Pausar partida (P / Esc)",
+        inertia: "Inercia: gravedad cero",
+        score: "Puntos: {{score}}",
+        threatLow: "Amenaza: baja",
+        patrol: "Tactical Patrol & Salvage",
+        newGame: "Nueva partida",
+        scores: "Puntuaciones",
+        rightClick: "Clic derecho (mantener):",
+        rightClickText: "propulsar hacia el cursor (deriva inercial con fricción casi nula).",
+        leftClick: "Clic izquierdo (pulsación):",
+        leftClickText: "disparar láseres tácticos de 360° en la dirección del puntero.",
+        charge: "Mantener pulsado (1s a 9s):",
+        chargeText: "carga el súper cañón de 360°. Proyectiles progresivos de N1 a N5 y daño x2, x3, x4 y x5 de N6 a N9.",
+        atomic: "Mantener pulsado (10s):",
+        atomicText: "carga la bomba atómica cuántica. Arrasa con todo en pantalla.",
+        relics: "Rescata reliquias retro (halo verde):",
+        relicsText: "flotan desde el exterior. ¡Restablecen los escudos al 100%!",
+        pauseInstruction: "Pausa la partida:",
+        pauseInstructionText: "pulsa [P], [Esc] o el panel superior.",
+        instruction1: "🖱️ <strong>Clic derecho (mantener):</strong> propulsar hacia el cursor (deriva inercial con fricción casi nula).",
+        instruction2: "🔥 <strong>Clic izquierdo (pulsación):</strong> disparar láseres tácticos de 360° en la dirección del puntero.",
+        instruction3: "⚡ <strong>Mantener pulsado (1s a 9s):</strong> carga el súper cañón de 360°. Proyectiles progresivos de N1 a N5 y daño x2, x3, x4 y x5 de N6 a N9.",
+        instruction4: "☄️ <strong>Mantener pulsado (10s):</strong> carga la bomba atómica cuántica. Arrasa con todo en pantalla.",
+        instruction5: "💾 <strong>Rescata reliquias retro (halo verde):</strong> flotan desde el exterior. ¡Restablecen los escudos al 100%!",
+        instruction6: "⏸️ <strong>Pausa la partida:</strong> pulsa [P], [Esc] o el panel superior.",
+        gameover: "Sistemas colapsados",
+        damage: "La Dev Enterprise ha sufrido daños estructurales críticos.",
+        trophy: "Trofeo de la misión",
+        points: "{{score}} puntos",
+        pointsHeader: "Puntos",
+        screenshot: "Haz una captura de pantalla de este trofeo para compartirlo con tus compañeros.",
+        restart: "Reiniciar patrulla",
+        backMenu: "Volver al menú",
+        previousGames: "Partidas anteriores",
+        bestScore: "mejor puntuación: {{score}} pts",
+        noSavedGames: "Todavía no hay partidas guardadas.",
+        date: "Fecha",
+        duration: "Duración",
+        threat: "Amenaza",
+        statusGreen: "CONDICIÓN VERDE",
+        statusYellow: "CONDICIÓN AMARILLA",
+        statusOrange: "CONDICIÓN NARANJA",
+        statusRed: "CONDICIÓN ROJA",
+        statusPurple: "CONDICIÓN VIOLETA",
+        statusBlack: "CONDICIÓN NEGRA",
+        threatModerate: "Amenaza: moderada",
+        threatHigh: "Amenaza: elevada (súper meteoros)",
+        threatCritical: "Amenaza: crítica",
+        threatExtreme: "Amenaza: extrema (zona apocalíptica)",
+        threatSingularity: "Amenaza: singularidad / invasión activa",
+        paused: "Sistemas en pausa",
+        channeling: "[ CANALIZANDO: N{{level}} ]",
+        atomicReady: "⚠ [ ¡BOMBA ATÓMICA LISTA! ] ⚠",
+        superCannon: "⚡ [ SÚPER CAÑÓN DAÑO x{{multiplier}} ] ⚡",
+      },
+      login: {
+        title: "Acceso Admin — Sergio Almagre",
+        password: "Contraseña de Administrador",
+        submit: "Iniciar Sesión",
+        wrongPassword: "Contraseña incorrecta.",
+        loginError: "Error al intentar iniciar sesión.",
+      },
+    },
+  };
+
+  let locale;
+  const supported = ["en", "es"];
+
+  function normalizeLocale(value) {
+    return String(value || "").toLowerCase().startsWith("es") ? "es" : "en";
+  }
+
+  function detectLocale() {
+    const queryLocale = new URLSearchParams(window.location.search).get("lang");
+    if (supported.includes(queryLocale)) return queryLocale;
+    const browserLocales = navigator.languages?.length ? navigator.languages : [navigator.language];
+    return normalizeLocale(browserLocales.find(Boolean));
+  }
+
+  function getValue(key) {
+    return key.split(".").reduce((value, part) => value?.[part], translations[locale]);
+  }
+
+  function translate(key, vars = {}) {
+    const value = getValue(key) ?? getValue(key.replace(/^common\./, "")) ?? key;
+    return String(value).replace(/\{\{(\w+)\}\}/g, (_, name) => vars[name] ?? "");
+  }
+
+  function applyTranslations() {
+    document.documentElement.lang = locale;
+    document.querySelectorAll("[data-i18n]").forEach((element) => {
+      const value = translate(element.dataset.i18n);
+      if (element.dataset.i18nHtml === "true") element.innerHTML = value;
+      else element.textContent = value;
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+      element.placeholder = translate(element.dataset.i18nPlaceholder);
+    });
+    document.querySelectorAll("[data-i18n-content]").forEach((element) => {
+      element.setAttribute("content", translate(element.dataset.i18nContent));
+    });
+    document.querySelectorAll("[data-i18n-title]").forEach((element) => {
+      element.setAttribute("title", translate(element.dataset.i18nTitle));
+    });
+    document.querySelectorAll("[data-i18n-aria-label]").forEach((element) => {
+      element.setAttribute("aria-label", translate(element.dataset.i18nAriaLabel));
+    });
+    document.querySelectorAll(".st-instructions-list li").forEach((element, index) => {
+      const key = `game.instruction${index + 1}`;
+      if (getValue(key)) element.innerHTML = translate(key);
+    });
+    const footerKeys = ["common.about", "common.stack", "common.projects", "common.experience", "common.play", "common.contact", "common.preowned"];
+    document.querySelectorAll(".footer a, .footer-simple a").forEach((element, index) => {
+      const key = element.classList.contains("admin-link") ? "store.adminAccess" : footerKeys[index];
+      if (key) element.textContent = translate(key);
+    });
+
+  }
+
+  function setLocale(nextLocale) {
+    locale = normalizeLocale(nextLocale);
+    applyTranslations();
+    window.dispatchEvent(new CustomEvent("languagechange", { detail: { locale } }));
+  }
+
+  locale = detectLocale();
+  window.I18n = {
+    get locale() { return locale; },
+    t: translate,
+    setLocale,
+    apply: applyTranslations,
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    applyTranslations();
+  });
+})();

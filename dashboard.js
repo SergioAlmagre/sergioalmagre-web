@@ -2024,6 +2024,30 @@ function openConfigModal(item) {
   currentConfigItem = item;
   configPropertiesBody.innerHTML = "";
 
+  // ── Helper: assign a priority weight to each column (lower = first) ──
+  const columnPriority = (col) => {
+    const norm = col.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    const ranks = [
+      { weight: 1,  patterns: ["naturaleza", "categoria", "category", "nature"] },
+      { weight: 2,  patterns: ["fabricante", "marca", "brand", "manufacturer"] },
+      { weight: 3,  patterns: ["precio compra", "precio_compra", "purchase price", "coste compra", "coste"] },
+      { weight: 4,  patterns: ["precio venta", "precio sugerido", "sale price", "secondhandprice"] },
+      { weight: 5,  patterns: ["precio original", "precio retail", "original price", "precio nuevo", "retailprice"] },
+      { weight: 6,  patterns: ["imagen url", "imagen", "url imagen", "image url"] },
+      { weight: 7,  patterns: ["descripcion wallapop", "descripcion", "description"] },
+      { weight: 8,  patterns: ["titulo venta", "titulo_venta", "title venta"] },
+      { weight: 9,  patterns: ["publicar", "publicar web"] },
+      { weight: 10, patterns: ["no vender", "no_vender", "dont sell"] },
+      { weight: 11, patterns: ["unidades vendidas", "unidadesvendidas"] },
+      { weight: 12, patterns: ["total ingresado", "totalingresado"] },
+      { weight: 13, patterns: ["vendido", "sold"] },
+    ];
+    for (const r of ranks) {
+      if (r.patterns.some(p => norm.includes(p))) return r.weight;
+    }
+    return 99; // unknown fields go to the end, sorted alphabetically
+  };
+
   // 1. Siempre incluir la fila destacada de Cantidad / Stock al inicio
   const currentQty = item.cantidad || 1;
   const qtyTr = document.createElement("tr");
@@ -2047,13 +2071,35 @@ function openConfigModal(item) {
 
   configPropertiesBody.appendChild(qtyTr);
 
-  // Loop through all properties in notionSchema
-  Object.keys(notionSchema).sort((a,b)=>a.localeCompare(b, "es", { sensitivity: "base" })).forEach(col => {
-    // Avoid duplicating Cantidad/Unidades if already shown above
-    if (col.toLowerCase() === "cantidad" || col.toLowerCase() === "stock" || col.toLowerCase() === "unidades") return;
+  // ── Build a sorted list of columns ──
+  // Start from all schema keys, plus ensure "Imagen URL" is included
+  const allColumns = new Set(Object.keys(notionSchema));
+  // Fallback: if "Imagen URL" is not in the schema, add it manually with a generic type
+  const hasImageUrlCol = [...allColumns].some(c => {
+    const n = c.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    return n === "imagen url" || n === "imagen" || n === "url imagen" || n === "image url";
+  });
+  if (!hasImageUrlCol) {
+    allColumns.add("Imagen URL");
+  }
 
-    const schema = notionSchema[col];
-    const val = item.rawProperties[col];
+  const sortedColumns = [...allColumns]
+    .filter(col => {
+      // Skip Cantidad/Stock/Unidades (already shown at top)
+      const norm = col.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+      return norm !== "cantidad" && norm !== "stock" && norm !== "unidades";
+    })
+    .sort((a, b) => {
+      const pa = columnPriority(a);
+      const pb = columnPriority(b);
+      if (pa !== pb) return pa - pb;
+      return a.localeCompare(b, "es", { sensitivity: "base" });
+    });
+
+  // 2. Render each column row
+  sortedColumns.forEach(col => {
+    const schema = notionSchema[col] || { type: "url" }; // fallback for manually added columns
+    const val = item.rawProperties !== undefined ? item.rawProperties[col] : undefined;
     const isReadOnly = (schema.type === "formula" || schema.type === "relation" || schema.type === "rollup" || schema.type === "created_time" || schema.type === "last_edited_time");
 
     const tr = document.createElement("tr");
@@ -2080,27 +2126,29 @@ function openConfigModal(item) {
       if (Array.isArray(val)) valStr = val.join(", ");
       else valStr = val !== null && val !== undefined ? String(val) : "";
       
-      valTd.innerHTML = `<input type="text" class="form-control-input" value="${valStr}" disabled style="background:rgba(255,255,255,0.02); color:var(--text-dim); cursor:not-allowed; font-size:0.75rem; padding:0.35rem 0.6rem; width:100%; border-color:var(--border);">`;
+      valTd.innerHTML = `<input type="text" class="form-control-input" value="${valStr.replace(/"/g, "&quot;")}" disabled style="background:rgba(255,255,255,0.02); color:var(--text-dim); cursor:not-allowed; font-size:0.75rem; padding:0.35rem 0.6rem; width:100%; border-color:var(--border);">`;
     } else if (schema.type === "checkbox") {
       valTd.innerHTML = `<div style="display:flex; align-items:center; height:100%;"><input type="checkbox" class="config-val-input" data-col="${col}" ${!!val ? "checked" : ""} style="width:1.1rem; height:1.1rem; cursor:pointer; accent-color:var(--accent);"></div>`;
     } else if (schema.type === "number") {
-      valTd.innerHTML = `<input type="number" class="config-val-input form-control-input" data-col="${col}" value="${val !== null && val !== undefined ? val : ""}" style="font-size:0.75rem; padding:0.35rem 0.6rem; width:100%;">`;
+      const numericVal = val !== null && val !== undefined ? val : "";
+      valTd.innerHTML = `<input type="number" class="config-val-input form-control-input" data-col="${col}" value="${numericVal}" style="font-size:0.75rem; padding:0.35rem 0.6rem; width:100%;">`;
     } else if (schema.type === "select" || schema.type === "status") {
       let options = `<option value="">-- Vacío --</option>`;
       if (schema.options) {
         const sortedOptions = [...schema.options].sort((a, b) => String(a).localeCompare(String(b), "es", { sensitivity: "base" }));
         sortedOptions.forEach(opt => {
-          options += `<option value="${opt}" ${opt === val ? "selected" : ""}>${opt}</option>`;
+          options += `<option value="${opt.replace(/"/g, "&quot;")}" ${opt === val ? "selected" : ""}>${opt}</option>`;
         });
       }
       valTd.innerHTML = `<select class="config-val-input" data-col="${col}" style="background:var(--bg3); border:1px solid var(--border); border-radius:4px; color:var(--text); font-size:0.75rem; padding:0.35rem 0.6rem; outline:none; width:100%;"><option value="">-- Vacío --</option>${options}</select>`;
     } else if (schema.type === "multi_select") {
       // Input text of comma separated values for multi select
       const currentList = Array.isArray(val) ? val : [];
-      valTd.innerHTML = `<input type="text" class="config-val-input form-control-input" data-col="${col}" data-type="multi" value="${currentList.join(", ")}" placeholder="Opción 1, Opción 2..." style="font-size:0.75rem; padding:0.35rem 0.6rem; width:100%;">`;
+      valTd.innerHTML = `<input type="text" class="config-val-input form-control-input" data-col="${col}" data-type="multi" value="${currentList.join(", ").replace(/"/g, "&quot;")}" placeholder="Opción 1, Opción 2..." style="font-size:0.75rem; padding:0.35rem 0.6rem; width:100%;">`;
     } else {
       // URL, Date, Title, rich_text, etc.
-      valTd.innerHTML = `<input type="text" class="config-val-input form-control-input" data-col="${col}" value="${val !== null && val !== undefined ? String(val) : ""}" style="font-size:0.75rem; padding:0.35rem 0.6rem; width:100%;">`;
+      const strVal = val !== null && val !== undefined ? String(val) : "";
+      valTd.innerHTML = `<input type="text" class="config-val-input form-control-input" data-col="${col}" value="${strVal.replace(/"/g, "&quot;")}" style="font-size:0.75rem; padding:0.35rem 0.6rem; width:100%;">`;
     }
 
     tr.appendChild(valTd);
@@ -2337,7 +2385,17 @@ if (addItemAiBtn) {
         }
 
         const data = await res.json();
-        
+
+        // ── Preserve brand/category __NEW__ state before enrichment ──
+        const savedBrandState = {
+          isNew: addItemBrandSelect.value === "__NEW__",
+          customValue: addItemBrandCustom.value
+        };
+        const savedCategoryState = {
+          isNew: addItemCategorySelect.value === "__NEW__",
+          customValue: addItemCategoryCustom.value
+        };
+
         // Auto-populate fields only if selected in modal
         if (selectedFields.title && data.title) addItemTitle.value = data.title;
         if (selectedFields.retailPrice && data.retailPrice) addItemRetail.value = data.retailPrice;
@@ -2345,8 +2403,9 @@ if (addItemAiBtn) {
         if (selectedFields.imageUrl && data.imageUrl) addItemImage.value = data.imageUrl;
         if (selectedFields.description && data.description) addItemDescription.value = data.description;
 
-        // Match Category and Brand automatically (only if user hasn't chosen "__NEW__")
-        if (data.title) {
+        // Match Category and Brand automatically — only when user opted to update the title
+        // (if user selected "__NEW__" the per-select check below skips the match)
+        if (selectedFields.title && data.title) {
           const titleLower = data.title.toLowerCase();
           
           // Match brand (Fabricante) — skip if user is adding a new custom brand
@@ -2386,6 +2445,18 @@ if (addItemAiBtn) {
               addItemCategorySelect.dispatchEvent(new Event("change"));
             }
           }
+        }
+
+        // ── Restore brand/category __NEW__ state (in case the matching above was skipped) ──
+        if (savedBrandState.isNew) {
+          addItemBrandSelect.value = "__NEW__";
+          addItemBrandCustom.value = savedBrandState.customValue;
+          addItemBrandCustom.classList.remove("hidden");
+        }
+        if (savedCategoryState.isNew) {
+          addItemCategorySelect.value = "__NEW__";
+          addItemCategoryCustom.value = savedCategoryState.customValue;
+          addItemCategoryCustom.classList.remove("hidden");
         }
 
         showToast("Datos autocompletados con IA correctamente.", "success");

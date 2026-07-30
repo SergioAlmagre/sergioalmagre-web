@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dev Enterprise — Sergio Almagre</title>
+  <title data-i18n="index.arcadeTitle">Dev Enterprise — Sergio Almagre</title>
   <meta name="description" content="Juego arcade Dev Enterprise. Tactical Patrol & Salvage." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,13 +17,13 @@
   <nav class="nav st-ignore-canvas">
     <span class="nav-logo" onclick="window.location.href='/'" style="cursor: pointer;">sergioalmagre<span class="accent">.</span>com</span>
     <ul class="nav-links">
-      <li><a href="/#about">about</a></li>
-      <li><a href="/#stack">stack</a></li>
-      <li><a href="/#projects">projects</a></li>
-      <li><a href="/#experience">experience</a></li>
-      <li><a href="/devtrek" class="accent">play</a></li>
-      <li><a href="/#contact">contact</a></li>
-      <li><a href="/preowned.html">pre-owned</a></li>
+      <li><a href="/#about" data-i18n="common.about">about</a></li>
+      <li><a href="/#stack" data-i18n="common.stack">stack</a></li>
+      <li><a href="/#projects" data-i18n="common.projects">projects</a></li>
+      <li><a href="/#experience" data-i18n="common.experience">experience</a></li>
+      <li><a href="/devtrek" class="accent" data-i18n="common.play">play</a></li>
+      <li><a href="/#contact" data-i18n="common.contact">contact</a></li>
+      <li><a href="/preowned.html" data-i18n="common.preowned">pre-owned</a></li>
     </ul>
   </nav>
 
@@ -32,7 +32,7 @@
     <div class="st-scanline"></div>
     
     <div class="st-root">
-      <button class="st-modal-close st-ignore-canvas" id="st-modal-close-btn" title="Volver al portfolio">⬅ VOLVER</button>
+      <button class="st-modal-close st-ignore-canvas" id="st-modal-close-btn" data-i18n="game.back" data-i18n-title="game.backTitle" title="Volver al portfolio">⬅ VOLVER</button>
       <button type="button" class="st-mobile-shoot-btn st-ignore-canvas">⚡</button>
       <canvas class="st-canvas"></canvas>
       
@@ -41,10 +41,10 @@
         <div class="st-hud-row">
           <div class="st-hud-left">
             <h1 class="st-title">DEV ENTERPRISE</h1>
-            <p class="st-hud-mini">Registro: NCC-1701</p>
-            <p class="st-hud-mini st-hud-status">Estado: Patrulla inercial activa</p>
+            <p class="st-hud-mini" data-i18n="game.registry">Registro: NCC-1701</p>
+            <p class="st-hud-mini st-hud-status" data-i18n="game.patrolActive">Estado: Patrulla inercial activa</p>
             <div class="st-shield-row">
-              <span class="st-hud-mini">Escudos:</span>
+              <span class="st-hud-mini" data-i18n="game.shields">Escudos:</span>
               <div class="st-shield-track">
                 <div class="st-shield-fill st-shield-full" style="width: 100%;"></div>
               </div>
@@ -53,14 +53,14 @@
 
           <div class="st-hud-right">
             <div class="st-hud-controls">
-              <button type="button" class="st-icon-btn st-btn-mute" title="Silenciar todo">🔊</button>
-              <button type="button" class="st-icon-btn st-btn-pause" title="Pausar partida (P / Esc)">⏸</button>
+              <button type="button" class="st-icon-btn st-btn-mute" data-i18n-title="game.mute" title="Silenciar todo">🔊</button>
+              <button type="button" class="st-icon-btn st-btn-pause" data-i18n-title="game.pause" title="Pausar partida (P / Esc)">⏸</button>
               <span class="st-alert-led"></span>
               <span class="st-alert-text">CONDICIÓN VERDE</span>
             </div>
-            <p class="st-hud-mini">Inercia: gravedad cero</p>
-            <p class="st-score">Puntos: 0</p>
-            <p class="st-threat-label">Amenaza: baja</p>
+            <p class="st-hud-mini" data-i18n="game.inertia">Inercia: gravedad cero</p>
+            <p class="st-score" data-i18n="game.score">Puntos: 0</p>
+            <p class="st-threat-label" data-i18n="game.threatLow">Amenaza: baja</p>
           </div>
         </div>
       </div>
@@ -69,11 +69,11 @@
       <div class="st-intro-overlay st-intro-overlay-menu st-hidden">
         <div class="st-instructions-card st-ignore-canvas">
           <h1 class="st-title">DEV ENTERPRISE</h1>
-          <p class="st-hud-mini" style="margin-bottom: 18px;">Tactical Patrol & Salvage</p>
+          <p class="st-hud-mini" style="margin-bottom: 18px;" data-i18n="game.patrol">Tactical Patrol & Salvage</p>
 
           <div class="st-menu-actions">
-            <button type="button" class="st-btn st-btn-primary st-btn-new">Nueva partida</button>
-            <button type="button" class="st-btn st-btn-secondary st-btn-scores">Puntuaciones</button>
+            <button type="button" class="st-btn st-btn-primary st-btn-new" data-i18n="game.newGame">Nueva partida</button>
+            <button type="button" class="st-btn st-btn-secondary st-btn-scores" data-i18n="game.scores">Puntuaciones</button>
           </div>
 
           <ul class="st-instructions-list">
@@ -90,34 +90,34 @@
       <!-- Puntuaciones -->
       <div class="st-intro-overlay st-intro-overlay-scores st-hidden">
         <div class="st-instructions-card st-ignore-canvas">
-          <h1 class="st-title">Puntuaciones</h1>
+          <h1 class="st-title" data-i18n="game.scores">Puntuaciones</h1>
           <div class="st-history-container"></div>
-          <button type="button" class="st-btn st-btn-secondary st-btn-back" style="margin-top: 16px;">Volver al menú</button>
+          <button type="button" class="st-btn st-btn-secondary st-btn-back" data-i18n="game.backMenu" style="margin-top: 16px;">Volver al menú</button>
         </div>
       </div>
 
       <!-- Fin de partida -->
       <div class="st-gameover-overlay st-hidden">
         <div class="st-instructions-card st-ignore-canvas" style="max-width: 520px; text-align: center;">
-          <h2 class="st-gameover-title">Sistemas colapsados</h2>
-          <p class="st-hud-mini" style="margin-bottom: 15px;">La Dev Enterprise ha sufrido daños estructurales críticos.</p>
+          <h2 class="st-gameover-title" data-i18n="game.gameover">Sistemas colapsados</h2>
+          <p class="st-hud-mini" data-i18n="game.damage" style="margin-bottom: 15px;">La Dev Enterprise ha sufrido daños estructurales críticos.</p>
 
           <div class="st-trophy-card">
-            <p class="st-trophy-label">Trofeo de la misión</p>
-            <p class="st-trophy-score">0 puntos</p>
+            <p class="st-trophy-label" data-i18n="game.trophy">Trofeo de la misión</p>
+            <p class="st-trophy-score" data-i18n="game.points">0 puntos</p>
             <div class="st-trophy-details">
               <span class="st-trophy-date">📅 --</span>
               <span class="st-trophy-time">⏱️ --</span>
               <span class="st-trophy-threat">🚨 CONDICIÓN VERDE</span>
             </div>
-            <p class="st-hud-mini" style="margin-top: 10px;">
+            <p class="st-hud-mini" data-i18n="game.screenshot" style="margin-top: 10px;">
               Haz una captura de pantalla de este trofeo para compartirlo con tus compañeros.
             </p>
           </div>
 
           <div class="st-menu-actions" style="margin-top: 20px;">
-            <button type="button" class="st-btn st-btn-primary st-btn-restart">Reiniciar patrulla</button>
-            <button type="button" class="st-btn st-btn-secondary st-btn-menu-back">Volver al menú</button>
+            <button type="button" class="st-btn st-btn-primary st-btn-restart" data-i18n="game.restart">Reiniciar patrulla</button>
+            <button type="button" class="st-btn st-btn-secondary st-btn-menu-back" data-i18n="game.backMenu">Volver al menú</button>
           </div>
 
           <div class="st-history-container" style="margin-top: 20px; text-align: left;"></div>
@@ -126,6 +126,7 @@
     </div>
   </div>
 
+  <script src="i18n.js"></script>
   <script src="game.js?v=4"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {

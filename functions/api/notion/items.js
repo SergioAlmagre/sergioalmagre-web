@@ -205,6 +205,8 @@ export async function onRequestGet(context) {
         notionSchema[key] = { type: "number" };
       } else if (prop.type === "rich_text") {
         notionSchema[key] = { type: "rich_text" };
+      } else if (prop.type === "url") {
+        notionSchema[key] = { type: "url" };
       } else if (prop.type === "title") {
         notionSchema[key] = { type: "title" };
       } else if (prop.type === "relation") {
@@ -298,6 +300,8 @@ export async function onRequestGet(context) {
             rawProperties[key] = prop.number !== null && prop.number !== undefined ? prop.number : null;
           } else if (prop.type === "rich_text") {
             rawProperties[key] = prop.rich_text?.map((t) => t.plain_text).join("") || "";
+          } else if (prop.type === "url") {
+            rawProperties[key] = prop.url || "";
           } else if (prop.type === "title") {
             rawProperties[key] = prop.title?.map((t) => t.plain_text).join("") || "";
           } else if (prop.type === "relation") {

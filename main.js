@@ -2,39 +2,23 @@
 const sequences = [
   {
     cmd: 'cat profile.json',
-    output: `<span class="comment">{</span>
-  <span class="key">"name"</span>:     <span class="val">"Sergio Almagre"</span>,
-  <span class="key">"role"</span>:     <span class="val">"Backend Developer"</span>,
-  <span class="key">"stack"</span>:    <span class="val2">["C#", ".NET", "Azure", "Terraform"]</span>,
-  <span class="key">"open_to"</span>: <span class="val">"backend / cloud / automation"</span>
-<span class="comment">}</span>`
+    outputKey: 'terminal.profile'
   },
   {
     cmd: 'git log --oneline -3',
-    output: `<span class="val">a3f2c1d</span> <span class="comment">feat: implement monitoring KPI pipeline</span>
-<span class="val">8e91b0a</span> <span class="comment">infra: terraform modules for azure deploy</span>
-<span class="val">c54d7f3</span> <span class="comment">refactor: clean architecture migration</span>`
+    outputKey: 'terminal.git'
   },
   {
     cmd: 'kubectl get pods --all-namespaces',
-    output: `<span class="comment">NAMESPACE     NAME                    STATUS</span>
-<span class="val">production</span>    api-backend-7d9f        <span class="val">Running</span>
-<span class="val">monitoring</span>    kpi-collector-2xk9      <span class="val">Running</span>
-<span class="val">infra</span>         cicd-runner-p8s1        <span class="val">Running</span>`
+    outputKey: 'terminal.pods'
   },
   {
     cmd: 'play --mission',
-    output: `<span class="val">INITIALIZING MISSION SIMULATOR...</span>
-<span class="comment">Ship:   USS Dev Enterprise (NCC-1701)</span>
-<span class="comment">Status: Tactical patrol ready.</span>
-<span class="val" id="terminal-play-hint" style="color: #00d4ff; text-shadow: 0 0 10px rgba(0, 212, 255, 0.4); cursor: pointer; text-decoration: underline;">[ CLICK HERE OR RUN 'play' TO PILOT SHIP ]</span>`
+    outputKey: 'terminal.mission'
   },
   {
     cmd: 'preowned --manage',
-    output: `<span class="val">CONNECTING TO PRE-OWNED DATABASE...</span>
-<span class="comment">Status: Online. database loaded.</span>
-<span class="comment">System: Edge worker ready.</span>
-<span class="val2" id="terminal-admin-hint" style="color: #a78bfa; text-shadow: 0 0 10px rgba(167, 139, 250, 0.4); cursor: pointer; text-decoration: underline;">[ CLICK HERE TO MANAGE INVENTORY ]</span>`
+    outputKey: 'terminal.inventory'
   }
 ];
 
@@ -65,7 +49,7 @@ async function typeSequence(seq) {
   await sleep(350);
 
   // Show output
-  outputEl.innerHTML = seq.output;
+  outputEl.innerHTML = window.I18n ? window.I18n.t(seq.outputKey) : '';
   outputVisible = true;
 
   await sleep(3200);

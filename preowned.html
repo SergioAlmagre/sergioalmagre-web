@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pre-owned — Sergio Almagre</title>
+  <title data-i18n="store.title">Pre-owned — Sergio Almagre</title>
   <meta name="description"
-    content="Catálogo exclusivo de material audiovisual de segunda mano. Cámaras, objetivos y accesorios." />
+    data-i18n-content="store.description" content="Catálogo exclusivo de material audiovisual de segunda mano. Cámaras, objetivos y accesorios." />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
@@ -42,22 +42,22 @@
     <span class="nav-logo" onclick="window.location.href='/'" style="cursor: pointer;">sergioalmagre<span
         class="accent">.</span>com</span>
     <ul class="nav-links">
-      <li><a href="/#about">about</a></li>
-      <li><a href="/#stack">stack</a></li>
-      <li><a href="/#projects">projects</a></li>
-      <li><a href="/#experience">experience</a></li>
-      <li><a href="/devtrek">play</a></li>
-      <li><a href="/#contact">contact</a></li>
-      <li><a href="/preowned.html" class="accent">pre-owned</a></li>
+      <li><a href="/#about" data-i18n="common.about">about</a></li>
+      <li><a href="/#stack" data-i18n="common.stack">stack</a></li>
+      <li><a href="/#projects" data-i18n="common.projects">projects</a></li>
+      <li><a href="/#experience" data-i18n="common.experience">experience</a></li>
+      <li><a href="/devtrek" data-i18n="common.play">play</a></li>
+      <li><a href="/#contact" data-i18n="common.contact">contact</a></li>
+      <li><a href="/preowned.html" class="accent" data-i18n="common.preowned">pre-owned</a></li>
     </ul>
   </nav>
 
   <!-- STORE HERO -->
   <header class="store-hero">
     <div class="store-hero-inner">
-      <p class="hero-eyebrow">// pre-owned_store</p>
-      <h1 class="store-title">Material<br><span class="accent">Audiovisual</span></h1>
-      <p class="store-subtitle">Catálogo exclusivo de material audiovisual de segunda mano en excelente estado.</p>
+      <p class="hero-eyebrow" data-i18n="store.hero">// pre-owned_store</p>
+      <h1 class="store-title"><span data-i18n="store.material">Material</span><br><span class="accent" data-i18n="store.audiovisual">Audiovisual</span></h1>
+      <p class="store-subtitle" data-i18n="store.subtitle">Catálogo exclusivo de material audiovisual de segunda mano en excelente estado.</p>
     </div>
   </header>
 
@@ -68,30 +68,30 @@
     <section class="filters-bar">
       <!-- Buscar -->
       <div class="filter-group">
-        <label for="search-input">Buscar artículo</label>
+        <label for="search-input" data-i18n="store.searchLabel">Buscar artículo</label>
         <div class="input-wrap-search">
-          <input type="text" id="search-input" placeholder="Cámara, objetivo, accesorios...">
+          <input type="text" id="search-input" data-i18n-placeholder="store.searchPlaceholder" placeholder="Cámara, objetivo, accesorios...">
         </div>
       </div>
 
       <!-- Vista: Lista / Categorías -->
       <div class="filter-group">
-        <label>Vista</label>
+        <label data-i18n="store.view">Vista</label>
         <div class="view-toggle">
-          <button id="view-list-btn" class="view-toggle-btn" data-view="list">Lista</button>
-          <button id="view-categories-btn" class="view-toggle-btn active" data-view="categories">Categorías</button>
+          <button id="view-list-btn" class="view-toggle-btn" data-view="list" data-i18n="store.list">Lista</button>
+          <button id="view-categories-btn" class="view-toggle-btn active" data-view="categories" data-i18n="store.categories">Categorías</button>
         </div>
       </div>
 
       <!-- Ordenar -->
       <div class="filter-group">
-        <label for="sort-select">Ordenar por</label>
+        <label for="sort-select" data-i18n="store.sort">Ordenar por</label>
         <select id="sort-select">
-          <option value="alpha-asc">Nombre: A-Z</option>
-          <option value="alpha-desc">Nombre: Z-A</option>
-          <option value="recent">Más recientes</option>
-          <option value="price-asc">Precio: menor a mayor</option>
-          <option value="price-desc">Precio: mayor a menor</option>
+          <option value="alpha-asc" data-i18n="store.alphaAsc">Nombre: A-Z</option>
+          <option value="alpha-desc" data-i18n="store.alphaDesc">Nombre: Z-A</option>
+          <option value="recent" data-i18n="store.recent">Más recientes</option>
+          <option value="price-asc" data-i18n="store.priceAsc">Precio: menor a mayor</option>
+          <option value="price-desc" data-i18n="store.priceDesc">Precio: mayor a menor</option>
         </select>
       </div>
     </section>
@@ -99,7 +99,7 @@
     <!-- LOADING / ERROR / EMPTY STATES -->
     <div id="loader" class="loader">
       <div class="spinner"></div>
-      <p>Cargando catálogo...</p>
+      <p data-i18n="store.loading">Cargando catálogo...</p>
     </div>
 
     <div id="error-message" class="alert-box error hidden"></div>
@@ -109,8 +109,8 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
           d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
-      <h3>No hay artículos disponibles</h3>
-      <p>No se encontraron artículos que coincidan con los filtros aplicados.</p>
+      <h3 data-i18n="store.noItems">No hay artículos disponibles</h3>
+      <p data-i18n="store.noMatches">No se encontraron artículos que coincidan con los filtros aplicados.</p>
     </div>
 
     <!-- PRODUCTS GRID (List View) -->
@@ -128,7 +128,7 @@
   <!-- MODAL DE DETALLE -->
   <div id="detail-modal" class="modal-overlay hidden">
     <div class="modal-card">
-      <button class="modal-close" id="close-modal-btn" aria-label="Cerrar modal">&times;</button>
+      <button class="modal-close" id="close-modal-btn" data-i18n-aria-label="store.closeModal" aria-label="Cerrar modal">&times;</button>
 
       <div class="modal-content-grid">
         <!-- Imagen -->
@@ -148,14 +148,14 @@
             <h2 class="modal-title" id="modal-title">Título del Producto</h2>
 
             <div class="description-section">
-              <span class="section-tag-label">// especificaciones_y_detalles</span>
+              <span class="section-tag-label" data-i18n="store.specs">// especificaciones_y_detalles</span>
               <pre class="modal-description" id="modal-description">Cargando...</pre>
             </div>
           </div>
 
           <div class="contact-box">
-            <h4>¿Cómo adquirir este artículo?</h4>
-            <p>Este material está a la venta. Escríbeme por email indicando el artículo en el que estás interesado para
+            <h4 data-i18n="store.acquiring">¿Cómo adquirir este artículo?</h4>
+            <p data-i18n="store.saleText">Este material está a la venta. Escríbeme por email indicando el artículo en el que estás interesado para
               coordinar los detalles:</p>
             <a href="#" id="modal-email-btn" class="btn-primary modal-contact-btn">
               <svg class="icon-mail" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16"
@@ -163,7 +163,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <span>Contactar por Email</span>
+              <span data-i18n="store.contactEmail">Contactar por Email</span>
             </a>
           </div>
         </div>
@@ -187,6 +187,7 @@
         class="admin-link" style="text-decoration: underline;">Acceso Administrador</a></p>
   </footer>
 
+  <script src="i18n.js"></script>
   <script src="preowned.js"></script>
 </body>
 

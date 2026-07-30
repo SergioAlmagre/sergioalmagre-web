@@ -167,13 +167,25 @@ const GAME_CONFIG = {
 };
 
 const THREAT_LEVELS = [
-  { key: 'VERDE', min: 0, color: '#22c55e', status: 'CONDICIÓN VERDE', label: 'Amenaza: baja', multiplier: 1.0 },
-  { key: 'AMARILLA', min: 100, color: '#eab308', status: 'CONDICIÓN AMARILLA', label: 'Amenaza: moderada', multiplier: 1.2 },
-  { key: 'NARANJA', min: 250, color: '#f97316', status: 'CONDICIÓN NARANJA', label: 'Amenaza: elevada (súper meteoros)', multiplier: 1.45 },
-  { key: 'ROJA', min: 500, color: '#dc2626', status: 'CONDICIÓN ROJA', label: 'Amenaza: crítica', multiplier: 1.7 },
-  { key: 'VIOLETA', min: 850, color: '#9333ea', status: 'CONDICIÓN VIOLETA', label: 'Amenaza: extrema (zona apocalíptica)', multiplier: 2.1 },
-  { key: 'NEGRA', min: 1200, color: '#38bdf8', status: 'CONDICIÓN NEGRA', label: 'Amenaza: singularidad / invasión activa', multiplier: 2.6 },
+  { key: 'VERDE', min: 0, color: '#22c55e', statusKey: 'statusGreen', labelKey: 'threatLow', multiplier: 1.0 },
+  { key: 'AMARILLA', min: 100, color: '#eab308', statusKey: 'statusYellow', labelKey: 'threatModerate', multiplier: 1.2 },
+  { key: 'NARANJA', min: 250, color: '#f97316', statusKey: 'statusOrange', labelKey: 'threatHigh', multiplier: 1.45 },
+  { key: 'ROJA', min: 500, color: '#dc2626', statusKey: 'statusRed', labelKey: 'threatCritical', multiplier: 1.7 },
+  { key: 'VIOLETA', min: 850, color: '#9333ea', statusKey: 'statusPurple', labelKey: 'threatExtreme', multiplier: 2.1 },
+  { key: 'NEGRA', min: 1200, color: '#38bdf8', statusKey: 'statusBlack', labelKey: 'threatSingularity', multiplier: 2.6 },
 ];
+
+function gameT(key, vars) {
+  return window.I18n ? window.I18n.t(`game.${key}`, vars) : key;
+}
+
+function localizedThreat(level) {
+  return {
+    ...level,
+    status: gameT(level.statusKey),
+    label: gameT(level.labelKey),
+  };
+}
 
 function threatLevelForScore(score) {
   let current = THREAT_LEVELS[0];
@@ -184,7 +196,7 @@ function threatLevelForScore(score) {
 }
 
 function threatLevelInfo(key) {
-  return THREAT_LEVELS.find((l) => l.key === key) ?? THREAT_LEVELS[0];
+  return localizedThreat(THREAT_LEVELS.find((l) => l.key === key) ?? THREAT_LEVELS[0]);
 }
 
 function formatDuration(totalSeconds) {
@@ -195,7 +207,7 @@ function formatDuration(totalSeconds) {
 
 function formatPlayedAt(iso) {
   try {
-    return new Date(iso).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
+    return new Date(iso).toLocaleString(window.I18n?.locale === 'en' ? 'en-GB' : 'es-ES', { dateStyle: 'medium', timeStyle: 'short' });
   } catch {
     return iso;
   }
@@ -910,9 +922,9 @@ class DevGame {
           ctx2.font = 'bold 12px Courier New';
           ctx2.textAlign = 'center';
 
-          let labelText = `[ CANALIZANDO: N${self.gameState.chargeLvl} ]`;
-          if (self.gameState.chargeLvl >= 10) labelText = '⚠ [ ¡BOMBA ATÓMICA LISTA! ] ⚠';
-          else if (self.gameState.chargeLvl >= 6) labelText = `⚡ [ SÚPER CAÑÓN DAÑO x${self.gameState.chargeLvl - 4} ] ⚡`;
+          let labelText = gameT('channeling', { level: self.gameState.chargeLvl });
+          if (self.gameState.chargeLvl >= 10) labelText = gameT('atomicReady');
+          else if (self.gameState.chargeLvl >= 6) labelText = gameT('superCannon', { multiplier: self.gameState.chargeLvl - 4 });
           ctx2.fillText(labelText, 0, -85);
           ctx2.restore();
         }
@@ -950,6 +962,7 @@ class DevGame {
 
     // Bindeo de botones HTML
     this.setupUIEvents();
+    window.addEventListener('languagechange', () => this.refreshLocalizedUi());
 
     // Iniciar loop inactivo
     this.animateFrameId = requestAnimationFrame(() => this.animate());
@@ -1038,7 +1051,7 @@ class DevGame {
     } else if (newPhase === 'gameover') {
       q('.st-gameover-overlay').classList.remove('st-hidden');
 
-      q('.st-trophy-score').textContent = `${this.finalScore} puntos`;
+      q('.st-trophy-score').textContent = gameT('points', { score: this.finalScore });
       const finalThreat = threatLevelInfo(this.finalThreatKey);
       const threatLabel = q('.st-trophy-threat');
       threatLabel.textContent = `🚨 ${finalThreat.status}`;
@@ -1050,6 +1063,19 @@ class DevGame {
     }
   }
 
+  refreshLocalizedUi() {
+    const q = (sel) => this.container.querySelector(sel);
+    const score = q('.st-score');
+    if (score) score.textContent = gameT('score', { score: this.score });
+    if (this.phase === 'playing') {
+      this.updateDifficulty();
+      const statusEl = q('.st-hud-status');
+      if (statusEl) statusEl.textContent = gameT(this.paused ? 'paused' : 'patrolActive');
+    } else if (this.phase === 'scores' || this.phase === 'gameover') {
+      this.setPhase(this.phase);
+    }
+  }
+
   renderHistoryTable(container) {
     if (!container) return;
     const history = this.getLocalScores();
@@ -1057,21 +1083,21 @@ class DevGame {
 
     let html = `
       <p class="st-trophy-label">
-        Partidas anteriores ${bestScore != null ? `· mejor puntuación: <span>${bestScore} pts</span>` : ''}
+        ${gameT('previousGames')}${bestScore != null ? ` · ${gameT('bestScore', { score: bestScore })}` : ''}
       </p>
     `;
 
     if (history.length === 0) {
-      html += `<p class="st-hud-mini">Todavía no hay partidas guardadas.</p>`;
+      html += `<p class="st-hud-mini">${gameT('noSavedGames')}</p>`;
     } else {
       html += `
         <table class="st-history-table">
           <thead>
             <tr>
-              <th>Fecha</th>
-              <th>Duración</th>
-              <th>Puntos</th>
-              <th>Amenaza</th>
+              <th>${gameT('date')}</th>
+              <th>${gameT('duration')}</th>
+              <th>${gameT('pointsHeader')}</th>
+              <th>${gameT('threat')}</th>
             </tr>
           </thead>
           <tbody>
@@ -1519,7 +1545,7 @@ class DevGame {
   }
 
   updateDifficulty() {
-    const level = threatLevelForScore(this.gameState.score);
+    const level = localizedThreat(threatLevelForScore(this.gameState.score));
     this.gameState.difficultyMultiplier = level.multiplier;
     this.gameState.threatLevel = level.key;
     this.threatKey = level.key;
@@ -1548,7 +1574,7 @@ class DevGame {
     if (pauseBtn) pauseBtn.textContent = this.paused ? '▶' : '⏸';
 
     const statusEl = q('.st-hud-status');
-    if (statusEl) statusEl.textContent = `Estado: ${this.paused ? 'Sistemas en pausa' : 'Patrulla inercial activa'}`;
+    if (statusEl) statusEl.textContent = gameT(this.paused ? 'paused' : 'patrolActive');
 
     if (this.paused) {
       this.stopChargeSound();
@@ -1655,7 +1681,7 @@ class DevGame {
 
     // Reset UI
     const q = (sel) => this.container.querySelector(sel);
-    q('.st-score').textContent = `Puntos: ${this.score}`;
+    q('.st-score').textContent = gameT('score', { score: this.score });
     this.applyDamage(0); // Forzar refresco visual del escudo
     this.updateDifficulty();
 
@@ -1968,7 +1994,7 @@ class DevGame {
     this.score = this.gameState.score;
     const q = (sel) => this.container.querySelector(sel);
     const scoreVal = q('.st-score');
-    if (scoreVal) scoreVal.textContent = `Puntos: ${this.score}`;
+    if (scoreVal) scoreVal.textContent = gameT('score', { score: this.score });
     this.updateDifficulty();
   }
 

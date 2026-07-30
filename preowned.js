@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let filteredItems = [];
   let activeCategory = "";
   let searchTriggeredView = false; // track if search auto-switched to list
+  let itemOpenedInCurrentHistoryEntry = false;
 
   // Fetch items
   async function fetchItems() {
@@ -56,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
       items = data.items || [];
       
       applyFilters();
+      syncItemFromUrl();
     } catch (error) {
       console.error(error);
       errorMessage.textContent = error.message || t("store.fetchError");
@@ -192,7 +194,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Modal actions
-  function openModal(item) {
+  function openModal(item, { updateUrl = true } = {}) {
+    if (updateUrl && item.id) {
+      const itemUrl = new URL("/preowned", window.location.origin);
+      itemUrl.searchParams.set("item", item.id);
+      history.pushState(
+        {
+          ...(history.state || {}),
+          preownedView: "list",
+          category: activeCategory,
+          preownedItem: item.id,
+        },
+        "",
+        itemUrl.href
+      );
+      itemOpenedInCurrentHistoryEntry = true;
+    }
+
     modalTitle.textContent = item.title;
     modalDescription.textContent = item.description || t("store.noDescription");
     modalSecondhandPrice.textContent = `${item.secondHandPrice} €`;
@@ -228,9 +246,34 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.style.overflow = "hidden"; // Disable background scrolling
   }
 
-  function closeModal() {
+  function closeModal({ updateUrl = true } = {}) {
+    if (updateUrl) {
+      if (itemOpenedInCurrentHistoryEntry) {
+        itemOpenedInCurrentHistoryEntry = false;
+        history.back();
+        return;
+      }
+
+      const url = new URL(window.location.href);
+      url.searchParams.delete("item");
+      const state = { ...(history.state || {}) };
+      delete state.preownedItem;
+      history.replaceState(state, "", url.href);
+    }
+
     detailModal.classList.add("hidden");
     document.body.style.overflow = ""; // Enable scrolling
+  }
+
+  function syncItemFromUrl() {
+    const itemId = new URLSearchParams(window.location.search).get("item");
+    const item = itemId ? items.find((candidate) => candidate.id === itemId) : null;
+
+    if (item) {
+      openModal(item, { updateUrl: false });
+    } else if (!detailModal.classList.contains("hidden")) {
+      closeModal({ updateUrl: false });
+    }
   }
 
   // View toggle
@@ -243,14 +286,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // Keep catalogue view changes in the browser history so Back returns to
   // categories before leaving the pre-owned page.
   const categoryFromUrl = new URLSearchParams(window.location.search).get("category") || "";
-  const initialCatalogueView = categoryFromUrl ? "list" : "categories";
+  const initialItemId = new URLSearchParams(window.location.search).get("item") || "";
+  const initialCatalogueView = categoryFromUrl || initialItemId ? "list" : "categories";
   if (categoryFromUrl) {
     activeCategory = categoryFromUrl;
     currentView = "list";
   }
   const initialHistoryState = history.state || {};
-  if (initialHistoryState.preownedView !== initialCatalogueView || initialHistoryState.category !== categoryFromUrl) {
-    history.replaceState({ ...initialHistoryState, preownedView: initialCatalogueView, category: categoryFromUrl }, "", window.location.href);
+  if (
+    initialHistoryState.preownedView !== initialCatalogueView ||
+    initialHistoryState.category !== categoryFromUrl ||
+    initialHistoryState.preownedItem !== initialItemId
+  ) {
+    history.replaceState(
+      {
+        ...initialHistoryState,
+        preownedView: initialCatalogueView,
+        category: categoryFromUrl,
+        preownedItem: initialItemId || null,
+      },
+      "",
+      window.location.href
+    );
   }
 
   function pushCatalogueView(view, category = "") {
@@ -386,6 +443,8 @@ document.addEventListener("DOMContentLoaded", () => {
       switchView("categories");
     }
     applyFilters();
+    itemOpenedInCurrentHistoryEntry = false;
+    syncItemFromUrl();
   });
 
   searchInput.addEventListener("input", () => {

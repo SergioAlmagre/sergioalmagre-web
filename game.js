@@ -12,8 +12,8 @@ function drawEnterpriseThrust(ctx, intensity) {
     const radiusY = 8 * intensity;
     const gradient = ctx.createRadialGradient(cx, yOffset, 0, cx, yOffset, radiusX);
     gradient.addColorStop(0, `rgba(224, 242, 254, ${0.9 * intensity})`);
-    gradient.addColorStop(0.45, `rgba(59, 130, 246, ${0.6 * intensity})`);
-    gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+    gradient.addColorStop(0.45, `rgba(165, 38, 26, ${0.6 * intensity})`);
+    gradient.addColorStop(1, 'rgba(165, 38, 26, 0)');
     ctx.fillStyle = gradient;
     ctx.beginPath();
     ctx.ellipse(cx - radiusX * 0.3, yOffset, radiusX, radiusY, 0, 0, Math.PI * 2);
@@ -34,7 +34,7 @@ function drawEnterpriseHull(ctx) {
   const hullColor = '#e2e8f0';
   const hullShadow = '#94a3b8';
   const hullDark = '#64748b';
-  const nacelleGlow = '#3b82f6';
+  const nacelleGlow = '#A5261A';
   const bussardGlow = '#ef4444';
 
   // Soportes de las nacelas (pylons)
@@ -62,7 +62,7 @@ function drawEnterpriseHull(ctx) {
 
     ctx.shadowBlur = 15;
     ctx.shadowColor = nacelleGlow;
-    ctx.fillStyle = '#60a5fa';
+    ctx.fillStyle = '#D65A4A';
     ctx.fillRect(-65, yOffset - 4, 45, 8);
     ctx.shadowBlur = 0;
 
@@ -88,8 +88,8 @@ function drawEnterpriseHull(ctx) {
   ctx.fill();
 
   ctx.shadowBlur = 10;
-  ctx.shadowColor = '#06b6d4';
-  ctx.fillStyle = '#22d3ee';
+  ctx.shadowColor = '#8C2016';
+  ctx.fillStyle = '#C64B3A';
   ctx.beginPath();
   ctx.ellipse(3, 0, 4, 8, 0, 0, Math.PI * 2);
   ctx.fill();
@@ -172,7 +172,7 @@ const THREAT_LEVELS = [
   { key: 'NARANJA', min: 250, color: '#f97316', statusKey: 'statusOrange', labelKey: 'threatHigh', multiplier: 1.45 },
   { key: 'ROJA', min: 500, color: '#dc2626', statusKey: 'statusRed', labelKey: 'threatCritical', multiplier: 1.7 },
   { key: 'VIOLETA', min: 850, color: '#9333ea', statusKey: 'statusPurple', labelKey: 'threatExtreme', multiplier: 2.1 },
-  { key: 'NEGRA', min: 1200, color: '#38bdf8', statusKey: 'statusBlack', labelKey: 'threatSingularity', multiplier: 2.6 },
+  { key: 'NEGRA', min: 1200, color: '#E06B5A', statusKey: 'statusBlack', labelKey: 'threatSingularity', multiplier: 2.6 },
 ];
 
 function gameT(key, vars) {
@@ -268,7 +268,7 @@ class PhaserBeam {
     if (isSuper && lvl >= 1) {
       if (lvl <= 5) {
         const levelConfigs = [
-          { core: '#a5f3fc', glow: '#06b6d4', width: 4.5 },
+          { core: '#F0B1A8', glow: '#8C2016', width: 4.5 },
           { core: '#99f6e4', glow: '#0d9488', width: 5.0 },
           { core: '#a7f3d0', glow: '#10b981', width: 5.5 },
           { core: '#fef08a', glow: '#ca8a04', width: 6.0 },
@@ -785,7 +785,7 @@ class DevGame {
                   impulseY,
                   -Math.cos(targetAngle) * 2 + (Math.random() - 0.5) * 0.5,
                   -Math.sin(targetAngle) * 2 + (Math.random() - 0.5) * 0.5,
-                  '#38bdf8',
+                  '#E06B5A',
                   Math.random() * 15 + 10,
                   2
                 )
@@ -827,7 +827,7 @@ class DevGame {
             self.gameState.chargeLvl = calculatedLevel;
             if (self.gameState.chargeLvl > 0) {
               self.updateChargeSoundFreq(self.gameState.chargeLvl);
-              let particleColor = '#06b6d4';
+              let particleColor = '#8C2016';
               if (self.gameState.chargeLvl >= 10) particleColor = '#22c55e';
               else if (self.gameState.chargeLvl >= 6) particleColor = '#a855f7';
               else if (self.gameState.chargeLvl >= 4) particleColor = '#ea580c';
@@ -897,14 +897,14 @@ class DevGame {
         ctx2.save();
         if (self.gameState.shields > 0) {
           ctx2.shadowBlur = this.damageGlow > 0 ? 35 : 18;
-          ctx2.shadowColor = this.damageGlow > 0 ? '#ef4444' : '#22d3ee';
+          ctx2.shadowColor = this.damageGlow > 0 ? '#ef4444' : '#C64B3A';
         }
         ctx2.translate(this.x, this.y);
 
         if (self.gameState.isPressingLeft && self.gameState.chargeLvl > 0) {
           ctx2.save();
           ctx2.shadowBlur = 15;
-          let chargeColor = '#06b6d4';
+          let chargeColor = '#8C2016';
           if (self.gameState.chargeLvl >= 10) chargeColor = '#22c55e';
           else if (self.gameState.chargeLvl >= 8) chargeColor = '#dc2626';
           else if (self.gameState.chargeLvl >= 6) chargeColor = '#a855f7';
@@ -1632,7 +1632,7 @@ class DevGame {
 
   createExplosion(x, y, isGreen = false) {
     this.playExplosionSound();
-    const colors = isGreen ? ['#10b981', '#34d399', '#a7f3d0'] : ['#f97316', '#eab308', '#38bdf8'];
+    const colors = isGreen ? ['#10b981', '#34d399', '#a7f3d0'] : ['#f97316', '#eab308', '#E06B5A'];
     for (let i = 0; i < 25; i++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = Math.random() * 3 + 1;
@@ -1727,11 +1727,11 @@ class DevGame {
     this.ctx.fillStyle = 'rgba(2, 6, 23, 0.05)';
     this.ctx.fillRect(0, 0, this.width, this.height);
     this.ctx.save();
-    this.ctx.fillStyle = 'rgba(34, 211, 238, 0.85)';
+    this.ctx.fillStyle = 'rgba(198, 75, 58, 0.85)';
     this.ctx.font = 'bold 20px "JetBrains Mono", Courier New';
     this.ctx.textAlign = 'center';
     this.ctx.shadowBlur = 15;
-    this.ctx.shadowColor = '#06b6d4';
+    this.ctx.shadowColor = '#8C2016';
     this.ctx.fillText('PAUSA DE OPERACIONES', this.width / 2, this.height / 2 - 20);
     this.ctx.font = '11px "JetBrains Mono", Courier New';
     this.ctx.fillStyle = '#6e6e8a';

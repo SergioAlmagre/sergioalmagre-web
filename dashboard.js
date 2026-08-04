@@ -411,7 +411,7 @@ function showToast(message, type = "success") {
   } else if (type === "error") {
     icon = `<svg style="width: 14px; height: 14px; color: #f43f5e;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
   } else {
-    icon = `<svg style="width: 14px; height: 14px; color: #a78bfa;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+    icon = `<svg style="width: 14px; height: 14px; color: #FFFFFF;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
   }
 
   toast.style.display = "flex";
@@ -2052,7 +2052,7 @@ function openConfigModal(item) {
   const currentQty = item.cantidad || 1;
   const qtyTr = document.createElement("tr");
   qtyTr.style.borderBottom = "1px solid var(--border)";
-  qtyTr.style.background = "rgba(59, 130, 246, 0.08)";
+  qtyTr.style.background = "rgba(165, 38, 26, 0.08)";
 
   const qtyKeyTd = document.createElement("td");
   qtyKeyTd.style.fontWeight = "700";
@@ -2716,13 +2716,13 @@ function calculateStats() {
   const unsoldUnits = Math.max(0, totalUnits - totalSoldUnits);
   const slicesUnits = [
     { name: "Vendidas", value: totalSoldUnits, color: "#10b981" },
-    { name: "Sin Vender", value: unsoldUnits, color: "#a78bfa" }
+    { name: "Sin Vender", value: unsoldUnits, color: "#FFFFFF" }
   ];
   drawGenericPieChart("stats-pie-chart-units", "unidades", slicesUnits, "val", totalUnits, totalUnits);
 
   // Render Chart 3: Inversión en stock vs Ingresos reales (€)
   const slicesFinance = [
-    { name: "Inversión en Stock", value: totalCost, color: "#3b82f6" },
+    { name: "Inversión en Stock", value: totalCost, color: "#A5261A" },
     { name: "Ingresado Real (€)", value: totalRealIncome, color: "#10b981" }
   ];
   drawGenericPieChart("stats-pie-chart-finance", "total €", slicesFinance, "val", totalCost, totalCost);
@@ -2792,7 +2792,7 @@ function drawStatsChart(categoryStats) {
     
     // Gradient fill bar
     const grad = ctx.createLinearGradient(paddingLeft, y, paddingLeft + valWidth, y);
-    grad.addColorStop(0, "#a78bfa"); // purple accent
+    grad.addColorStop(0, "#FFFFFF");
     grad.addColorStop(1, "#10b981"); // neon green
     ctx.fillStyle = grad;
     

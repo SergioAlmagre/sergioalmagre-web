@@ -9,15 +9,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet" />
   
-  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="stylesheet" href="style.css?v=5" />
   <link rel="stylesheet" href="preowned.css" />
-  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="icon" type="image/svg+xml" href="/assets/signature_white_transparent.svg" />
 </head>
 <body class="admin-body-bg">
 
   <!-- NAV -->
   <nav class="nav">
-    <span class="nav-logo" onclick="window.location.href='/'" style="cursor: pointer;">sergioalmagre<span class="accent">.</span>com</span>
+    <a class="nav-logo" href="/" aria-label="Sergio Almagre">
+      <img src="/assets/signature_white_transparent.svg" alt="Sergio Almagre" />
+    </a>
     <button class="nav-hamburger" id="nav-hamburger" aria-label="Menú de navegación">
       <span></span>
       <span></span>
@@ -97,7 +99,7 @@
       <div class="dash-stats-bar">
         <span>Artículos: <strong class="accent" id="stat-notion-count">0</strong></span>
         <span class="divider">|</span>
-        <span>Filtrados: <strong class="accent-purple" id="stat-filtered-count">0</strong></span>
+        <span>Filtrados: <strong id="stat-filtered-count">0</strong></span>
         <span class="divider">|</span>
         <span>Seleccionados: <strong class="accent-green" id="stat-selected-count">0 (0 ud)</strong></span>
       </div>
@@ -269,9 +271,9 @@
           <span class="stats-card-desc" id="stat-real-income">Ingresado: 0 € · Neto: 0 €</span>
         </div>
         <!-- Card: Valor Retail Total -->
-        <div class="stats-card" style="border-color: rgba(59, 130, 246, 0.3);">
+        <div class="stats-card" style="border-color: rgba(165, 38, 26, 0.3);">
           <span class="stats-card-label">Valor Retail Total</span>
-          <span class="stats-card-value" id="stat-total-retail" style="color: #3b82f6;">0 €</span>
+          <span class="stats-card-value" id="stat-total-retail" style="color: var(--accent);">0 €</span>
           <span class="stats-card-desc">Suma de precios nuevos retail</span>
         </div>
       </section>
@@ -473,7 +475,7 @@
   <div id="general-confirm-modal" class="modal-overlay hidden" style="z-index: 10100;">
     <div class="modal-card max-w-md">
       <div class="modal-body-padding">
-        <h3 id="confirm-modal-title" class="accent-purple">Confirmación</h3>
+        <h3 id="confirm-modal-title">Confirmación</h3>
         <p id="confirm-modal-message" class="modal-subtitle-text mt-3"></p>
         <div class="modal-actions-row mt-6">
           <button id="confirm-modal-cancel" class="btn-ghost">Cancelar</button>

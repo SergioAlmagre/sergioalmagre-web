@@ -18,22 +18,22 @@
   <meta property="og:url" content="https://www.sergioalmagre.com/" />
   <meta property="og:title" data-i18n-content="index.title" content="Sergio Almagre — Backend Developer" />
   <meta property="og:description" data-i18n-content="index.description" content="Portfolio y CV de Sergio Almagre, desarrollador backend especializado en Cloud, automatización y APIs REST robustas." />
-  <meta property="og:image" content="https://www.sergioalmagre.com/favicon.png" />
+  <meta property="og:image" content="https://www.sergioalmagre.com/assets/vector_transparent_light.svg" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary" />
   <meta property="twitter:url" content="https://www.sergioalmagre.com/" />
   <meta property="twitter:title" content="Sergio Almagre — Backend Developer" />
   <meta property="twitter:description" data-i18n-content="index.description" content="Portfolio y CV de Sergio Almagre, desarrollador backend especializado en Cloud, automatización y APIs REST." />
-  <meta property="twitter:image" content="https://www.sergioalmagre.com/favicon.png" />
+  <meta property="twitter:image" content="https://www.sergioalmagre.com/assets/vector_transparent_light.svg" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=4" />
-  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="icon" type="image/svg+xml" href="/assets/signature_white_transparent.svg" />
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -58,7 +58,9 @@
 
   <!-- NAV -->
   <nav class="nav st-ignore-canvas">
-    <span class="nav-logo" onclick="window.location.href='/'" style="cursor: pointer;">sergioalmagre<span class="accent">.</span>com</span>
+    <a class="nav-logo" href="/" aria-label="Sergio Almagre">
+      <img src="/assets/signature_white_transparent.svg" alt="Sergio Almagre" />
+    </a>
     <ul class="nav-links">
       <li><a href="#about" data-i18n="common.about">about</a></li>
       <li><a href="#stack" data-i18n="common.stack">stack</a></li>
@@ -74,7 +76,11 @@
   <section class="hero" id="about">
     <div class="hero-inner">
       <p class="hero-eyebrow" data-i18n="index.hello">// hello world</p>
-      <h1 class="hero-name">Sergio<br><span class="accent">Almagre</span></h1>
+      <h1 class="hero-name">
+        <span class="hero-brand-wrap">
+          <img class="hero-brand" src="/assets/vector_transparent_light.svg" alt="Sergio Almagre" />
+        </span>
+      </h1>
       <p class="hero-role" data-i18n="index.role" data-i18n-html="true">Backend Developer <span class="dim">·</span> Cloud <span class="dim">·</span> Automation</p>
 
       <div class="terminal">

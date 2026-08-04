@@ -1,5 +1,5 @@
 const SITE_NAME = "Sergio Almagre";
-const FALLBACK_IMAGE = "/favicon.png";
+const FALLBACK_IMAGE = "/assets/vector_transparent_light.svg";
 const SHARE_VERSION = "5";
 
 function escapeHtml(value) {
@@ -86,7 +86,7 @@ function addItemMetadata(html, item, requestUrl) {
     ["og:description", description],
     ["og:image", image],
     ["og:image:secure_url", image],
-    ["og:image:type", "image/jpeg"],
+    ["og:image:type", "image/svg+xml"],
     ["og:image:alt", title],
     ["og:site_name", SITE_NAME],
     ["twitter:card", "summary_large_image"],

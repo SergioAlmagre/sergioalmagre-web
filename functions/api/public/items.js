@@ -68,6 +68,10 @@ export async function onRequestGet(context) {
     );
   }
 
+  const cacheKey = new Request(new URL("/api/public/items", context.request.url));
+  const cachedResponse = await caches.default.match(cacheKey);
+  if (cachedResponse) return cachedResponse;
+
   try {
     // 1. Consultar el esquema de Notion para saber si existe la columna de publicación
     const schemaRes = await fetch(
@@ -226,16 +230,19 @@ export async function onRequestGet(context) {
 
     const items = Object.values(groupedMap);
 
-    return new Response(
+    const response = new Response(
       JSON.stringify({ items }),
       {
         status: 200,
         headers: {
           "Content-Type": "application/json",
-          "Cache-Control": "public, max-age=60" // Cache por 60 segundos
+          "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=300" // Cache por 60 segundos
         }
       }
     );
+
+    context.waitUntil(caches.default.put(cacheKey, response.clone()));
+    return response;
   } catch (error) {
     console.error("Excepción en public items API:", error);
     return new Response(

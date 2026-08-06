@@ -491,10 +491,32 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   text-align: center;
   font-size: 0.8rem;
   padding: 0.6rem 1rem;
   text-decoration: none;
+}
+
+.modal-share-btn {
+  width: 100%;
+  margin-top: 0.6rem;
+  background: transparent;
+  cursor: pointer;
+}
+
+.modal-share-btn svg {
+  flex: 0 0 auto;
+}
+
+.modal-share-status {
+  display: block;
+  min-height: 1.1rem;
+  margin-top: 0.45rem;
+  color: #10b981;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-align: center;
 }
 
 /* footer */

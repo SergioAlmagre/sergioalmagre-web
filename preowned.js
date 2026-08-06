@@ -40,12 +40,78 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalDtoBadge = document.getElementById("modal-dto-badge");
   const modalImageContainer = document.getElementById("modal-image-container");
   const modalEmailBtn = document.getElementById("modal-email-btn");
+  const modalShareBtn = document.getElementById("modal-share-btn");
+  const modalShareStatus = document.getElementById("modal-share-status");
 
   let items = [];
   let filteredItems = [];
   let activeCategory = "";
   let searchTriggeredView = false; // track if search auto-switched to list
   let itemOpenedInCurrentHistoryEntry = false;
+  let currentModalItem = null;
+  let shareStatusTimer = null;
+
+  function getItemShareUrl(item) {
+    const itemUrl = new URL("/preowned", window.location.origin);
+    itemUrl.searchParams.set("item", slugify(item.title));
+    // Keep this in sync with functions/preowned.js so preview changes use a new URL.
+    itemUrl.searchParams.set("v", "6");
+    return itemUrl.href;
+  }
+
+  function showShareStatus(message) {
+    window.clearTimeout(shareStatusTimer);
+    modalShareStatus.textContent = message;
+    shareStatusTimer = window.setTimeout(() => {
+      modalShareStatus.textContent = "";
+    }, 2200);
+  }
+
+  async function copyToClipboard(value) {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value);
+      return;
+    }
+
+    const input = document.createElement("textarea");
+    input.value = value;
+    input.setAttribute("readonly", "");
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.select();
+    const copied = document.execCommand("copy");
+    input.remove();
+    if (!copied) throw new Error("Clipboard unavailable");
+  }
+
+  async function shareCurrentItem() {
+    if (!currentModalItem) return;
+
+    const url = getItemShareUrl(currentModalItem);
+    const shareData = {
+      title: currentModalItem.title,
+      text: `${currentModalItem.title} — ${currentModalItem.secondHandPrice} €`,
+      url,
+    };
+
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (error) {
+        // Closing the native share sheet is not an error.
+        if (error?.name === "AbortError") return;
+      }
+    }
+
+    try {
+      await copyToClipboard(url);
+      showShareStatus(t("store.linkCopied"));
+    } catch (_) {
+      showShareStatus(t("store.shareError"));
+    }
+  }
 
   // Fetch items
   async function fetchItems() {
@@ -202,11 +268,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Modal actions
   function openModal(item, { updateUrl = true } = {}) {
+    currentModalItem = item;
     if (updateUrl && item.id) {
-      const itemUrl = new URL("/preowned", window.location.origin);
-      itemUrl.searchParams.set("item", slugify(item.title));
-      // Bump this when preview metadata changes so WhatsApp does not reuse an old card.
-      itemUrl.searchParams.set("v", "5");
+      const itemUrl = new URL(getItemShareUrl(item));
       history.pushState(
         {
           ...(history.state || {}),
@@ -272,6 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     detailModal.classList.add("hidden");
     document.body.style.overflow = ""; // Enable scrolling
+    currentModalItem = null;
   }
 
   function syncItemFromUrl() {
@@ -479,6 +544,7 @@ document.addEventListener("DOMContentLoaded", () => {
   sortSelect.addEventListener("change", applyFilters);
   
   closeModalBtn.addEventListener("click", closeModal);
+  modalShareBtn.addEventListener("click", shareCurrentItem);
   detailModal.addEventListener("click", (e) => {
     if (e.target === detailModal) {
       closeModal();

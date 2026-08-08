@@ -84,10 +84,10 @@ ul { list-style: none; }
 /* ── HERO ────────────────────────────────────────────── */
 .hero {
   position: relative;
-  min-height: 100vh;
+  min-height: auto;
   display: flex;
-  align-items: center;
-  padding: 6rem 2.5rem 3rem;
+  align-items: flex-start;
+  padding: 7.5rem 2.5rem 4.5rem;
   overflow: hidden;
 }
 
@@ -137,7 +137,7 @@ ul { list-style: none; }
 .hero-brand-wrap {
   display: block;
   width: min(420px, 100%);
-  aspect-ratio: 1080 / 710;
+  aspect-ratio: 1080 / 560;
   overflow: hidden;
 }
 

@@ -63,10 +63,18 @@
         experienceAltia: "Building backend services and APIs following Clean Architecture. Automating operational tasks with PowerShell, maintaining CI/CD pipelines in Azure DevOps, and deploying infrastructure as code via Terraform. Developed monitoring systems and KPI dashboards for cloud and on-premise environments.",
         intern: "Backend Developer Intern",
         experienceGamereactor: "Migrated a relational MySQL database to a document model in MongoDB. Implemented adaptive streaming with Nginx + MPEG-DASH and built an automatic VTT subtitle system to improve platform accessibility.",
+        polatecRole: "IT Service & Repair Technician",
+        polatecLocation: "Ciudad Real, Spain",
+        experiencePolatec: "Repaired thousands of electronic devices, from mobile phones to computers. Recovered data, provided software support, and assembled workstations and servers while delivering personalized technical support to customers.",
         interactiveTerminal: "// interactive_terminal",
         arcadeTitle: "Dev Arcade Simulator",
         arcadeDescription: "A tactical, inertia-based arcade spaceship game integrated directly into the portfolio. Pilot the ship, destroy meteors with phaser shots and particle cannons, and restore your shields by collecting retro relics.",
         launchSimulation: "🕹️ START SIMULATION",
+        preownedAccessLabel: "// pre-owned_store",
+        preownedAccessTitle: "Pre-owned audiovisual gear",
+        preownedAccessDescription: "A curated selection of cameras, lenses and accessories in excellent condition.",
+        preownedAccessAction: "Open catalog",
+        preownedAccessStatus: "catalog online",
         letsTalk: "Let's talk",
         contactSub: "Open to backend, cloud and automation roles. Based in Almagro, Spain.",
         city: "Sergio Almagre · Almagro, Spain",
@@ -250,10 +258,18 @@
         experienceAltia: "Construcción de servicios backend y APIs siguiendo Clean Architecture. Automatización de tareas operativas con PowerShell, mantenimiento de pipelines CI/CD en Azure DevOps y despliegue de infraestructura como código mediante Terraform. Desarrollo de sistemas de monitorización y dashboards KPI para entornos cloud y on-premise.",
         intern: "Desarrollador Backend en prácticas",
         experienceGamereactor: "Migración de una base de datos relacional MySQL a un modelo documental en MongoDB. Implementación de streaming adaptativo con Nginx + MPEG-DASH y creación de un sistema automático de subtítulos VTT para mejorar la accesibilidad de la plataforma.",
+        polatecRole: "Técnico de servicio y reparación informática",
+        polatecLocation: "Ciudad Real, España",
+        experiencePolatec: "Reparación de miles de dispositivos electrónicos, desde móviles hasta ordenadores. Recuperación de datos, soporte de software y ensamblaje de estaciones de trabajo y servidores, junto con una atención técnica personalizada a clientes.",
         interactiveTerminal: "// terminal_interactivo",
         arcadeTitle: "Simulador Arcade Dev",
         arcadeDescription: "Un minijuego arcade táctico e inercial de naves espaciales integrado directamente en el portfolio. Pilota la nave, destruye meteoros con disparos y cañones de partículas, y restaura tus escudos recogiendo reliquias retro.",
         launchSimulation: "🕹️ INICIAR SIMULACIÓN",
+        preownedAccessLabel: "// tienda_segunda_mano",
+        preownedAccessTitle: "Material audiovisual de segunda mano",
+        preownedAccessDescription: "Una selección cuidada de cámaras, objetivos y accesorios en excelente estado.",
+        preownedAccessAction: "Ver catálogo",
+        preownedAccessStatus: "catálogo disponible",
         letsTalk: "Hablemos",
         contactSub: "Abierto a oportunidades backend, cloud y automatización. Vivo en Almagro, España.",
         city: "Sergio Almagre · Almagro, España",
@@ -440,7 +456,7 @@
       const key = `game.instruction${index + 1}`;
       if (getValue(key)) element.innerHTML = translate(key);
     });
-    const footerKeys = ["common.about", "common.stack", "common.projects", "common.experience", "common.play", "common.contact", "common.preowned"];
+    const footerKeys = ["common.about", "common.stack", "common.projects", "common.experience", "common.play", "common.preowned", "common.contact"];
     document.querySelectorAll(".footer a, .footer-simple a").forEach((element, index) => {
       const key = element.classList.contains("admin-link") ? "store.adminAccess" : footerKeys[index];
       if (key) element.textContent = translate(key);

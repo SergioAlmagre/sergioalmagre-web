@@ -18,33 +18,35 @@
   <meta property="og:url" content="https://www.sergioalmagre.com/" />
   <meta property="og:title" data-i18n-content="index.title" content="Sergio Almagre — Backend Developer" />
   <meta property="og:description" data-i18n-content="index.description" content="Portfolio y CV de Sergio Almagre, desarrollador backend especializado en Cloud, automatización y APIs REST robustas." />
-  <meta property="og:image" content="https://www.sergioalmagre.com/assets/signature_white_transparent.svg?v=2" />
-  <meta property="og:image:secure_url" content="https://www.sergioalmagre.com/assets/signature_white_transparent.svg?v=2" />
-  <meta property="og:image:type" content="image/svg+xml" />
-  <meta property="og:image:width" content="512" />
-  <meta property="og:image:height" content="512" />
+  <meta property="og:image" content="https://www.sergioalmagre.com/assets/brand/vector_social_light_1080.png?v=1" />
+  <meta property="og:image:secure_url" content="https://www.sergioalmagre.com/assets/brand/vector_social_light_1080.png?v=1" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1080" />
+  <meta property="og:image:height" content="1080" />
   <meta property="og:image:alt" content="Sergio Almagre" />
 
   <!-- Twitter -->
-  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://www.sergioalmagre.com/" />
   <meta name="twitter:title" content="Sergio Almagre — Backend Developer" />
   <meta name="twitter:description" data-i18n-content="index.description" content="Portfolio y CV de Sergio Almagre, desarrollador backend especializado en Cloud, automatización y APIs REST." />
-  <meta name="twitter:image" content="https://www.sergioalmagre.com/assets/signature_white_transparent.svg?v=2" />
+  <meta name="twitter:image" content="https://www.sergioalmagre.com/assets/brand/vector_social_light_1080.png?v=1" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=6" />
-  <link rel="icon" type="image/svg+xml" href="/assets/signature_white_transparent.svg?v=2" />
+  <link rel="stylesheet" href="style.css?v=8" />
+  <link id="theme-favicon" rel="icon" type="image/svg+xml" sizes="512x512" href="/assets/brand/favicon.svg?v=2" />
+  <script src="/theme.js?v=4"></script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Person",
       "name": "Sergio Almagre",
       "url": "https://www.sergioalmagre.com/",
+      "image": "https://www.sergioalmagre.com/assets/brand/vector_social_light_1080.png?v=1",
       "jobTitle": "Backend Developer",
       "address": {
         "@type": "PostalAddress",
@@ -64,7 +66,9 @@
   <!-- NAV -->
   <nav class="nav st-ignore-canvas">
     <a class="nav-logo" href="/" aria-label="Sergio Almagre">
-      <img src="/assets/signature_white_transparent.svg" alt="Sergio Almagre" />
+      <img src="/assets/brand/signature_white_transparent.svg"
+        data-theme-src-light="/assets/brand/signature_black_transparent.svg"
+        data-theme-src-dark="/assets/brand/signature_white_transparent.svg" alt="Sergio Almagre" />
     </a>
     <ul class="nav-links">
       <li><a href="#about" data-i18n="common.about">about</a></li>
@@ -72,8 +76,8 @@
       <li><a href="#projects" data-i18n="common.projects">projects</a></li>
       <li><a href="#experience" data-i18n="common.experience">experience</a></li>
       <li><a href="/devtrek" data-i18n="common.play">play</a></li>
+      <li><a href="preowned.html" data-nav-section="preowned" data-i18n="common.preowned">pre-owned</a></li>
       <li><a href="#contact" data-i18n="common.contact">contact</a></li>
-      <li><a href="preowned.html" data-i18n="common.preowned">pre-owned</a></li>
     </ul>
   </nav>
 
@@ -82,7 +86,9 @@
     <div class="hero-inner">
       <h1 class="hero-name">
         <span class="hero-brand-wrap">
-          <img class="hero-brand" src="/assets/vector_transparent_light.svg" alt="Sergio Almagre" />
+          <img class="hero-brand" src="/assets/brand/vector_transparent_light.svg"
+            data-theme-src-light="/assets/brand/vector_transparent_dark.svg"
+            data-theme-src-dark="/assets/brand/vector_transparent_light.svg" alt="Sergio Almagre" />
         </span>
       </h1>
       <p class="hero-role" data-i18n="index.role" data-i18n-html="true">Backend Developer <span class="dim">·</span> Cloud <span class="dim">·</span> Automation</p>
@@ -309,7 +315,12 @@
           <span class="timeline-status active" data-i18n="index.active">active</span>
         </div>
         <div class="timeline-content">
-          <h3>Backend Developer <span class="dim">@</span> <span class="accent">Altia</span></h3>
+          <div class="timeline-company-header">
+            <h3>Backend Developer <span class="dim">@</span> <span class="accent">Altia</span></h3>
+            <div class="timeline-company-logo timeline-company-logo--altia">
+              <img src="/assets/companies/altia_logo.jpg" alt="Altia" loading="lazy" />
+            </div>
+          </div>
           <p class="timeline-sub">Data &amp; Cloud</p>
           <p class="timeline-desc" data-i18n="index.experienceAltia">
             Building backend services and APIs following Clean Architecture. Automating operational tasks with
@@ -328,7 +339,12 @@
           <span class="timeline-date">2024</span>
         </div>
         <div class="timeline-content">
-          <h3><span data-i18n="index.intern">Backend Developer Intern</span> <span class="dim">@</span> <span class="accent">Gamereactor</span></h3>
+          <div class="timeline-company-header">
+            <h3><span data-i18n="index.intern">Backend Developer Intern</span> <span class="dim">@</span> <span class="accent">Gamereactor</span></h3>
+            <div class="timeline-company-logo timeline-company-logo--gamereactor">
+              <img src="/assets/companies/gamereactor_logo.jpg" alt="Gamereactor" loading="lazy" />
+            </div>
+          </div>
           <p class="timeline-sub">Denmark</p>
           <p class="timeline-desc" data-i18n="index.experienceGamereactor">
             Migrated a relational MySQL database to a document model in MongoDB. Implemented adaptive streaming with
@@ -336,6 +352,27 @@
           </p>
           <div class="timeline-tags">
             <span>MongoDB</span><span>Nginx</span><span>MPEG-DASH</span><span>MySQL</span><span>VTT</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-meta">
+          <span class="timeline-date">2015 &mdash; 2022</span>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-company-header">
+            <h3><span data-i18n="index.polatecRole">IT Service &amp; Repair Technician</span> <span class="dim">@</span> <span class="accent">POLATEC</span></h3>
+            <div class="timeline-company-logo timeline-company-logo--polatec">
+              <img src="/assets/companies/polatec_logo.jpg" alt="Polatec" loading="lazy" />
+            </div>
+          </div>
+          <p class="timeline-sub" data-i18n="index.polatecLocation">Ciudad Real, Spain</p>
+          <p class="timeline-desc" data-i18n="index.experiencePolatec">
+            Repaired thousands of electronic devices, from mobile phones to computers. Recovered data, provided software support, and assembled workstations and servers while delivering personalized technical support to customers.
+          </p>
+          <div class="timeline-tags">
+            <span>Hardware</span><span>Data Recovery</span><span>Software Support</span><span>Workstations</span><span>Servers</span>
           </div>
         </div>
       </div>
@@ -358,6 +395,24 @@
           <button type="button" class="st-btn-launch-game" data-i18n="index.launchSimulation">🕹️ INICIAR SIMULACIÓN</button>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- PRE-OWNED ACCESS -->
+  <section class="section preowned-access-section animate-on-scroll" id="preowned">
+    <div class="preowned-access">
+      <div class="preowned-access__copy">
+        <div class="preowned-access__meta">
+          <span class="preowned-access__label" data-i18n="index.preownedAccessLabel">// pre-owned_store</span>
+          <span class="preowned-access__status"><span aria-hidden="true"></span><span data-i18n="index.preownedAccessStatus">catalog online</span></span>
+        </div>
+        <h2 class="preowned-access__title" data-i18n="index.preownedAccessTitle">Pre-owned audiovisual gear</h2>
+        <p class="preowned-access__description" data-i18n="index.preownedAccessDescription">A curated selection of cameras, lenses and accessories in excellent condition.</p>
+      </div>
+      <a class="preowned-access__link" href="/preowned.html">
+        <span data-i18n="index.preownedAccessAction">Open catalog</span>
+        <span class="preowned-access__arrow" aria-hidden="true">&#8599;</span>
+      </a>
     </div>
   </section>
 
@@ -390,8 +445,8 @@
       <a href="#projects" style="color: inherit; text-decoration: underline;">projects</a> · 
       <a href="#experience" style="color: inherit; text-decoration: underline;">experience</a> · 
       <a href="/devtrek" style="color: var(--accent); text-decoration: underline; font-weight: bold;">play</a> · 
-      <a href="#contact" style="color: inherit; text-decoration: underline;">contact</a> · 
       <a href="/preowned.html" style="color: inherit; text-decoration: underline;">pre-owned</a>
+      · <a href="#contact" style="color: inherit; text-decoration: underline;">contact</a>
     </div>
     <span>Sergio Almagre · Almagro, España</span>
   </footer>
@@ -496,7 +551,7 @@
   </div>
 
   <script src="i18n.js"></script>
-  <script src="main.js?v=4"></script>
+  <script src="main.js?v=5"></script>
 </body>
 
 </html>

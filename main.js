@@ -89,25 +89,54 @@ if (reducedMotion) {
   runLoop();
 }
 
-// Smooth active nav link highlight on scroll
-const sections = document.querySelectorAll('section[id], .section[id]');
-const navLinks = document.querySelectorAll('.nav-links a');
+// Active navigation follows the section that has passed the fixed header.
+// It also supports links that open another page but represent a section on the home page.
+const navLinks = [...document.querySelectorAll('.nav-links a')];
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      navLinks.forEach(link => {
-        link.style.color = '';
-        const href = link.getAttribute('href');
-        if (href === '#' + entry.target.id || (entry.target.id === 'play' && href === '/devtrek')) {
-          link.style.color = 'var(--accent)';
-        }
-      });
-    }
+function sectionIdForLink(link) {
+  if (link.dataset.navSection) return link.dataset.navSection;
+
+  const href = link.getAttribute('href') || '';
+  if (href.startsWith('#')) return href.slice(1);
+  if (href === '/devtrek') return 'play';
+
+  return null;
+}
+
+const navSectionLinks = navLinks
+  .map((link) => ({ link, sectionId: sectionIdForLink(link) }))
+  .filter(({ sectionId }) => sectionId);
+
+const trackedSections = [...document.querySelectorAll('section[id]')]
+  .filter((section) => navSectionLinks.some(({ sectionId }) => sectionId === section.id));
+
+function setActiveNav(sectionId) {
+  navSectionLinks.forEach(({ link, sectionId: linkSectionId }) => {
+    const isActive = linkSectionId === sectionId;
+    link.classList.toggle('is-active', isActive);
+    if (isActive) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
   });
-}, { threshold: 0.35 });
+}
 
-sections.forEach(s => observer.observe(s));
+function updateActiveNav() {
+  const headerHeight = document.querySelector('.nav')?.offsetHeight || 0;
+  const marker = window.scrollY + Math.max(headerHeight + 24, window.innerHeight * 0.42);
+  let activeSectionId = trackedSections[0]?.id;
+
+  trackedSections.forEach((section) => {
+    if (section.offsetTop <= marker) activeSectionId = section.id;
+  });
+
+  const isAtPageEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+  if (isAtPageEnd) activeSectionId = trackedSections.at(-1)?.id || activeSectionId;
+
+  if (activeSectionId) setActiveNav(activeSectionId);
+}
+
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+window.addEventListener('resize', updateActiveNav);
+updateActiveNav();
 
 // Fade-in on scroll
 const fadeEls = document.querySelectorAll('.timeline-item, .stack-card, .contact-card, .cert-badge');

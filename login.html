@@ -10,9 +10,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=8" />
   <link rel="stylesheet" href="preowned.css" />
-  <link rel="icon" type="image/svg+xml" href="/assets/signature_white_transparent.svg?v=2" />
+  <link id="theme-favicon" rel="icon" type="image/svg+xml" sizes="512x512" href="/assets/brand/favicon.svg?v=2" />
+  <script src="/theme.js?v=4"></script>
   <style>
     .login-container {
       max-width: 480px;
@@ -84,15 +85,17 @@
   <!-- NAV -->
   <nav class="nav">
     <a class="nav-logo" href="/" aria-label="Sergio Almagre">
-      <img src="/assets/signature_white_transparent.svg" alt="Sergio Almagre" />
+      <img src="/assets/brand/signature_white_transparent.svg"
+        data-theme-src-light="/assets/brand/signature_black_transparent.svg"
+        data-theme-src-dark="/assets/brand/signature_white_transparent.svg" alt="Sergio Almagre" />
     </a>
     <ul class="nav-links">
       <li><a href="/#about" data-i18n="common.about">about</a></li>
       <li><a href="/#stack" data-i18n="common.stack">stack</a></li>
       <li><a href="/#projects" data-i18n="common.projects">projects</a></li>
       <li><a href="/#experience" data-i18n="common.experience">experience</a></li>
-      <li><a href="/#contact" data-i18n="common.contact">contact</a></li>
       <li><a href="/preowned.html" data-i18n="common.preowned">pre-owned</a></li>
+      <li><a href="/#contact" data-i18n="common.contact">contact</a></li>
     </ul>
   </nav>
 

@@ -35,6 +35,16 @@
       : { light: "claro", dark: "oscuro", toLight: "Cambiar a modo claro", toDark: "Cambiar a modo oscuro" };
   }
 
+  function navigationCopy() {
+    const pathIsEnglish = /^\/en(?:\/|$)/.test(window.location.pathname);
+    const pathIsSpanish = /^\/es(?:\/|$)/.test(window.location.pathname);
+    const isEnglish = pathIsEnglish || (!pathIsSpanish && root.lang === "en");
+
+    return isEnglish
+      ? { menu: "menu", closeLabel: "close", open: "Open navigation", close: "Close navigation" }
+      : { menu: "menú", closeLabel: "cerrar", open: "Abrir navegación", close: "Cerrar navegación" };
+  }
+
   function themeIcon(theme) {
     if (theme === "light") {
       return `
@@ -103,6 +113,75 @@
     if (persist) storeTheme(nextTheme);
   }
 
+  function mountMobileNav() {
+    const nav = document.querySelector(".nav");
+    const navLinks = nav?.querySelector(".nav-links");
+    if (!nav || !navLinks || document.body?.classList.contains("admin-body-bg")) return;
+    if (nav.dataset.mobileNavMounted === "true") return;
+
+    nav.dataset.mobileNavMounted = "true";
+    if (!navLinks.id) navLinks.id = "site-navigation";
+
+    const toggle = document.createElement("button");
+    toggle.className = "nav-command-toggle st-ignore-canvas";
+    toggle.type = "button";
+    toggle.setAttribute("aria-controls", navLinks.id);
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.innerHTML = `
+      <span class="nav-command-toggle__prompt" aria-hidden="true">&gt;_</span>
+      <span class="nav-command-toggle__label"></span>
+      <span class="nav-command-toggle__icon" aria-hidden="true"><i></i><i></i></span>`;
+    nav.insertBefore(toggle, navLinks);
+
+    const backdrop = document.createElement("div");
+    backdrop.className = "nav-menu-backdrop";
+    backdrop.hidden = true;
+    document.body.appendChild(backdrop);
+
+    function updateCopy() {
+      const copy = navigationCopy();
+      const isOpen = toggle.getAttribute("aria-expanded") === "true";
+      toggle.querySelector(".nav-command-toggle__label").textContent = isOpen ? copy.closeLabel : copy.menu;
+      toggle.setAttribute("aria-label", isOpen ? copy.close : copy.open);
+      toggle.title = isOpen ? copy.close : copy.open;
+    }
+
+    function setOpen(open, { restoreFocus = false } = {}) {
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.classList.toggle("is-open", open);
+      navLinks.classList.toggle("nav-open", open);
+      document.body.classList.toggle("nav-menu-open", open);
+      backdrop.hidden = !open;
+      requestAnimationFrame(() => backdrop.classList.toggle("is-visible", open));
+      updateCopy();
+
+      if (open) {
+        window.setTimeout(() => navLinks.querySelector("a")?.focus(), 180);
+      } else if (restoreFocus) {
+        toggle.focus();
+      }
+    }
+
+    toggle.addEventListener("click", () => {
+      setOpen(toggle.getAttribute("aria-expanded") !== "true", { restoreFocus: true });
+    });
+    backdrop.addEventListener("click", () => setOpen(false, { restoreFocus: true }));
+    navLinks.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => setOpen(false));
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
+        setOpen(false, { restoreFocus: true });
+      }
+    });
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 768 && toggle.getAttribute("aria-expanded") === "true") setOpen(false);
+    });
+    window.addEventListener("languagechange", updateCopy);
+
+    updateCopy();
+  }
+
   function mountToggle() {
     if (document.body?.dataset.themeToggle === "off") {
       updateThemeAssets(root.dataset.theme);
@@ -145,15 +224,27 @@
     updateToggle(root.dataset.theme);
   }
 
+  window.SiteTheme = {
+    get: () => root.dataset.theme,
+    set: (theme) => applyTheme(theme, { persist: true, animate: true }),
+    toggle: () => applyTheme(root.dataset.theme === "dark" ? "light" : "dark", { persist: true, animate: true }),
+  };
+
+  function mountInterface() {
+    mountMobileNav();
+    mountToggle();
+  }
+
   applyTheme(preferredTheme());
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", mountToggle, { once: true });
+    document.addEventListener("DOMContentLoaded", mountInterface, { once: true });
   } else {
-    mountToggle();
+    mountInterface();
   }
 
   window.addEventListener("storage", (event) => {
     if (event.key === STORAGE_KEY) applyTheme(preferredTheme(), { animate: true });
   });
+  window.addEventListener("languagechange", () => updateToggle(root.dataset.theme));
 })();

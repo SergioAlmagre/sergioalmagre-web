@@ -112,11 +112,11 @@ function runTerminalCommand(rawCommand) {
   } else if (['play', 'jugar', 'play --mission'].includes(normalized)) {
     navigateTo('/devtrek', command, 'Dev Enterprise');
   } else if (['login', 'sudo login'].includes(normalized)) {
-    navigateTo('/login.html', command, 'admin auth');
+    navigateTo('/login', command, 'admin auth');
   } else if (['preowned', 'pre-owned', 'catalog', 'catalogo', 'catálogo'].includes(normalized)) {
-    navigateTo('/preowned.html', command, 'pre-owned');
+    navigateTo('/preowned', command, 'pre-owned');
   } else if (['preowned --manage', 'sudo preowned --manage'].includes(normalized)) {
-    navigateTo('/login.html', command, 'inventory admin');
+    navigateTo('/login', command, 'inventory admin');
   } else if (['contact', 'contacto', 'email'].includes(normalized)) {
     scrollToSection('contact', command);
   } else if (normalized === 'github') {
@@ -402,7 +402,7 @@ if (outputBody) {
     if (e.target.id === 'terminal-play-hint' || e.target.closest('#terminal-play-hint')) {
       window.location.href = window.I18n?.url('/devtrek') || '/devtrek';
     } else if (e.target.id === 'terminal-admin-hint' || e.target.closest('#terminal-admin-hint')) {
-      window.location.href = window.I18n?.url('/login.html') || '/login.html';
+      window.location.href = window.I18n?.url('/login') || '/login';
     }
   });
 }

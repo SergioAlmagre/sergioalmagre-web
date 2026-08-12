@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Allow: /api/public/item-image/
+Disallow: /login
+Disallow: /dashboard
 
 Sitemap: https://www.sergioalmagre.com/sitemap.xml

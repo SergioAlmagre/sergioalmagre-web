@@ -1,6 +1,7 @@
 /* Lightweight i18n for the static portfolio.
- * The initial locale follows the browser's preferred language (es-* => Spanish,
- * everything else => English). There is no visible language switcher.
+ * The initial locale follows ?lang=es/en when provided, then the browser's
+ * preferred language (es-* => Spanish, everything else => English). There is
+ * no visible language switcher and public URLs remain canonical and language-neutral.
  */
 (function () {
   const translations = {
@@ -89,6 +90,11 @@
         preownedAccessStatus: "catalog online",
         letsTalk: "Let's talk",
         contactSub: "Open to backend, cloud and automation roles. Based in Almagro, Spain.",
+        contactEmailAction: "Contact by email",
+        contactLinkedInAction: "View profile",
+        contactGithubAction: "View repositories",
+        contactLinkedInAriaLabel: "View LinkedIn profile",
+        contactGithubAriaLabel: "View GitHub repositories",
         city: "Sergio Almagre · Almagro, Spain",
       },
       terminal: {
@@ -316,6 +322,11 @@
         preownedAccessStatus: "catálogo disponible",
         letsTalk: "Hablemos",
         contactSub: "Abierto a oportunidades backend, cloud y automatización. Vivo en Almagro, España.",
+        contactEmailAction: "Contactar por email",
+        contactLinkedInAction: "Ver perfil",
+        contactGithubAction: "Ver repositorios",
+        contactLinkedInAriaLabel: "Ver perfil de LinkedIn",
+        contactGithubAriaLabel: "Ver repositorios de GitHub",
         city: "Sergio Almagre · Almagro, España",
       },
       terminal: {
@@ -470,21 +481,11 @@
   function detectLocale() {
     const queryLocale = new URLSearchParams(window.location.search).get("lang");
     if (supported.includes(queryLocale)) return queryLocale;
-    const pathLocale = window.location.pathname.split("/").filter(Boolean)[0];
-    if (supported.includes(pathLocale)) return pathLocale;
     const browserLocales = navigator.languages?.length ? navigator.languages : [navigator.language];
     return normalizeLocale(browserLocales.find(Boolean));
   }
 
   function localizedUrl(target) {
-    const pathLocale = window.location.pathname.split("/").filter(Boolean)[0];
-    if (!supported.includes(pathLocale)) return target;
-    const prefix = `/${pathLocale}`;
-    if (target === "/") return prefix;
-    if (target === "/devtrek") return `${prefix}/devtrek`;
-    if (target === "/preowned.html" || target === "preowned.html") return `${prefix}/preowned`;
-    if (target === "/login.html") return `${prefix}/login`;
-    if (target.startsWith("/#")) return `${prefix}${target.slice(1)}`;
     return target;
   }
 
@@ -529,16 +530,6 @@
     document.querySelectorAll("a[href]").forEach((link) => {
       link.setAttribute("href", localizedUrl(link.getAttribute("href")));
     });
-    const logo = document.querySelector(".nav-logo");
-    const pathLocale = window.location.pathname.split("/").filter(Boolean)[0];
-    if (logo && supported.includes(pathLocale)) {
-      logo.onclick = () => { window.location.href = localizedUrl("/"); };
-    }
-    const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical && supported.includes(pathLocale)) {
-      canonical.href = `${window.location.origin}${window.location.pathname}`;
-    }
-
   }
 
   function setLocale(nextLocale) {

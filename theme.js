@@ -26,9 +26,7 @@
   }
 
   function themeCopy() {
-    const pathIsEnglish = /^\/en(?:\/|$)/.test(window.location.pathname);
-    const pathIsSpanish = /^\/es(?:\/|$)/.test(window.location.pathname);
-    const isEnglish = pathIsEnglish || (!pathIsSpanish && root.lang === "en");
+    const isEnglish = root.lang === "en";
 
     return isEnglish
       ? { light: "light", dark: "dark", toLight: "Switch to light mode", toDark: "Switch to dark mode" }
@@ -36,9 +34,7 @@
   }
 
   function navigationCopy() {
-    const pathIsEnglish = /^\/en(?:\/|$)/.test(window.location.pathname);
-    const pathIsSpanish = /^\/es(?:\/|$)/.test(window.location.pathname);
-    const isEnglish = pathIsEnglish || (!pathIsSpanish && root.lang === "en");
+    const isEnglish = root.lang === "en";
 
     return isEnglish
       ? { menu: "menu", closeLabel: "close", open: "Open navigation", close: "Close navigation" }

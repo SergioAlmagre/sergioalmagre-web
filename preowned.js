@@ -54,8 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function getItemShareUrl(item) {
     const itemUrl = new URL("/preowned", window.location.origin);
     itemUrl.searchParams.set("item", slugify(item.title));
-    // Keep this in sync with functions/preowned.js so preview changes use a new URL.
-    itemUrl.searchParams.set("v", "6");
     return itemUrl.href;
   }
 
@@ -194,10 +192,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     filteredItems.forEach(item => {
-      const card = document.createElement("div");
+      const card = document.createElement("a");
       card.className = "product-card";
-      card.setAttribute("role", "button");
-      card.tabIndex = 0;
+      card.href = getItemShareUrl(item);
       const title = escapeHtml(item.title);
       const description = escapeHtml(item.description || t("store.noDescription"));
       const imageUrl = safeImageUrl(item.imageUrl);
@@ -254,14 +251,11 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
 
-      const activateCard = () => openModal(item);
+      const activateCard = (event) => {
+        event.preventDefault();
+        openModal(item);
+      };
       card.addEventListener("click", activateCard);
-      card.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          activateCard();
-        }
-      });
       productsGrid.appendChild(card);
     });
   }

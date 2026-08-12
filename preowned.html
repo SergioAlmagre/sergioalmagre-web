@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
@@ -7,18 +7,15 @@
   <base href="/">
   <title data-i18n="store.title">Pre-owned — Sergio Almagre</title>
   <link rel="canonical" href="https://www.sergioalmagre.com/preowned" />
-  <link rel="alternate" hreflang="en" href="https://www.sergioalmagre.com/en/preowned" />
-  <link rel="alternate" hreflang="es" href="https://www.sergioalmagre.com/es/preowned" />
-  <link rel="alternate" hreflang="x-default" href="https://www.sergioalmagre.com/preowned" />
   <meta name="description"
-    data-i18n-content="store.description" content="Catálogo exclusivo de material audiovisual de segunda mano. Cámaras, objetivos y accesorios." />
+    data-i18n-content="store.description" content="Exclusive catalog of second-hand audiovisual equipment. Cameras, lenses and accessories." />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.sergioalmagre.com/preowned" />
-  <meta property="og:title" content="Material Audiovisual de Segunda Mano — Sergio Almagre" />
+  <meta property="og:title" content="Pre-owned Audiovisual Equipment — Sergio Almagre" />
   <meta property="og:description" data-i18n-content="store.description"
-    content="Catálogo exclusivo de cámaras, objetivos y accesorios de segunda mano. Equipamiento de calidad garantizada." />
+    content="Exclusive catalog of second-hand cameras, lenses and accessories." />
   <meta property="og:image" content="https://www.sergioalmagre.com/assets/brand/vector_social_light_1080.png?v=1" />
   <meta property="og:image:secure_url" content="https://www.sergioalmagre.com/assets/brand/vector_social_light_1080.png?v=1" />
   <meta property="og:image:type" content="image/png" />
@@ -29,10 +26,24 @@
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://www.sergioalmagre.com/preowned" />
-  <meta name="twitter:title" content="Material Audiovisual de Segunda Mano — Sergio Almagre" />
+  <meta name="twitter:title" content="Pre-owned Audiovisual Equipment — Sergio Almagre" />
   <meta name="twitter:description" data-i18n-content="store.description"
-    content="Catálogo exclusivo de cámaras, objetivos y accesorios de segunda mano. Equipamiento de calidad garantizada." />
+    content="Exclusive catalog of second-hand cameras, lenses and accessories." />
   <meta name="twitter:image" content="https://www.sergioalmagre.com/assets/brand/vector_social_light_1080.png?v=1" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "@id": "https://www.sergioalmagre.com/preowned#webpage",
+      "url": "https://www.sergioalmagre.com/preowned",
+      "name": "Pre-owned Audiovisual Equipment — Sergio Almagre",
+      "description": "Exclusive catalog of second-hand audiovisual equipment. Cameras, lenses and accessories.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "url": "https://www.sergioalmagre.com/"
+      }
+    }
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -70,8 +81,8 @@
   <header class="store-hero">
     <div class="store-hero-inner">
       <p class="hero-eyebrow" data-i18n="store.hero">// pre-owned_store</p>
-      <h1 class="store-title"><span data-i18n="store.material">Material</span><br><span class="accent" data-i18n="store.audiovisual">Audiovisual</span></h1>
-      <p class="store-subtitle" data-i18n="store.subtitle">Catálogo exclusivo de material audiovisual de segunda mano en excelente estado.</p>
+      <h1 class="store-title"><span data-i18n="store.material">Equipment</span><br><span class="accent" data-i18n="store.audiovisual">Audiovisual</span></h1>
+      <p class="store-subtitle" data-i18n="store.subtitle">Exclusive catalog of second-hand audiovisual equipment in excellent condition.</p>
     </div>
   </header>
 
@@ -82,15 +93,15 @@
     <section class="filters-bar">
       <!-- Buscar -->
       <div class="filter-group">
-        <label for="search-input" data-i18n="store.searchLabel">Buscar artículo</label>
+        <label for="search-input" data-i18n="store.searchLabel">Search item</label>
         <div class="input-wrap-search">
-          <input type="text" id="search-input" data-i18n-placeholder="store.searchPlaceholder" placeholder="Cámara, objetivo, accesorios...">
+          <input type="text" id="search-input" data-i18n-placeholder="store.searchPlaceholder" placeholder="Camera, lens, accessories...">
         </div>
       </div>
 
       <!-- Vista: Lista / Categorías -->
       <div class="filter-group">
-        <label data-i18n="store.view">Vista</label>
+        <label data-i18n="store.view">View</label>
         <div class="view-toggle">
           <button id="view-list-btn" class="view-toggle-btn" data-view="list" data-i18n="store.list">Lista</button>
           <button id="view-categories-btn" class="view-toggle-btn active" data-view="categories" data-i18n="store.categories">Categorías</button>
@@ -99,13 +110,13 @@
 
       <!-- Ordenar -->
       <div class="filter-group">
-        <label for="sort-select" data-i18n="store.sort">Ordenar por</label>
+        <label for="sort-select" data-i18n="store.sort">Sort by</label>
         <select id="sort-select">
           <option value="alpha-asc" data-i18n="store.alphaAsc">Nombre: A-Z</option>
           <option value="alpha-desc" data-i18n="store.alphaDesc">Nombre: Z-A</option>
-          <option value="recent" data-i18n="store.recent">Más recientes</option>
-          <option value="price-asc" data-i18n="store.priceAsc">Precio: menor a mayor</option>
-          <option value="price-desc" data-i18n="store.priceDesc">Precio: mayor a menor</option>
+          <option value="recent" data-i18n="store.recent">Most recent</option>
+          <option value="price-asc" data-i18n="store.priceAsc">Price: low to high</option>
+          <option value="price-desc" data-i18n="store.priceDesc">Price: high to low</option>
         </select>
       </div>
     </section>
@@ -113,7 +124,7 @@
     <!-- LOADING / ERROR / EMPTY STATES -->
     <div id="loader" class="loader">
       <div class="spinner"></div>
-      <p data-i18n="store.loading">Cargando catálogo...</p>
+      <p data-i18n="store.loading">Loading catalog...</p>
     </div>
 
     <div id="error-message" class="alert-box error hidden"></div>
@@ -123,8 +134,8 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
           d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
-      <h3 data-i18n="store.noItems">No hay artículos disponibles</h3>
-      <p data-i18n="store.noMatches">No se encontraron artículos que coincidan con los filtros aplicados.</p>
+      <h3 data-i18n="store.noItems">No items available</h3>
+      <p data-i18n="store.noMatches">No items matched the applied filters.</p>
     </div>
 
     <!-- PRODUCTS GRID (List View) -->
@@ -142,7 +153,7 @@
   <!-- MODAL DE DETALLE -->
   <div id="detail-modal" class="modal-overlay hidden">
     <div class="modal-card">
-      <button class="modal-close" id="close-modal-btn" data-i18n-aria-label="store.closeModal" aria-label="Cerrar modal">&times;</button>
+      <button class="modal-close" id="close-modal-btn" data-i18n-aria-label="store.closeModal" aria-label="Close modal">&times;</button>
 
       <div class="modal-content-grid">
         <!-- Imagen -->
@@ -159,25 +170,24 @@
               <span class="modal-dto-badge" id="modal-dto-badge">--% DTO</span>
             </div>
 
-            <h2 class="modal-title" id="modal-title">Título del Producto</h2>
+            <h2 class="modal-title" id="modal-title">Product title</h2>
 
             <div class="description-section">
-              <span class="section-tag-label" data-i18n="store.specs">// especificaciones_y_detalles</span>
+              <span class="section-tag-label" data-i18n="store.specs">// specifications_and_details</span>
               <pre class="modal-description" id="modal-description">Cargando...</pre>
             </div>
           </div>
 
           <div class="contact-box">
-            <h4 data-i18n="store.acquiring">¿Cómo adquirir este artículo?</h4>
-            <p data-i18n="store.saleText">Este material está a la venta. Escríbeme por email indicando el artículo en el que estás interesado para
-              coordinar los detalles:</p>
+            <h4 data-i18n="store.acquiring">How can I buy this item?</h4>
+            <p data-i18n="store.saleText">This equipment is for sale. Email me with the item you are interested in so we can arrange the details:</p>
             <a href="#" id="modal-email-btn" class="btn-primary modal-contact-btn">
               <svg class="icon-mail" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16"
                 style="margin-right: 8px; vertical-align: middle;">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <span data-i18n="store.contactEmail">Contactar por Email</span>
+              <span data-i18n="store.contactEmail">Contact by Email</span>
             </a>
             <button type="button" id="modal-share-btn" class="btn-ghost modal-contact-btn modal-share-btn">
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16" aria-hidden="true">
@@ -186,7 +196,7 @@
                 <circle cx="18" cy="19" r="3" stroke-width="2" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.6 13.5 6.8 3.9M15.4 6.6 8.6 10.5" />
               </svg>
-              <span data-i18n="store.share">Compartir anuncio</span>
+              <span data-i18n="store.share">Share item</span>
             </button>
             <span id="modal-share-status" class="modal-share-status" aria-live="polite"></span>
           </div>
@@ -197,8 +207,8 @@
 
   <footer class="footer-simple"
     style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 2rem 1.5rem;">
-    <p style="margin: 0; font-size: 0.75rem; color: var(--text-dim);">© 2026 Sergio Almagre · <a href="/login.html"
-        class="admin-link" style="text-decoration: underline;">Acceso Administrador</a></p>
+    <p style="margin: 0; font-size: 0.75rem; color: var(--text-dim);">© 2026 Sergio Almagre · <a href="/login"
+        class="admin-link" style="text-decoration: underline;">Administrator Access</a></p>
   </footer>
 
   <script src="i18n.js?v=2"></script>

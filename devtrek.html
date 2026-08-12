@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <base href="/">
   <title data-i18n="index.arcadeTitle">Dev Enterprise — Sergio Almagre</title>
   <link rel="canonical" href="https://www.sergioalmagre.com/devtrek" />
-  <link rel="alternate" hreflang="en" href="https://www.sergioalmagre.com/en/devtrek" />
-  <link rel="alternate" hreflang="es" href="https://www.sergioalmagre.com/es/devtrek" />
-  <link rel="alternate" hreflang="x-default" href="https://www.sergioalmagre.com/devtrek" />
-  <meta name="description" data-i18n-content="index.arcadeDescription" content="Juego arcade Dev Enterprise. Tactical Patrol & Salvage." />
+  <meta name="description" data-i18n-content="index.arcadeDescription" content="Dev Enterprise arcade game by Sergio Almagre. Tactical Patrol & Salvage." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.sergioalmagre.com/devtrek" />
   <meta property="og:title" content="Dev Enterprise — Sergio Almagre" />
-  <meta property="og:description" content="Juego arcade Dev Enterprise. Tactical Patrol & Salvage." />
+  <meta property="og:description" content="Dev Enterprise arcade game by Sergio Almagre. Tactical Patrol & Salvage." />
   <meta property="og:image" content="https://www.sergioalmagre.com/assets/brand/vector_social_light_1080.png?v=1" />
   <meta property="og:image:secure_url" content="https://www.sergioalmagre.com/assets/brand/vector_social_light_1080.png?v=1" />
   <meta property="og:image:type" content="image/png" />
@@ -22,6 +19,23 @@
   <meta property="og:image:alt" content="Sergio Almagre" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://www.sergioalmagre.com/assets/brand/vector_social_light_1080.png?v=1" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "Dev Enterprise",
+      "description": "Dev Enterprise arcade game by Sergio Almagre. Tactical Patrol & Salvage.",
+      "url": "https://www.sergioalmagre.com/devtrek",
+      "author": {
+        "@type": "Person",
+        "name": "Sergio Almagre",
+        "url": "https://www.sergioalmagre.com/"
+      },
+      "genre": "Arcade",
+      "gamePlatform": "Web browser",
+      "applicationCategory": "Game"
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet" />
@@ -44,17 +58,18 @@
       <li><a href="/#stack" data-i18n="common.stack">stack</a></li>
       <li><a href="/#experience" data-i18n="common.experience">experience</a></li>
       <li><a href="/devtrek" class="accent" data-i18n="common.play">play</a></li>
-      <li><a href="/preowned.html" data-i18n="common.preowned">pre-owned</a></li>
+      <li><a href="/preowned" data-i18n="common.preowned">pre-owned</a></li>
       <li><a href="/#contact" data-i18n="common.contact">contact</a></li>
     </ul>
   </nav>
 
   <!-- RETRO ARCADE CONTAINER -->
+  <main>
   <div class="st-modal" id="st-arcade-modal" style="position: fixed; top: 73px; bottom: 0; left: 0; right: 0; z-index: 10; font-family: var(--font-mono);">
     <div class="st-scanline"></div>
     
     <div class="st-root">
-      <button class="st-modal-close st-ignore-canvas" id="st-modal-close-btn" data-i18n="game.back" data-i18n-title="game.backTitle" title="Volver al portfolio">⬅ VOLVER</button>
+      <button class="st-modal-close st-ignore-canvas" id="st-modal-close-btn" data-i18n="game.back" data-i18n-title="game.backTitle" title="Back to portfolio">⬅ BACK</button>
       <button type="button" class="st-mobile-shoot-btn st-ignore-canvas">⚡</button>
       <canvas class="st-canvas"></canvas>
       
@@ -63,10 +78,10 @@
         <div class="st-hud-row">
           <div class="st-hud-left">
             <h1 class="st-title">DEV ENTERPRISE</h1>
-            <p class="st-hud-mini" data-i18n="game.registry">Registro: NCC-1701</p>
-            <p class="st-hud-mini st-hud-status" data-i18n="game.patrolActive">Estado: Patrulla inercial activa</p>
+            <p class="st-hud-mini" data-i18n="game.registry">Registry: NCC-1701</p>
+            <p class="st-hud-mini st-hud-status" data-i18n="game.patrolActive">Status: Inertial patrol active</p>
             <div class="st-shield-row">
-              <span class="st-hud-mini" data-i18n="game.shields">Escudos:</span>
+              <span class="st-hud-mini" data-i18n="game.shields">Shields:</span>
               <div class="st-shield-track">
                 <div class="st-shield-fill st-shield-full" style="width: 100%;"></div>
               </div>
@@ -78,11 +93,11 @@
               <button type="button" class="st-icon-btn st-btn-mute" data-i18n-title="game.mute" title="Silenciar todo">🔊</button>
               <button type="button" class="st-icon-btn st-btn-pause" data-i18n-title="game.pause" title="Pausar partida (P / Esc)">⏸</button>
               <span class="st-alert-led"></span>
-              <span class="st-alert-text">CONDICIÓN VERDE</span>
+              <span class="st-alert-text">GREEN CONDITION</span>
             </div>
-            <p class="st-hud-mini" data-i18n="game.inertia">Inercia: gravedad cero</p>
-            <p class="st-score" data-i18n="game.score">Puntos: 0</p>
-            <p class="st-threat-label" data-i18n="game.threatLow">Amenaza: baja</p>
+            <p class="st-hud-mini" data-i18n="game.inertia">Inertia: zero gravity</p>
+            <p class="st-score" data-i18n="game.score">Score: 0</p>
+            <p class="st-threat-label" data-i18n="game.threatLow">Threat: low</p>
           </div>
         </div>
       </div>
@@ -90,7 +105,7 @@
       <!-- Menú principal -->
       <div class="st-intro-overlay st-intro-overlay-menu st-hidden">
         <div class="st-instructions-card st-ignore-canvas">
-          <h1 class="st-title">DEV ENTERPRISE</h1>
+          <h2 class="st-title">DEV ENTERPRISE</h2>
           <p class="st-hud-mini" style="margin-bottom: 18px;" data-i18n="game.patrol">Tactical Patrol & Salvage</p>
 
           <div class="st-menu-actions">
@@ -99,12 +114,12 @@
           </div>
 
           <ul class="st-instructions-list">
-            <li><strong>🖱️ Clic derecho (mantener):</strong> propulsar hacia el cursor (deriva inercial con fricción casi nula).</li>
-            <li><strong>🔥 Clic izquierdo (pulsación):</strong> disparar fáseres tácticos de 360º en dirección de tu puntero.</li>
-            <li><strong>⚡ Mantener pulsado (1s a 9s):</strong> carga el súper cañón de 360°. ¡Escala proyectiles progresivos de N1 a N5 y multiplica el daño x2, x3, x4 y x5 de N6 a N9!</li>
-            <li><strong>☄️ Mantener pulsado (10s):</strong> carga la ¡bomba atómica cuántica! Arrasa con todo en la pantalla.</li>
-            <li><strong>💾 Rescata reliquias retro (halo verde):</strong> flotan desde el exterior. ¡Restablecen escudos al 100%!</li>
-            <li><strong>⏸️ Pausa la partida:</strong> pulsa [P], [Esc] o el panel superior.</li>
+            <li><strong>🖱️ Right click (hold):</strong> thrust towards the cursor (inertial drift with almost no friction).</li>
+            <li><strong>🔥 Left click (press):</strong> fire 360° tactical phasers in the direction of your pointer.</li>
+            <li><strong>⚡ Hold (1s to 9s):</strong> charge the 360° super cannon. Progressive N1–N5 projectiles and x2, x3, x4 and x5 damage from N6 to N9!</li>
+            <li><strong>☄️ Hold (10s):</strong> charge the quantum atomic bomb! Clear everything on screen.</li>
+            <li><strong>💾 Rescue retro relics (green halo):</strong> they float in from outside. Restore shields to 100%!</li>
+            <li><strong>⏸️ Pause the game:</strong> press [P], [Esc] or the top panel.</li>
           </ul>
         </div>
       </div>
@@ -112,9 +127,9 @@
       <!-- Puntuaciones -->
       <div class="st-intro-overlay st-intro-overlay-scores st-hidden">
         <div class="st-instructions-card st-ignore-canvas">
-          <h1 class="st-title" data-i18n="game.scores">Puntuaciones</h1>
+          <h2 class="st-title" data-i18n="game.scores">Puntuaciones</h2>
           <div class="st-history-container"></div>
-          <button type="button" class="st-btn st-btn-secondary st-btn-back" data-i18n="game.backMenu" style="margin-top: 16px;">Volver al menú</button>
+          <button type="button" class="st-btn st-btn-secondary st-btn-back" data-i18n="game.backMenu" style="margin-top: 16px;">Back to menu</button>
         </div>
       </div>
 
@@ -122,24 +137,24 @@
       <div class="st-gameover-overlay st-hidden">
         <div class="st-instructions-card st-ignore-canvas" style="max-width: 520px; text-align: center;">
           <h2 class="st-gameover-title" data-i18n="game.gameover">Sistemas colapsados</h2>
-          <p class="st-hud-mini" data-i18n="game.damage" style="margin-bottom: 15px;">La Dev Enterprise ha sufrido daños estructurales críticos.</p>
+          <p class="st-hud-mini" data-i18n="game.damage" style="margin-bottom: 15px;">The Dev Enterprise has suffered critical structural damage.</p>
 
           <div class="st-trophy-card">
-            <p class="st-trophy-label" data-i18n="game.trophy">Trofeo de la misión</p>
-            <p class="st-trophy-score" data-i18n="game.points">0 puntos</p>
+            <p class="st-trophy-label" data-i18n="game.trophy">Mission trophy</p>
+            <p class="st-trophy-score" data-i18n="game.points">0 points</p>
             <div class="st-trophy-details">
               <span class="st-trophy-date">📅 --</span>
               <span class="st-trophy-time">⏱️ --</span>
-              <span class="st-trophy-threat">🚨 CONDICIÓN VERDE</span>
+              <span class="st-trophy-threat">🚨 GREEN CONDITION</span>
             </div>
             <p class="st-hud-mini" data-i18n="game.screenshot" style="margin-top: 10px;">
-              Haz una captura de pantalla de este trofeo para compartirlo con tus compañeros.
+              Take a screenshot of this trophy to share it with your crewmates.
             </p>
           </div>
 
           <div class="st-menu-actions" style="margin-top: 20px;">
             <button type="button" class="st-btn st-btn-primary st-btn-restart" data-i18n="game.restart">Reiniciar patrulla</button>
-            <button type="button" class="st-btn st-btn-secondary st-btn-menu-back" data-i18n="game.backMenu">Volver al menú</button>
+            <button type="button" class="st-btn st-btn-secondary st-btn-menu-back" data-i18n="game.backMenu">Back to menu</button>
           </div>
 
           <div class="st-history-container" style="margin-top: 20px; text-align: left;"></div>
@@ -147,6 +162,7 @@
       </div>
     </div>
   </div>
+  </main>
 
   <script src="i18n.js?v=2"></script>
   <script src="game.js?v=4"></script>

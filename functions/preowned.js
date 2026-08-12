@@ -1,7 +1,6 @@
 const SITE_NAME = "Sergio Almagre";
 const FALLBACK_IMAGE = "/assets/brand/vector_social_light_1080.png?v=1";
 const FALLBACK_IMAGE_TYPE = "image/png";
-const SHARE_VERSION = "9";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -62,6 +61,13 @@ function replaceOrInsertMeta(html, key, content) {
   return html.replace("</head>", `  ${tag}</head>`);
 }
 
+function replaceOrInsertCanonical(html, url) {
+  const tag = `<link rel="canonical" href="${escapeHtml(url)}" />\n`;
+  const canonicalPattern = /<link\s+rel=["']canonical["'][^>]*>\s*/i;
+  if (canonicalPattern.test(html)) return html.replace(canonicalPattern, tag);
+  return html.replace("</head>", `  ${tag}</head>`);
+}
+
 function addItemMetadata(html, item, requestUrl) {
   const title = item.title || "Material audiovisual de segunda mano";
   const description = cleanDescription(item.description, item);
@@ -74,10 +80,10 @@ function addItemMetadata(html, item, requestUrl) {
   }
   const itemUrlObject = new URL("/preowned", requestUrl);
   itemUrlObject.searchParams.set("item", slugify(item.title));
-  itemUrlObject.searchParams.set("v", SHARE_VERSION);
   const itemUrl = itemUrlObject.href;
 
   let result = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)} — ${SITE_NAME}</title>`);
+  result = replaceOrInsertCanonical(result, itemUrl);
 
   const metadata = [
     ["description", description],
@@ -101,6 +107,43 @@ function addItemMetadata(html, item, requestUrl) {
   for (const [key, content] of metadata) {
     result = replaceOrInsertMeta(result, key, content);
   }
+
+  const price = Number(item.secondHandPrice);
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": title,
+    "description": description,
+    "url": itemUrl,
+    "image": [image],
+    "offers": {
+      "@type": "Offer",
+      "url": itemUrl,
+      "priceCurrency": "EUR",
+      ...(Number.isFinite(price) && price > 0 ? { "price": price } : {}),
+      "availability": Number(item.cantidad) > 0
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      "seller": {
+        "@type": "Person",
+        "name": SITE_NAME,
+        "url": new URL("/", requestUrl).href,
+      },
+    },
+  };
+  const productSchemaScript = JSON.stringify(productSchema).replace(/</g, "\\u003c");
+  result = result.replace(
+    "</head>",
+    `  <script type="application/ld+json">${productSchemaScript}</script>\n</head>`
+  );
+
+  const summary = `
+    <section class="seo-product-summary" aria-labelledby="seo-product-title">
+      <h2 id="seo-product-title">${escapeHtml(title)}</h2>
+      <p>${escapeHtml(description)}</p>
+      ${Number.isFinite(price) && price > 0 ? `<p><strong>Price:</strong> ${escapeHtml(price)} €</p>` : ""}
+    </section>`;
+  result = result.replace('<main class="store-container">', `<main class="store-container">${summary}`);
 
   return result;
 }

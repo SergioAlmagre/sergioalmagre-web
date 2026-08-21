@@ -118,6 +118,26 @@
 
 .waves-hero__lead a:hover { color: var(--accent); }
 
+.waves-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 2rem;
+}
+
+.waves-hero__actions .btn-primary,
+.waves-hero__actions .btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.waves-hero__actions .btn-primary span,
+.waves-hero__actions .btn-ghost span {
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .waves-hero__facts {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -400,6 +420,9 @@
 
 @media (max-width: 640px) {
   .waves-hero__copy h1 { font-size: clamp(2.25rem, 12vw, 3.4rem); }
+  .waves-hero__actions { flex-direction: column; align-items: stretch; }
+  .waves-hero__actions .btn-primary,
+  .waves-hero__actions .btn-ghost { justify-content: space-between; }
   .waves-hero__facts { grid-template-columns: 1fr; }
   .waves-hero__facts div { display: grid; grid-template-columns: 3rem 1fr; align-items: baseline; padding: 0.7rem 0.9rem; }
   .waves-spec-card { display: block; }

@@ -42,6 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalEmailBtn = document.getElementById("modal-email-btn");
   const modalShareBtn = document.getElementById("modal-share-btn");
   const modalShareStatus = document.getElementById("modal-share-status");
+  const modalWavesInfoBtn = document.getElementById("modal-waves-info-btn");
+
+  const wavesAudioItemSlug = "waves-emotion-lv1-64-ch-plugins-sonido-estudio";
 
   let items = [];
   let filteredItems = [];
@@ -55,6 +58,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const itemUrl = new URL("/preowned", window.location.origin);
     itemUrl.searchParams.set("item", slugify(item.title));
     return itemUrl.href;
+  }
+
+  function isWavesAudioItem(item) {
+    const itemSlug = slugify(item?.title);
+    return itemSlug === wavesAudioItemSlug || itemSlug.startsWith("waves-emotion-lv1-64-ch-plugins");
   }
 
   function showShareStatus(message) {
@@ -279,7 +287,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     modalTitle.textContent = item.title;
+    const hasDedicatedWavesPage = isWavesAudioItem(item);
     modalDescription.textContent = item.description || t("store.noDescription");
+    modalDescription.classList.toggle("hidden", hasDedicatedWavesPage);
+    modalWavesInfoBtn?.classList.toggle("hidden", !hasDedicatedWavesPage);
     modalSecondhandPrice.textContent = `${item.secondHandPrice} €`;
     
     if (item.retailPrice > 0) {

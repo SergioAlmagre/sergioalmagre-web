@@ -488,6 +488,36 @@
   overflow-y: auto;
 }
 
+.modal-waves-info-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 0.7rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(165, 38, 26, 0.42);
+  border-radius: var(--radius);
+  background: rgba(165, 38, 26, 0.08);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.modal-waves-info-btn:hover {
+  border-color: var(--accent);
+  background: rgba(165, 38, 26, 0.15);
+  transform: translateY(-1px);
+}
+
+.modal-waves-info-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 /* contact box */
 .contact-box {
   background: rgba(165, 38, 26, 0.03);

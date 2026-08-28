@@ -197,6 +197,90 @@ commandCenter?.addEventListener('click', (event) => {
   if (!event.target.closest('button, a, input')) terminalInput?.focus();
 });
 
+// Newsletter signup
+const newsletterForm = document.getElementById('newsletter-form');
+const newsletterEmail = document.getElementById('newsletter-email');
+const newsletterConsent = document.getElementById('newsletter-consent');
+const newsletterWebsite = document.getElementById('newsletter-website');
+const newsletterSubmit = newsletterForm?.querySelector('.newsletter-submit');
+const newsletterFeedback = document.getElementById('newsletter-feedback');
+let newsletterFeedbackKey = '';
+let newsletterFeedbackType = '';
+
+function newsletterText(key) {
+  return window.I18n?.t(`index.${key}`) || key;
+}
+
+function setNewsletterFeedback(key = '', type = '') {
+  newsletterFeedbackKey = key;
+  newsletterFeedbackType = type;
+  if (!newsletterFeedback) return;
+  newsletterFeedback.textContent = key ? newsletterText(key) : '';
+  newsletterFeedback.classList.toggle('is-success', type === 'success');
+  newsletterFeedback.classList.toggle('is-error', type === 'error');
+}
+
+newsletterForm?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  if (newsletterForm.dataset.submitting === 'true') return;
+
+  if (!newsletterEmail?.checkValidity()) {
+    setNewsletterFeedback('newsletterInvalid', 'error');
+    newsletterEmail?.focus();
+    return;
+  }
+
+  if (!newsletterConsent?.checked) {
+    setNewsletterFeedback('newsletterConsentError', 'error');
+    newsletterConsent?.focus();
+    return;
+  }
+
+  newsletterForm.dataset.submitting = 'true';
+  newsletterSubmit.disabled = true;
+  newsletterSubmit.setAttribute('aria-busy', 'true');
+  newsletterSubmit.textContent = newsletterText('newsletterSending');
+  setNewsletterFeedback();
+
+  try {
+    const response = await fetch('/api/newsletter/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: newsletterEmail.value.trim(),
+        consent: newsletterConsent.checked,
+        website: newsletterWebsite?.value || '',
+      }),
+    });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      const errorKey = result.code === 'consent_required' ? 'newsletterConsentError' : 'newsletterError';
+      throw new Error(errorKey);
+    }
+
+    const alreadySubscribed = Boolean(result.alreadySubscribed);
+    newsletterForm.reset();
+    setNewsletterFeedback(alreadySubscribed ? 'newsletterAlreadySubscribed' : 'newsletterSuccess', 'success');
+  } catch (error) {
+    setNewsletterFeedback(error.message?.startsWith('newsletter') ? error.message : 'newsletterError', 'error');
+  } finally {
+    newsletterForm.dataset.submitting = 'false';
+    newsletterSubmit.disabled = false;
+    newsletterSubmit.removeAttribute('aria-busy');
+    newsletterSubmit.textContent = newsletterText('newsletterSubmit');
+  }
+});
+
+window.addEventListener('languagechange', () => {
+  if (newsletterForm?.dataset.submitting === 'true') {
+    newsletterSubmit.textContent = newsletterText('newsletterSending');
+    return;
+  }
+  newsletterSubmit.textContent = newsletterText('newsletterSubmit');
+  if (newsletterFeedbackKey) setNewsletterFeedback(newsletterFeedbackKey, newsletterFeedbackType);
+});
+
 initializeTerminal();
 
 // Auladex case-study tabs and metric reveal
@@ -315,7 +399,7 @@ window.addEventListener('resize', updateActiveNav);
 updateActiveNav();
 
 // Progressive reveal: content remains visible when JS or IntersectionObserver is unavailable.
-const revealElements = [...document.querySelectorAll('.project-card, .timeline-item, .stack-card, .contact-card, .cert-badge, .arcade-card, .preowned-access')];
+const revealElements = [...document.querySelectorAll('.project-card, .timeline-item, .stack-card, .contact-card, .cert-badge, .arcade-card, .preowned-access, .newsletter-card')];
 
 if (!reducedMotion && 'IntersectionObserver' in window) {
   const revealObserver = new IntersectionObserver((entries) => {

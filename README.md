@@ -33,3 +33,14 @@ El portfolio incluye un minijuego arcade táctico e inercial inspirado en Star T
 ## 🚀 Despliegue en Cloudflare Pages
 
 El despliegue está automatizado mediante **Cloudflare Pages** enlazado con la rama `main` de este repositorio. Cada `push` desencadena un despliegue automático en menos de 10 segundos en el servidor CDN de Cloudflare.
+
+## Newsletter
+
+La home incluye un formulario de suscripcion que guarda los registros en una base de datos de Notion independiente del inventario. El endpoint server-side usa el token de Notion sin exponerlo al navegador y evita duplicar emails activos.
+
+Para activarlo:
+
+1. Crea una base de datos nueva en Notion y comparte esa base con la integracion que usa el proyecto.
+2. Anade `NEWSLETTER_DATABASE_ID` y `NEWSLETTER_NOTION_TOKEN` en las variables de entorno locales y en Cloudflare Pages. El token de newsletter debe pertenecer a una integracion con acceso a esa base; si no existe `NEWSLETTER_NOTION_TOKEN`, el endpoint usa como fallback `NOTION_TOKEN`. La columna principal de la base debe llamarse `Email` y ser de tipo Title; el endpoint creara las columnas que falten: Fecha suscripcion y Activo.
+   El checkbox de consentimiento del formulario se valida antes de guardar, pero no se crea como columna independiente en Notion.
+3. Antes de usarla en produccion, enlaza el formulario con tu aviso de privacidad y valora activar doble opt-in si vas a enviar comunicaciones comerciales.

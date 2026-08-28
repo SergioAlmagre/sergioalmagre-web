@@ -33,7 +33,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=15" />
+  <link rel="stylesheet" href="style.css?v=16" />
   <link id="theme-favicon" rel="icon" type="image/svg+xml" sizes="512x512" href="/assets/brand/favicon.svg?v=2" />
   <script src="/theme.js?v=5"></script>
   <script type="application/ld+json">
@@ -78,8 +78,18 @@
     </ul>
   </nav>
 
+  <div class="page-progress st-ignore-canvas" aria-hidden="true">
+    <span class="page-progress__bar"></span>
+  </div>
+
+  <div class="scroll-hud st-ignore-canvas" aria-hidden="true">
+    <span class="scroll-hud__index">00</span>
+    <span class="scroll-hud__rail"><i class="scroll-hud__fill"></i></span>
+    <span class="scroll-hud__label">about</span>
+  </div>
+
   <!-- HERO -->
-  <section class="hero" id="about">
+  <section class="hero" id="about" data-section-index="00">
     <div class="hero-inner">
       <div class="hero-copy">
         <h1 class="hero-name">
@@ -145,7 +155,7 @@
   </section>
 
   <!-- PROJECTS -->
-  <section class="section" id="projects">
+  <section class="section" id="projects" data-section-index="01">
     <p class="section-label" data-i18n="index.projectsLabel">// projects</p>
     <h2 class="section-title" data-i18n="index.built">What I've built</h2>
 
@@ -306,7 +316,7 @@
   </section>
 
   <!-- STACK -->
-  <section class="section" id="stack">
+  <section class="section" id="stack" data-section-index="02">
     <p class="section-label" data-i18n="index.coreStack">// core_tech_stack</p>
     <h2 class="section-title" data-i18n="index.workWith">What I work with</h2>
 
@@ -372,9 +382,11 @@
   </section>
 
   <!-- EXPERIENCE -->
-  <section class="section" id="experience">
-    <p class="section-label" data-i18n="index.experienceLabel">// experience</p>
-    <h2 class="section-title" data-i18n="index.worked">Where I've worked</h2>
+  <section class="section" id="experience" data-section-index="03">
+    <div class="section-heading">
+      <p class="section-label" data-i18n="index.experienceLabel">// experience</p>
+      <h2 class="section-title" data-i18n="index.worked">Where I've worked</h2>
+    </div>
 
     <div class="timeline">
 
@@ -450,7 +462,7 @@
   </section>
 
   <!-- PLAY (ARCADE SIMULATOR) -->
-  <section class="section animate-on-scroll" id="play">
+  <section class="section animate-on-scroll" id="play" data-section-index="04">
     <p class="section-label" data-i18n="index.interactiveTerminal">// dev_arcade</p>
     <h2 class="section-title" data-i18n="index.arcadeTitle">Dev Arcade Simulator</h2>
     <div class="arcade-card">
@@ -468,7 +480,7 @@
   </section>
 
   <!-- PRE-OWNED ACCESS -->
-  <section class="section preowned-access-section animate-on-scroll" id="preowned">
+  <section class="section preowned-access-section animate-on-scroll" id="preowned" data-section-index="05">
     <p class="section-label" data-i18n="index.preownedAccessLabel">// pre-owned_store</p>
     <h2 class="section-title" data-i18n="index.preownedSectionTitle">Pre-owned audiovisual gear</h2>
     <p class="preowned-section-description" data-i18n="index.preownedSectionDescription">A curated selection of cameras, lenses and accessories in excellent condition.</p>
@@ -486,7 +498,7 @@
   </section>
 
   <!-- NEWSLETTER -->
-  <section class="section newsletter-section animate-on-scroll" id="newsletter">
+  <section class="section newsletter-section animate-on-scroll" id="newsletter" data-section-index="06">
     <p class="section-label" data-i18n="index.newsletterLabel">// signal_subscribe</p>
     <h2 class="section-title" data-i18n="index.newsletterTitle">Receive the signal</h2>
 
@@ -499,7 +511,6 @@
         <p data-i18n="index.newsletterDescription">Occasional notes about backend, cloud, automation and the things I am building. I will keep the frequency low and the signal useful.</p>
         <ul class="newsletter-points">
           <li data-i18n="index.newsletterPointOne">Projects, experiments and technical notes</li>
-          <li data-i18n="index.newsletterPointTwo">New audiovisual gear when it reaches the catalog</li>
           <li data-i18n="index.newsletterPointThree">No spam or unnecessary emails</li>
         </ul>
       </div>
@@ -530,7 +541,7 @@
   </section>
 
   <!-- CONTACT -->
-  <section class="section" id="contact">
+  <section class="section" id="contact" data-section-index="07">
     <p class="section-label">// contact</p>
     <h2 class="section-title" data-i18n="index.letsTalk">Let's talk</h2>
     <p class="contact-sub" data-i18n="index.contactSub">Open to backend, cloud and automation roles. Based in Almagro, Spain.</p>
@@ -673,7 +684,7 @@
   </div>
 
   <script src="i18n.js?v=5"></script>
-  <script src="main.js?v=9"></script>
+  <script src="main.js?v=10"></script>
 </body>
 
 </html>

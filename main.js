@@ -369,6 +369,10 @@ const navSectionLinks = navLinks
 
 const trackedSections = [...document.querySelectorAll('section[id]')]
   .filter((section) => navSectionLinks.some(({ sectionId }) => sectionId === section.id));
+const pageProgressBar = document.querySelector('.page-progress__bar');
+const scrollHudFill = document.querySelector('.scroll-hud__fill');
+const scrollHudIndex = document.querySelector('.scroll-hud__index');
+const scrollHudLabel = document.querySelector('.scroll-hud__label');
 
 function setActiveNav(sectionId) {
   navSectionLinks.forEach(({ link, sectionId: linkSectionId }) => {
@@ -377,6 +381,25 @@ function setActiveNav(sectionId) {
     if (isActive) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   });
+}
+
+function updateScrollHud(activeSectionId) {
+  const scrollRange = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+  const progress = Math.min(Math.max(window.scrollY / scrollRange, 0), 1);
+
+  if (pageProgressBar) pageProgressBar.style.transform = `scaleX(${progress})`;
+  if (scrollHudFill) scrollHudFill.style.transform = `scaleY(${progress})`;
+
+  const activeSection = trackedSections.find((section) => section.id === activeSectionId);
+  if (!activeSection) return;
+
+  const sectionPosition = trackedSections.indexOf(activeSection);
+  const sectionLink = navSectionLinks.find(({ sectionId }) => sectionId === activeSectionId)?.link;
+
+  if (scrollHudIndex) {
+    scrollHudIndex.textContent = activeSection.dataset.sectionIndex || String(sectionPosition).padStart(2, '0');
+  }
+  if (scrollHudLabel) scrollHudLabel.textContent = sectionLink?.textContent?.trim() || activeSectionId;
 }
 
 function updateActiveNav() {
@@ -391,15 +414,29 @@ function updateActiveNav() {
   const isAtPageEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
   if (isAtPageEnd) activeSectionId = trackedSections.at(-1)?.id || activeSectionId;
 
-  if (activeSectionId) setActiveNav(activeSectionId);
+  if (activeSectionId) {
+    setActiveNav(activeSectionId);
+    updateScrollHud(activeSectionId);
+  }
 }
 
-window.addEventListener('scroll', updateActiveNav, { passive: true });
-window.addEventListener('resize', updateActiveNav);
+let scrollUpdateQueued = false;
+
+function requestScrollUpdate() {
+  if (scrollUpdateQueued) return;
+  scrollUpdateQueued = true;
+  window.requestAnimationFrame(() => {
+    updateActiveNav();
+    scrollUpdateQueued = false;
+  });
+}
+
+window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+window.addEventListener('resize', requestScrollUpdate);
 updateActiveNav();
 
 // Progressive reveal: content remains visible when JS or IntersectionObserver is unavailable.
-const revealElements = [...document.querySelectorAll('.project-card, .timeline-item, .stack-card, .contact-card, .cert-badge, .arcade-card, .preowned-access, .newsletter-card')];
+const revealElements = [...document.querySelectorAll('.section > .section-label, .section > .section-title, .section-heading, .project-card, .timeline-item, .stack-card, .contact-card, .cert-badge, .arcade-card, .preowned-access, .newsletter-card')];
 
 if (!reducedMotion && 'IntersectionObserver' in window) {
   const revealObserver = new IntersectionObserver((entries) => {

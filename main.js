@@ -5,7 +5,7 @@ const terminalOutput = document.getElementById('terminal-output');
 const commandCenter = document.getElementById('command-center');
 const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const commandHistory = [];
-const commandNames = ['help', 'about', 'projects', 'experience', 'stack', 'play', 'preowned', 'contact', 'github', 'theme toggle', 'clear'];
+const commandNames = ['help', 'about', 'projects', 'experience', 'stack', 'play', 'preowned', 'newsletter', 'contact', 'github', 'theme toggle', 'clear'];
 let historyIndex = 0;
 
 function sleep(ms) {
@@ -64,6 +64,7 @@ function helpOutput() {
       ${commandButton('experience', 'terminal.helpExperience')}
       ${commandButton('stack', 'terminal.helpStack')}
       ${commandButton('play', 'terminal.helpPlay')}
+      ${commandButton('newsletter', 'terminal.helpNewsletter')}
       ${commandButton('contact', 'terminal.helpContact')}
       ${commandButton('theme toggle', 'terminal.helpTheme')}
       ${commandButton('clear', 'terminal.helpClear')}
@@ -117,6 +118,8 @@ function runTerminalCommand(rawCommand) {
     navigateTo('/preowned', command, 'pre-owned');
   } else if (['preowned --manage', 'sudo preowned --manage'].includes(normalized)) {
     navigateTo('/login', command, 'inventory admin');
+  } else if (['newsletter', 'suscripcion', 'suscripción', 'subscribe', 'news'].includes(normalized)) {
+    scrollToSection('newsletter', command);
   } else if (['contact', 'contacto', 'email'].includes(normalized)) {
     scrollToSection('contact', command);
   } else if (normalized === 'github') {
@@ -369,6 +372,7 @@ const navSectionLinks = navLinks
 
 const trackedSections = [...document.querySelectorAll('section[id]')]
   .filter((section) => navSectionLinks.some(({ sectionId }) => sectionId === section.id));
+const isHomePage = Boolean(document.getElementById('about'));
 const pageProgressBar = document.querySelector('.page-progress__bar');
 const scrollHudFill = document.querySelector('.scroll-hud__fill');
 const scrollHudIndex = document.querySelector('.scroll-hud__index');
@@ -403,6 +407,8 @@ function updateScrollHud(activeSectionId) {
 }
 
 function updateActiveNav() {
+  if (!isHomePage) return;
+
   const headerHeight = document.querySelector('.nav')?.offsetHeight || 0;
   const marker = window.scrollY + Math.max(headerHeight + 24, window.innerHeight * 0.42);
   let activeSectionId = trackedSections[0]?.id;

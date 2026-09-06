@@ -39,11 +39,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=13" />
+  <link rel="stylesheet" href="style.css?v=16" />
   <link id="theme-favicon" rel="icon" type="image/svg+xml" sizes="512x512" href="/assets/brand/favicon.svg?v=2" />
   <script src="/theme.js?v=5"></script>
 </head>
-<body data-theme-toggle="off" style="background: #020617; overflow: hidden; height: 100vh;">
+<body class="devtrek-page" data-theme-toggle="off">
 
   <!-- NAV -->
   <nav class="nav st-ignore-canvas">
@@ -59,13 +59,15 @@
       <li><a href="/#experience" data-i18n="common.experience">experience</a></li>
       <li><a href="/devtrek" class="accent" data-i18n="common.play">play</a></li>
       <li><a href="/preowned" data-i18n="common.preowned">pre-owned</a></li>
+      <li><a href="#newsletter" data-nav-section="newsletter" data-i18n="common.newsletter">newsletter</a></li>
       <li><a href="/#contact" data-i18n="common.contact">contact</a></li>
     </ul>
   </nav>
 
   <!-- RETRO ARCADE CONTAINER -->
   <main>
-  <div class="st-modal" id="st-arcade-modal" style="position: fixed; top: 73px; bottom: 0; left: 0; right: 0; z-index: 10; font-family: var(--font-mono);">
+  <div class="devtrek-game-stage">
+  <div class="st-modal" id="st-arcade-modal" style="z-index: 10; font-family: var(--font-mono);">
     <div class="st-scanline"></div>
     
     <div class="st-root">
@@ -162,9 +164,54 @@
       </div>
     </div>
   </div>
+
+  </div>
+
+  <!-- NEWSLETTER -->
+  <section class="section newsletter-section devtrek-newsletter-section" id="newsletter" data-section-index="06">
+    <p class="section-label" data-i18n="index.newsletterLabel">// signal_subscribe</p>
+    <h2 class="section-title" data-i18n="index.newsletterTitle">Receive the signal</h2>
+
+    <div class="newsletter-card">
+      <div class="newsletter-copy">
+        <div class="newsletter-meta">
+          <span class="newsletter-status"><i aria-hidden="true"></i><span data-i18n="index.newsletterStatus">channel open</span></span>
+        </div>
+        <h3 data-i18n="index.newsletterHeading">A few useful transmissions. No noise.</h3>
+        <p data-i18n="index.newsletterDescription">Occasional notes about backend, cloud, automation and the things I am building. I will keep the frequency low and the signal useful.</p>
+        <ul class="newsletter-points">
+          <li data-i18n="index.newsletterPointOne">Projects, experiments and technical notes</li>
+          <li data-i18n="index.newsletterPointThree">No spam or unnecessary emails</li>
+        </ul>
+      </div>
+
+      <form class="newsletter-form" id="newsletter-form" autocomplete="on">
+        <div class="newsletter-field">
+          <label for="newsletter-email" data-i18n="index.newsletterEmailLabel">Email</label>
+          <input id="newsletter-email" name="email" type="email" autocomplete="email" maxlength="254" required
+            data-i18n-placeholder="index.newsletterEmailPlaceholder" placeholder="you@example.com" />
+        </div>
+
+        <div class="newsletter-consent">
+          <input id="newsletter-consent" name="consent" type="checkbox" required />
+          <label for="newsletter-consent" data-i18n="index.newsletterConsent">I agree to receive the newsletter by email.</label>
+        </div>
+
+        <!-- Honeypot for simple automated submissions. It stays invisible to people. -->
+        <div class="newsletter-trap">
+          <label for="newsletter-website">Website</label>
+          <input id="newsletter-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <button class="newsletter-submit btn-primary" type="submit" data-i18n="index.newsletterSubmit">Join the channel →</button>
+        <p class="newsletter-note" data-i18n="index.newsletterNote">One email when there is something worth sending.</p>
+        <p class="newsletter-feedback" id="newsletter-feedback" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
   </main>
 
-  <script src="i18n.js?v=2"></script>
+  <script src="i18n.js?v=6"></script>
   <script src="game.js?v=4"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -189,5 +236,6 @@
       });
     });
   </script>
+  <script src="main.js?v=11"></script>
 </body>
 </html>

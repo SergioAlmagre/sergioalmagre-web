@@ -3417,3 +3417,39 @@ ul { list-style: none; }
 
   #contact .contact-card:nth-child(2) { margin-top: 0; }
 }
+
+/* The arcade has its own viewport, followed by normal page content. */
+.devtrek-page {
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.devtrek-game-stage {
+  position: relative;
+  height: 100vh;
+  min-height: 560px;
+}
+
+.devtrek-game-stage > .st-modal {
+  position: absolute;
+  inset: 73px 0 0;
+}
+
+.devtrek-newsletter-section {
+  min-height: 720px;
+}
+
+@media (max-width: 640px) {
+  .devtrek-game-stage {
+    min-height: 620px;
+  }
+
+  .devtrek-game-stage > .st-modal {
+    inset: 64px 0 0;
+  }
+
+  .devtrek-newsletter-section {
+    min-height: 0;
+  }
+}

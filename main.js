@@ -64,6 +64,7 @@ function helpOutput() {
       ${commandButton('experience', 'terminal.helpExperience')}
       ${commandButton('stack', 'terminal.helpStack')}
       ${commandButton('play', 'terminal.helpPlay')}
+      ${commandButton('preowned', 'terminal.helpPreowned')}
       ${commandButton('newsletter', 'terminal.helpNewsletter')}
       ${commandButton('contact', 'terminal.helpContact')}
       ${commandButton('theme toggle', 'terminal.helpTheme')}
@@ -513,13 +514,6 @@ if (triggerBtn) {
   triggerBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     openGame();
-  });
-}
-
-const launchBtn = document.querySelector('.st-btn-launch-game');
-if (launchBtn) {
-  launchBtn.addEventListener('click', (e) => {
-        window.location.href = window.I18n?.url('/devtrek') || '/devtrek';
   });
 }
 

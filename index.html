@@ -46,7 +46,7 @@
       "jobTitle": "Backend Developer",
       "address": {
         "@type": "PostalAddress",
-        "addressLocality": "Almagro",
+        "addressLocality": "Barcelona",
         "addressCountry": "ES"
       },
       "sameAs": [
@@ -73,8 +73,6 @@
       <li><a href="#projects" data-i18n="common.projects">projects</a></li>
       <li><a href="#stack" data-i18n="common.stack">stack</a></li>
       <li><a href="#experience" data-i18n="common.experience">experience</a></li>
-      <li><a href="/devtrek" data-i18n="common.play">play</a></li>
-      <li><a href="/preowned" data-nav-section="preowned" data-i18n="common.preowned">pre-owned</a></li>
       <li><a href="#newsletter" data-i18n="common.newsletter">newsletter</a></li>
       <li><a href="#contact" data-i18n="common.contact">contact</a></li>
     </ul>
@@ -150,6 +148,7 @@
           <button type="button" data-terminal-command="experience">experience</button>
           <button type="button" data-terminal-command="play">play</button>
           <button type="button" data-terminal-command="newsletter">newsletter</button>
+          <button type="button" data-terminal-command="preowned">preowned</button>
         </div>
       </div>
     </div>
@@ -395,8 +394,31 @@
 
       <div class="timeline-item">
         <div class="timeline-meta">
-          <span class="timeline-date">2024 — present</span>
+          <span class="timeline-date">2026 — present</span>
           <span class="timeline-status active" data-i18n="index.active">active</span>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-company-header">
+            <h3>Backend Developer <span class="dim">@</span> <span class="accent">Bluetab</span> <span class="dim">(IBM)</span></h3>
+            <div class="timeline-company-logo timeline-company-logo--bluetab">
+              <img src="/assets/companies/bluetab_logo.png" alt="Bluetab" loading="lazy" />
+            </div>
+          </div>
+          <p class="timeline-sub" data-i18n="index.experienceBluetabTeam">Generative AI</p>
+          <p class="timeline-desc" data-i18n="index.experienceBluetab">
+            Backend development for Generative AI solutions: building and integrating LLM-powered services and APIs in
+            Python within IBM's Generative AI practice.
+          </p>
+          <div class="timeline-tags">
+            <span>Python</span><span>Generative AI</span><span>LLM Integration</span><span>Backend APIs</span><span>Prompt
+              Engineering</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-meta">
+          <span class="timeline-date">2024 — 2026</span>
         </div>
         <div class="timeline-content">
           <div class="timeline-company-header">
@@ -464,44 +486,8 @@
     </div>
   </section>
 
-  <!-- PLAY (ARCADE SIMULATOR) -->
-  <section class="section animate-on-scroll" id="play" data-section-index="04">
-    <p class="section-label" data-i18n="index.interactiveTerminal">// dev_arcade</p>
-    <h2 class="section-title" data-i18n="index.arcadeTitle">Dev Arcade Simulator</h2>
-    <div class="arcade-card">
-      <div class="arcade-scanner"></div>
-      <div class="arcade-card-body">
-        <h3 class="arcade-card-title">DEV ENTERPRISE <span class="dim">NCC-1701</span></h3>
-        <p class="arcade-card-text" data-i18n="index.arcadeDescription">
-          Un minijuego arcade táctico e inercial de naves espaciales integrado directamente en el portfolio. Pilota la nave, destruye meteoros con disparos y cañones de partículas, y restaura tus escudos recolectando reliquias retro.
-        </p>
-        <div class="arcade-card-actions">
-          <button type="button" class="st-btn-launch-game" data-i18n="index.launchSimulation">🕹️ INICIAR SIMULACIÓN</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PRE-OWNED ACCESS -->
-  <section class="section preowned-access-section animate-on-scroll" id="preowned" data-section-index="05">
-    <p class="section-label" data-i18n="index.preownedAccessLabel">// pre-owned_store</p>
-    <h2 class="section-title" data-i18n="index.preownedSectionTitle">Pre-owned audiovisual gear</h2>
-    <p class="preowned-section-description" data-i18n="index.preownedSectionDescription">A curated selection of cameras, lenses and accessories in excellent condition.</p>
-    <div class="preowned-access">
-      <div class="preowned-access__copy">
-        <div class="preowned-access__meta">
-          <span class="preowned-access__status"><span aria-hidden="true"></span><span data-i18n="index.preownedAccessStatus">catalog online</span></span>
-        </div>
-      </div>
-      <a class="preowned-access__link" href="/preowned">
-        <span data-i18n="index.preownedAccessAction">Open catalog</span>
-        <span class="preowned-access__arrow" aria-hidden="true">&#8599;</span>
-      </a>
-    </div>
-  </section>
-
   <!-- NEWSLETTER -->
-  <section class="section newsletter-section animate-on-scroll" id="newsletter" data-section-index="06">
+  <section class="section newsletter-section animate-on-scroll" id="newsletter" data-section-index="04">
     <p class="section-label" data-i18n="index.newsletterLabel">// signal_subscribe</p>
     <h2 class="section-title" data-i18n="index.newsletterTitle">Receive the signal</h2>
 
@@ -544,10 +530,10 @@
   </section>
 
   <!-- CONTACT -->
-  <section class="section" id="contact" data-section-index="07">
+  <section class="section" id="contact" data-section-index="05">
     <p class="section-label">// contact</p>
     <h2 class="section-title" data-i18n="index.letsTalk">Let's talk</h2>
-    <p class="contact-sub" data-i18n="index.contactSub">Open to backend, cloud and automation roles. Based in Almagro, Spain.</p>
+    <p class="contact-sub" data-i18n="index.contactSub">Open to backend, cloud and automation roles. Based in Barcelona, Spain.</p>
 
     <div class="contact-links">
       <a href="mailto:info@sergioalmagre.com" class="contact-card" data-i18n-aria-label="index.contactEmailAction" aria-label="Contact by email">
@@ -584,107 +570,9 @@
   </section>
 
   <footer class="footer">
-    <span>Sergio Almagre · Almagro, España</span>
+    <span>Sergio Almagre · Barcelona, España</span>
+    <a href="/preowned" data-i18n="common.preowned">pre-owned</a>
   </footer>
-
-  <!-- RETRO ARCADE MODAL (EASTER EGG) -->
-  <div class="st-modal st-hidden" id="st-arcade-modal">
-    <div class="st-scanline"></div>
-    
-    <div class="st-root">
-      <button class="st-modal-close st-ignore-canvas" id="st-modal-close-btn" data-i18n="game.back" data-i18n-title="game.backTitle" title="Volver al portfolio">⬅ VOLVER</button>
-      <button type="button" class="st-mobile-shoot-btn st-ignore-canvas">⚡</button>
-      <canvas class="st-canvas"></canvas>
-      
-      <!-- HUD de juego -->
-      <div class="st-hud st-hidden st-ignore-canvas">
-        <div class="st-hud-row">
-          <div class="st-hud-left">
-            <h3 class="st-title">DEV ENTERPRISE</h3>
-            <p class="st-hud-mini" data-i18n="game.registry">Registro: NCC-1701</p>
-            <p class="st-hud-mini st-hud-status" data-i18n="game.patrolActive">Estado: Patrulla inercial activa</p>
-            <div class="st-shield-row">
-              <span class="st-hud-mini" data-i18n="game.shields">Escudos:</span>
-              <div class="st-shield-track">
-                <div class="st-shield-fill st-shield-full" style="width: 100%;"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="st-hud-right">
-            <div class="st-hud-controls">
-              <button type="button" class="st-icon-btn st-btn-mute" data-i18n-title="game.mute" title="Silenciar todo">🔊</button>
-              <button type="button" class="st-icon-btn st-btn-pause" data-i18n-title="game.pause" title="Pausar partida (P / Esc)">⏸</button>
-              <span class="st-alert-led"></span>
-              <span class="st-alert-text">CONDICIÓN VERDE</span>
-            </div>
-            <p class="st-hud-mini" data-i18n="game.inertia">Inercia: gravedad cero</p>
-            <p class="st-score" data-i18n="game.score">Puntos: 0</p>
-            <p class="st-threat-label" data-i18n="game.threatLow">Amenaza: baja</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Menú principal -->
-      <div class="st-intro-overlay st-intro-overlay-menu st-hidden">
-        <div class="st-instructions-card st-ignore-canvas">
-          <h3 class="st-title">DEV ENTERPRISE</h3>
-          <p class="st-hud-mini" style="margin-bottom: 18px;" data-i18n="game.patrol">Tactical Patrol & Salvage</p>
-
-          <div class="st-menu-actions">
-            <button type="button" class="st-btn st-btn-primary st-btn-new" data-i18n="game.newGame">Nueva partida</button>
-            <button type="button" class="st-btn st-btn-secondary st-btn-scores" data-i18n="game.scores">Puntuaciones</button>
-          </div>
-
-          <ul class="st-instructions-list">
-            <li>🖱️ <b>Clic derecho (mantener):</b> propulsar hacia el cursor (deriva inercial con fricción casi nula).</li>
-            <li>🔥 <b>Clic izquierdo (pulsación):</b> disparar fáseres tácticos de 360º en dirección de tu puntero.</li>
-            <li>⚡ <b>Mantener pulsado (1s a 9s):</b> carga el súper cañón de 360°. ¡Escala proyectiles progresivos de N1 a N5 y multiplica el daño x2, x3, x4 y x5 de N6 a N9!</li>
-            <li>☄️ <b>Mantener pulsado (10s):</b> carga la ¡bomba atómica cuántica! Arrasa con todo en la pantalla.</li>
-            <li>💾 <b>Rescata reliquias retro (halo verde):</b> flotan desde el exterior. ¡Restablecen escudos al 100%!</li>
-            <li>⏸️ <b>Pausa la partida:</b> pulsa [P], [Esc] o el panel superior.</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Puntuaciones -->
-      <div class="st-intro-overlay st-intro-overlay-scores st-hidden">
-        <div class="st-instructions-card st-ignore-canvas">
-          <h3 class="st-title" data-i18n="game.scores">Puntuaciones</h3>
-          <div class="st-history-container"></div>
-          <button type="button" class="st-btn st-btn-secondary st-btn-back" data-i18n="game.backMenu" style="margin-top: 16px;">Volver al menú</button>
-        </div>
-      </div>
-
-      <!-- Fin de partida -->
-      <div class="st-gameover-overlay st-hidden">
-        <div class="st-instructions-card st-ignore-canvas" style="max-width: 520px; text-align: center;">
-          <h2 class="st-gameover-title" data-i18n="game.gameover">Sistemas colapsados</h2>
-          <p class="st-hud-mini" data-i18n="game.damage" data-i18n-html="true" style="margin-bottom: 15px;">La Dev Enterprise ha sufrido daños estructurales críticos.</p>
-
-          <div class="st-trophy-card">
-            <p class="st-trophy-label" data-i18n="game.trophy">Trofeo de la misión</p>
-            <p class="st-trophy-score" data-i18n="game.points">0 puntos</p>
-            <div class="st-trophy-details">
-              <span class="st-trophy-date">📅 --</span>
-              <span class="st-trophy-time">⏱️ --</span>
-              <span class="st-trophy-threat">🚨 CONDICIÓN VERDE</span>
-            </div>
-            <p class="st-hud-mini" data-i18n="game.screenshot" style="margin-top: 10px;">
-              Haz una captura de pantalla de este trofeo para compartirlo con tus compañeros.
-            </p>
-          </div>
-
-          <div class="st-menu-actions" style="margin-top: 20px;">
-            <button type="button" class="st-btn st-btn-primary st-btn-restart" data-i18n="game.restart">Reiniciar patrulla</button>
-            <button type="button" class="st-btn st-btn-secondary st-btn-menu-back" data-i18n="game.backMenu">Volver al menú</button>
-          </div>
-
-          <div class="st-history-container" style="margin-top: 20px; text-align: left;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <script src="i18n.js?v=6"></script>
   <script src="main.js?v=11"></script>

@@ -912,13 +912,16 @@ ul { list-style: none; }
 .timeline-company-logo--altia { --company-logo-scale: 1.5; }
 .timeline-company-logo--gamereactor { --company-logo-scale: 3.2; }
 .timeline-company-logo--polatec { --company-logo-scale: 0.9; }
+.timeline-company-logo--bluetab { --company-logo-scale: 0.85; }
 
-.timeline-company-logo:hover {
+.timeline-company-logo:hover,
+.timeline-item:hover .timeline-company-logo {
   opacity: 1;
   border-color: var(--accent-dim);
 }
 
-.timeline-company-logo:hover img {
+.timeline-company-logo:hover img,
+.timeline-item:hover .timeline-company-logo img {
   filter: grayscale(0.35) contrast(0.9);
   opacity: 0.9;
   transform: scale(calc(var(--company-logo-scale, 1) * 1.06));
@@ -1383,12 +1386,15 @@ ul { list-style: none; }
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 1.5rem;
   border-top: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--text-dim);
   text-align: center;
 }
+
+.footer a:hover { color: var(--accent); }
 
 /* ── RESPONSIVE ──────────────────────────────────────── */
 @media (max-width: 980px) {

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="gradient-shape" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c5cff" />
+      <stop offset="100%" stop-color="#6ee7ff" />
+    </linearGradient>
+    <filter id="shape-shadow" x="-20%" y="-10%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="20" stdDeviation="15" flood-color="#000000" flood-opacity="0.22" result="shadow1" />
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#7c5cff" flood-opacity="0.16" result="shadow2" />
+      <feMerge>
+        <feMergeNode in="shadow1" />
+        <feMergeNode in="shadow2" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="slash-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#ffffff" flood-opacity="0.16" />
+    </filter>
+  </defs>
+  <rect x="64" y="64" width="384" height="384" rx="89.088" ry="89.088" fill="url(#gradient-shape)" transform="rotate(45 256 256)" filter="url(#shape-shadow)" />
+  <rect x="160" y="160" width="192" height="192" rx="20.736" ry="20.736" fill="#11182d" transform="rotate(45 256 256)" />
+  <rect x="96" y="215.04" width="320" height="73.216" rx="36.608" ry="36.608" fill="#ffffff" fill-opacity="0.95" transform="rotate(-28 256 251.648)" filter="url(#slash-glow)" />
+  <circle cx="388.608" cy="388.608" r="54.784" fill="#ffffff" />
+</svg>

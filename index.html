@@ -31,9 +31,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&family=Manrope:wght@500;600;700;800&family=Sora:wght@600;700;800&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=17" />
+  <link rel="stylesheet" href="style.css?v=18" />
+  <link rel="stylesheet" href="/assets/auladex/showcase.css?v=1" />
   <link id="theme-favicon" rel="icon" type="image/svg+xml" sizes="512x512" href="/assets/brand/favicon.svg?v=2" />
   <script src="/theme.js?v=5"></script>
   <script type="application/ld+json">
@@ -185,22 +186,26 @@
           <div class="project-badges">
             <span class="proj-badge commercial" data-i18n="index.commercialProduct">commercial product</span>
             <span class="proj-badge solo" data-i18n="index.soloDev">solo dev</span>
+            <span class="proj-badge period" data-i18n="index.projectPeriod">Mar 2026 — present</span>
           </div>
           <h3 class="project-name">Auladex</h3>
-          <p class="project-domain" data-i18n="index.multiCertification">auladex.com — multi-certification exam platform</p>
+          <p class="project-domain" data-i18n="index.multiCertification">auladex.com — certification &amp; corporate training platform</p>
         </div>
         <a href="https://www.auladex.com" target="_blank" rel="noopener" class="project-live-btn" data-i18n="index.live">Live &#8599;</a>
       </div>
 
       <p class="project-tagline" data-i18n="index.projectTagline">
-        Full-stack certification platform with a tokenized economy, AI-driven content pipeline, and real-time community
+        Full-stack learning platform for certifications and corporate training, with an internal token economy, AI-assisted content pipeline, and real-time community
         &mdash; designed, built, and operated by one developer.
       </p>
+
+      <div class="auladex-showcase" data-auladex-showcase aria-hidden="true"></div>
 
       <div class="case-study-shell" data-case-study>
         <div class="case-study-tabs" role="tablist" aria-label="Auladex case study" data-i18n-aria-label="index.caseStudyNavigation">
           <button type="button" role="tab" id="case-tab-overview" aria-controls="case-panel-overview" aria-selected="true" data-case-tab="overview" data-i18n="index.caseOverview">Product</button>
           <button type="button" role="tab" id="case-tab-architecture" aria-controls="case-panel-architecture" aria-selected="false" tabindex="-1" data-case-tab="architecture" data-i18n="index.caseArchitecture">Architecture</button>
+          <button type="button" role="tab" id="case-tab-decisions" aria-controls="case-panel-decisions" aria-selected="false" tabindex="-1" data-case-tab="decisions" data-i18n="index.caseDecisions">Decisions</button>
           <button type="button" role="tab" id="case-tab-scale" aria-controls="case-panel-scale" aria-selected="false" tabindex="-1" data-case-tab="scale" data-i18n="index.caseScale">Scale</button>
         </div>
 
@@ -221,19 +226,19 @@
                     <span class="system-module__index">01</span>
                     <span class="system-module__state">RUNNING</span>
                     <h5 data-i18n="index.aiPipeline">AI content pipeline</h5>
-                    <div class="system-module__flow" aria-hidden="true"><span>vote</span><i></i><span>job</span><i></i><span>active</span></div>
+                    <div class="system-module__flow" aria-hidden="true"><span>spec</span><i></i><span>review</span><i></i><span>publish</span></div>
                   </article>
                   <article class="system-module">
                     <span class="system-module__index">02</span>
                     <span class="system-module__state">ADAPTIVE</span>
-                    <h5 data-i18n="index.mastery">Algorithmic mastery per question</h5>
+                    <h5 data-i18n="index.mastery">Study &amp; exam practice</h5>
                     <div class="system-module__levels" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
                   </article>
                   <article class="system-module">
                     <span class="system-module__index">03</span>
-                    <span class="system-module__state">CONNECTED</span>
-                    <h5 data-i18n="index.tokenEconomy">Tokenized economy (off-chain)</h5>
-                    <div class="system-module__providers" aria-hidden="true"><span>EUR</span><span>BTC</span><span>WEB3</span></div>
+                    <span class="system-module__state">ROLE-BASED</span>
+                    <h5 data-i18n="index.companyTraining">Corporate training</h5>
+                    <div class="system-module__providers" aria-hidden="true"><span>TEAMS</span><span>PLANS</span><span>EXPORT</span></div>
                   </article>
                 </div>
               </div>
@@ -242,11 +247,27 @@
             <div class="project-highlights project-highlights--cards">
               <article class="highlight-item">
                 <span class="highlight-dot"></span>
-                <div><h4 data-i18n="index.aiPipeline">AI content pipeline</h4><p data-i18n="index.aiPipelineText" data-i18n-html="true">Demand-driven course generation via OpenAI in waves of 30 questions, with an automated lifecycle from draft to active.</p></div>
+                <div><h4 data-i18n="index.aiPipeline">AI content pipeline</h4><p data-i18n="index.aiPipelineText" data-i18n-html="true">AI-assisted course generation with Anthropic, reviewed and quality-checked before publishing.</p></div>
               </article>
               <article class="highlight-item">
                 <span class="highlight-dot"></span>
-                <div><h4 data-i18n="index.mastery">Algorithmic mastery per question</h4><p data-i18n="index.masteryText" data-i18n-html="true">A state machine computed from accuracy, consistency and attempt history.</p></div>
+                <div><h4 data-i18n="index.mastery">Study &amp; exam practice</h4><p data-i18n="index.masteryText" data-i18n-html="true">Syllabi, question banks and exam simulations with per-question mastery tracking.</p></div>
+              </article>
+              <article class="highlight-item">
+                <span class="highlight-dot"></span>
+                <div><h4 data-i18n="index.companyTraining">Corporate training</h4><p data-i18n="index.companyTrainingText" data-i18n-html="true">Company workspaces with teams, departments, training plans and exportable progress.</p></div>
+              </article>
+              <article class="highlight-item">
+                <span class="highlight-dot"></span>
+                <div><h4 data-i18n="index.studyToolkit">Toolkit &amp; community</h4><p data-i18n="index.studyToolkitText" data-i18n-html="true">Notebook, certificates, audio resources and a real-time community chat, in Spanish and English.</p></div>
+              </article>
+              <article class="highlight-item">
+                <span class="highlight-dot"></span>
+                <div><h4 data-i18n="index.tokenEconomy">Internal token economy (off-chain)</h4><p data-i18n="index.tokenEconomyText" data-i18n-html="true">Off-chain ALX token for internal platform use, with Stripe and Lightning top-ups and P2P transfers.</p></div>
+              </article>
+              <article class="highlight-item">
+                <span class="highlight-dot"></span>
+                <div><h4 data-i18n="index.multiProvider">Multi-provider, multi-exam</h4><p data-i18n="index.multiProviderText" data-i18n-html="true">Provider-agnostic certification catalog and question banks.</p></div>
               </article>
             </div>
           </section>
@@ -254,26 +275,28 @@
           <section class="case-study-panel" id="case-panel-architecture" role="tabpanel" aria-labelledby="case-tab-architecture" data-case-panel="architecture">
             <div class="architecture-map" aria-label="Auladex system architecture" data-i18n-aria-label="index.architectureLabel">
               <div class="architecture-map__flow">
-                <div class="architecture-node"><small>CLIENT</small><strong>React SPA</strong><span>offline-ready</span></div>
+                <div class="architecture-node"><small>CLIENT</small><strong>React SPA</strong><span>lazy views &middot; ES/EN</span></div>
                 <i aria-hidden="true"></i>
-                <div class="architecture-node architecture-node--accent"><small>API</small><strong>Express.js</strong><span>11 domains</span></div>
+                <div class="architecture-node architecture-node--accent"><small>API</small><strong>Express.js</strong><span>permissions &middot; rules</span></div>
                 <i aria-hidden="true"></i>
-                <div class="architecture-node"><small>DATA</small><strong>Firestore</strong><span>RTDB presence</span></div>
+                <div class="architecture-node"><small>DATA</small><strong>Firebase</strong><span>Auth &middot; Firestore &middot; RTDB</span></div>
                 <i aria-hidden="true"></i>
-                <div class="architecture-node"><small>INTELLIGENCE</small><strong>OpenAI</strong><span>content jobs</span></div>
+                <div class="architecture-node"><small>INTELLIGENCE</small><strong>Anthropic</strong><span>content jobs</span></div>
               </div>
               <div class="architecture-map__services">
-                <span>Stripe / EUR</span><span>OpenNode / Lightning</span><span>Polygon / Web3</span><span>GitHub Actions</span>
+                <span>content worker</span><span>speech worker</span><span>render worker</span><span>Stripe / EUR</span><span>OpenNode / Lightning</span><span>Docker Compose</span><span>GitHub Actions / GHCR</span>
               </div>
             </div>
 
             <div class="project-arch">
               <p class="arch-label" data-i18n="index.architecture">// architecture</p>
-              <pre class="arch-code">Browser &#9472;&#9472; React SPA &#9472;&#9472; Express API &#9472;&#9472; Firestore &#9472;&#9472; OpenAI
-    &#9474;           &#9474;             &#9474;             &#9474;
-    &#9474;      localStorage   11 domains    RTDB (chat)
-    &#9474;      (offline)    feature-flagged  presence
-    &#9492;&#9472;&#9472; Stripe / Lightning / Web3 payments</pre>
+              <pre class="arch-code">Browser &#9472;&#9472; React SPA &#9472;&#9472; Express API &#9472;&#9472; Firebase &#9472;&#9472; Anthropic
+                         &#9474;               &#9474;
+                  permissions      Auth &middot; Firestore
+                  idempotency      RTDB &middot; Storage
+                         &#9474;
+                         &#9492;&#9472;&#9472; content &middot; speech &middot; render workers
+                             (independent images)</pre>
             </div>
 
             <article class="highlight-item highlight-item--wide">
@@ -282,34 +305,73 @@
             </article>
 
             <div class="project-stack-row">
-              <span>React 19</span><span>Vite 6</span><span>Node.js 22</span><span>Express.js</span>
-              <span>Firebase / Firestore</span><span>OpenAI API</span><span>Stripe</span>
-              <span>OpenNode (Lightning)</span><span>Web3 / Polygon</span>
-              <span>AWS / Google Cloud</span><span>Ubuntu Server</span><span>PM2</span>
-              <span>GitHub Actions</span><span>Vitest</span><span>Playwright</span>
+              <span>React 19</span><span>Vite 6</span><span>Node.js 22</span><span>Express 4</span>
+              <span>Firebase Auth</span><span>Firestore</span><span>Realtime Database</span><span>Cloud Storage</span>
+              <span>Anthropic API</span><span>Supertonic / ONNX</span><span>FFmpeg</span>
+              <span>Stripe</span><span>OpenNode (Lightning)</span>
+              <span>Docker Compose</span><span>Nginx</span><span>GHCR</span><span>GitHub Actions</span>
+              <span>Vitest</span><span>Supertest</span><span>Playwright</span>
             </div>
           </section>
 
-          <section class="case-study-panel" id="case-panel-scale" role="tabpanel" aria-labelledby="case-tab-scale" data-case-panel="scale">
-            <div class="project-metrics">
-              <div class="metric"><span class="metric-value" data-count="255">255</span><span class="metric-label" data-i18n="index.apiHandlers">API route handlers</span></div>
-              <div class="metric"><span class="metric-value" data-count="1825">1,825</span><span class="metric-label" data-i18n="index.automatedTests">automated tests</span></div>
-              <div class="metric"><span class="metric-value" data-count="126">126</span><span class="metric-label" data-i18n="index.automationScripts">automation scripts</span></div>
-              <div class="metric"><span class="metric-value" data-count="60">60</span><span class="metric-label" data-i18n="index.sharedContracts">shared contracts</span></div>
-              <div class="metric"><span class="metric-value" data-count="32">32</span><span class="metric-label" data-i18n="index.lazyViews">lazy-loaded views</span></div>
-              <div class="metric"><span class="metric-value" data-count="308">308</span><span class="metric-label" data-i18n="index.frontendModules">frontend modules</span></div>
+          <section class="case-study-panel" id="case-panel-decisions" role="tabpanel" aria-labelledby="case-tab-decisions" data-case-panel="decisions">
+            <div class="case-challenge">
+              <p class="arch-label" data-i18n="index.challengeLabel">// the_challenge</p>
+              <p class="case-challenge__text" data-i18n="index.challengeText">Coordinate three areas that usually live apart: a usable study experience, reviewable content, and secure operations for individuals and teams.</p>
             </div>
 
             <div class="project-highlights project-highlights--cards">
               <article class="highlight-item">
                 <span class="highlight-dot"></span>
-                <div><h4 data-i18n="index.tokenEconomy">Tokenized economy (off-chain)</h4><p data-i18n="index.tokenEconomyText" data-i18n-html="true">Multi-path acquisition and P2P transfers with automatic social scholarship donation.</p></div>
+                <div>
+                  <h4 data-i18n="index.decisionBackend">Business rules live in the backend</h4>
+                  <p data-i18n="index.decisionBackendText" data-i18n-html="true">The API is the single authority for permissions, payments and critical writes.</p>
+                  <p class="decision-result" data-i18n="index.decisionBackendResult">A modified client cannot bypass controls.</p>
+                </div>
               </article>
               <article class="highlight-item">
                 <span class="highlight-dot"></span>
-                <div><h4 data-i18n="index.multiProvider">Multi-provider, multi-exam</h4><p data-i18n="index.multiProviderText" data-i18n-html="true">Provider-agnostic certification catalog and question banks.</p></div>
+                <div>
+                  <h4 data-i18n="index.decisionContent">Content as a controlled lifecycle</h4>
+                  <p data-i18n="index.decisionContentText" data-i18n-html="true">AI generation is one step in a managed, reviewed flow.</p>
+                  <p class="decision-result" data-i18n="index.decisionContentResult">Nothing AI-generated reaches students unreviewed.</p>
+                </div>
+              </article>
+              <article class="highlight-item">
+                <span class="highlight-dot"></span>
+                <div>
+                  <h4 data-i18n="index.decisionWorkers">Heavy work out of the request path</h4>
+                  <p data-i18n="index.decisionWorkersText" data-i18n-html="true">Content, speech and render run as separate workers with their own images.</p>
+                  <p class="decision-result" data-i18n="index.decisionWorkersResult">A heavy process ships without touching the API.</p>
+                </div>
+              </article>
+              <article class="highlight-item">
+                <span class="highlight-dot"></span>
+                <div>
+                  <h4 data-i18n="index.decisionOps">Operable by one person</h4>
+                  <p data-i18n="index.decisionOpsText" data-i18n-html="true">Health checks, request IDs, rate limits and an infra watchdog.</p>
+                  <p class="decision-result" data-i18n="index.decisionOpsResult">Failures are traced to a request and a service quickly.</p>
+                </div>
               </article>
             </div>
+
+            <p class="decision-note" data-i18n="index.decisionsNote">Recorded in 4 architecture decision records · 800+ commits since March 2026</p>
+          </section>
+
+          <section class="case-study-panel" id="case-panel-scale" role="tabpanel" aria-labelledby="case-tab-scale" data-case-panel="scale">
+            <div class="project-metrics">
+              <div class="metric"><span class="metric-value" data-count="517">517</span><span class="metric-label" data-i18n="index.apiHandlers">API route handlers</span></div>
+              <div class="metric"><span class="metric-value" data-count="10009">10,009</span><span class="metric-label" data-i18n="index.automatedTests">automated tests</span></div>
+              <div class="metric"><span class="metric-value" data-count="272">272</span><span class="metric-label" data-i18n="index.automationScripts">automation scripts</span></div>
+              <div class="metric"><span class="metric-value" data-count="140">140</span><span class="metric-label" data-i18n="index.sharedContracts">shared contracts</span></div>
+              <div class="metric"><span class="metric-value" data-count="51">51</span><span class="metric-label" data-i18n="index.lazyViews">lazy-loaded views</span></div>
+              <div class="metric"><span class="metric-value" data-count="671">671</span><span class="metric-label" data-i18n="index.frontendModules">frontend modules</span></div>
+            </div>
+
+            <article class="highlight-item highlight-item--wide">
+              <span class="highlight-dot"></span>
+              <div><h4 data-i18n="index.quality">Verifiable quality</h4><p data-i18n="index.qualityText" data-i18n-html="true">Unit, API-integration and browser tests, i18n audits, and per-service images published by CI.</p></div>
+            </article>
           </section>
         </div>
       </div>
@@ -576,6 +638,8 @@
 
   <script src="i18n.js?v=6"></script>
   <script src="main.js?v=11"></script>
+  <script src="/assets/auladex/showcase-markup.js?v=1"></script>
+  <script src="/assets/auladex/showcase.js?v=1"></script>
 </body>
 
 </html>

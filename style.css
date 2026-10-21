@@ -1662,6 +1662,11 @@ ul { list-style: none; }
   border: 1px solid rgba(165,38,26,0.2);
 }
 
+.proj-badge.period {
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
 .project-name {
   font-family: var(--font-mono);
   font-size: 1.25rem;
@@ -2085,6 +2090,47 @@ ul { list-style: none; }
 .highlight-item p { font-size: 0.82rem; line-height: 1.65; }
 .highlight-item--wide { margin: 0 0 1rem; }
 
+/* Auladex product showcase (assets/auladex/): reserves the stage's aspect
+   ratio before the markup mounts so the card doesn't jump. */
+.auladex-showcase {
+  aspect-ratio: 1137 / 828;
+  margin: 0 auto 1.6rem;
+  max-width: 860px;
+}
+
+.case-challenge {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  border-radius: 4px;
+  background: var(--bg);
+}
+
+.case-challenge__text {
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.highlight-item p.decision-result {
+  margin-top: 0.55rem;
+  color: var(--text);
+}
+
+.decision-result::before {
+  content: "→ ";
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+.decision-note {
+  margin-top: 1rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
 .architecture-map {
   margin-bottom: 1.25rem;
   padding: 1.1rem;
@@ -2185,7 +2231,7 @@ ul { list-style: none; }
   .project-tagline { margin-bottom: 1.35rem; }
   .case-study-tabs {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
   }
   .case-study-tabs button { padding-inline: 0.35rem; font-size: 0.64rem; }

@@ -121,7 +121,7 @@ function addItemMetadata(html, item, requestUrl) {
       "url": itemUrl,
       "priceCurrency": "EUR",
       ...(Number.isFinite(price) && price > 0 ? { "price": price } : {}),
-      "availability": Number(item.cantidad) > 0
+      "availability": Number(item.cantidad) > 0 && !item.reserved
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
       "seller": {

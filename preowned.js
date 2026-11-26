@@ -38,9 +38,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalSecondhandPrice = document.getElementById("modal-secondhand-price");
   const modalRetailPrice = document.getElementById("modal-retail-price");
   const modalDtoBadge = document.getElementById("modal-dto-badge");
+  const modalReservedBadge = document.getElementById("modal-reserved-badge");
   const modalImageContainer = document.getElementById("modal-image-container");
   const modalEmailBtn = document.getElementById("modal-email-btn");
   const modalShareBtn = document.getElementById("modal-share-btn");
+  const modalOfferBtn = document.getElementById("modal-offer-btn");
   const modalShareStatus = document.getElementById("modal-share-status");
   const modalWavesInfoBtn = document.getElementById("modal-waves-info-btn");
 
@@ -219,9 +221,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ? `<span class="dto-badge">${t("store.savings", { percentage: item.savingsPercentage })}</span>`
         : "";
 
-      // Qty badge (on image)
-      const qtyBadgeHtml = item.cantidad > 1
-        ? `<span class="qty-badge">${t("store.units", { count: item.cantidad })}</span>`
+      // Qty badge (on image): solo cuenta las unidades libres
+      const freeUnits = item.cantidad - (item.reservedUnits || 0);
+      const qtyBadgeHtml = freeUnits > 1
+        ? `<span class="qty-badge">${t("store.units", { count: freeUnits })}</span>`
         : "";
 
       // Retail price HTML
@@ -229,16 +232,27 @@ document.addEventListener("DOMContentLoaded", () => {
         ? `<span class="product-retail-price">${item.retailPrice} €</span>`
         : "";
 
-      // Stock info
-      const stockHtml = item.cantidad > 1
-        ? `<span class="product-stock">${t("store.inStock", { count: item.cantidad })}</span>`
-        : `<span class="product-stock">${t("store.inStockOne")}</span>`;
+      // Stock info (las unidades reservadas no están disponibles)
+      const availableText = freeUnits > 1
+        ? t("store.inStock", { count: freeUnits })
+        : t("store.inStockOne");
+      let stockText = availableText;
+      if (item.reserved) {
+        stockText = t("store.reserved");
+      } else if (item.reservedUnits > 0) {
+        stockText = `${availableText} · ${t("store.reservedCount", { count: item.reservedUnits })}`;
+      }
+      const stockHtml = `<span class="product-stock">${stockText}</span>`;
+      const reservedBadgeHtml = item.reserved
+        ? `<span class="reserved-badge">${t("store.reserved")}</span>`
+        : "";
 
       card.innerHTML = `
         <div class="product-img-wrap">
           ${imgHtml}
           ${savingsBadgeHtml}
           ${qtyBadgeHtml}
+          ${reservedBadgeHtml}
         </div>
         <div class="product-body">
           <div>
@@ -287,6 +301,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     modalTitle.textContent = item.title;
+    modalReservedBadge.textContent = t("store.reserved");
+    modalReservedBadge.classList.toggle("hidden", !item.reserved);
+    // Sin unidades libres no se aceptan ofertas
+    modalOfferBtn?.classList.toggle("hidden", !!item.reserved || typeof window.openOfferModal !== "function");
     const hasDedicatedWavesPage = isWavesAudioItem(item);
     modalDescription.textContent = item.description || t("store.noDescription");
     modalDescription.classList.toggle("hidden", hasDedicatedWavesPage);
@@ -550,6 +568,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
   closeModalBtn.addEventListener("click", closeModal);
   modalShareBtn.addEventListener("click", shareCurrentItem);
+  modalOfferBtn?.addEventListener("click", () => window.openOfferModal?.(currentModalItem));
   detailModal.addEventListener("click", (e) => {
     if (e.target === detailModal) {
       closeModal();
@@ -564,6 +583,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   window.addEventListener("languagechange", () => {
+    modalReservedBadge.textContent = t("store.reserved");
     renderItems();
     renderCategories();
   });

@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet" />
   
   <link rel="stylesheet" href="style.css?v=13" />
-  <link rel="stylesheet" href="preowned.css" />
+  <link rel="stylesheet" href="preowned.css?v=5" />
   <link id="theme-favicon" rel="icon" type="image/svg+xml" sizes="512x512" href="/assets/brand/favicon.svg?v=2" />
   <script src="/theme.js?v=5"></script>
 </head>
@@ -52,6 +52,7 @@
       <!-- TABS SELECTOR -->
       <div class="dash-tabs">
         <button class="tab-btn active" id="tab-inventario-btn" data-tab="inventario-tab">Inventario</button>
+        <button class="tab-btn" id="tab-offers-btn" data-tab="offers-tab">Ofertas <span id="offers-badge" class="tab-badge hidden">0</span></button>
         <button class="tab-btn" id="tab-stats-btn" data-tab="stats-tab">Estadísticas</button>
         <button class="tab-btn" id="tab-categories-btn" data-tab="categories-tab">Categorías</button>
         <button class="tab-btn" id="tab-config-btn" data-tab="config-tab">Configuración</button>
@@ -185,6 +186,45 @@
           <!-- Se inyecta dinámicamente -->
         </div>
       </div>
+    </div>
+
+
+    <!-- TAB: OFERTAS -->
+    <div id="offers-tab" class="tab-content hidden">
+      <section class="offers-stats" id="offers-stats"></section>
+
+      <section class="offers-filters">
+        <input type="text" id="offers-search" class="form-control-input" placeholder="Buscar por nombre, email, teléfono, artículo o mensaje...">
+        <select id="offers-product" class="form-control-input"></select>
+        <select id="offers-sort" class="form-control-input">
+          <option value="recent">Más recientes</option>
+          <option value="oldest">Más antiguas</option>
+          <option value="discountDesc">Mayor descuento pedido</option>
+          <option value="discountAsc">Menor descuento pedido</option>
+          <option value="totalDesc">Mayor importe</option>
+          <option value="item">Artículo A-Z</option>
+        </select>
+        <button type="button" id="offers-refresh" class="btn-ghost">Actualizar</button>
+      </section>
+
+      <div id="offers-email-warning" class="alert-box offers-warning hidden">
+        El envío de correos no está configurado. Las ofertas se guardan y puedes verlas aquí, pero no recibirás avisos ni podrás enviar respuestas hasta definir <code>RESEND_API_KEY</code> y <code>OFFERS_NOTIFY_EMAIL</code>.
+      </div>
+      <div id="offers-alert" class="alert-box error hidden"></div>
+      <div id="offers-loader" class="loader hidden"><div class="spinner"></div><p>Cargando ofertas...</p></div>
+
+      <div id="offers-table-wrap" class="table-responsive hidden">
+        <table class="dash-table offers-table">
+          <thead>
+            <tr>
+              <th>Fecha</th><th>Artículo</th><th>Ofertante</th><th class="num">Ud.</th><th class="num">Publicado</th>
+              <th class="num">Oferta</th><th class="num">Dto.</th><th class="num">Total</th><th>Estado</th><th>Respuesta</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="offers-body"></tbody>
+        </table>
+      </div>
+      <p id="offers-empty" class="offers-empty hidden">No hay ofertas con estos filtros.</p>
     </div>
 
     <!-- TAB 2: ESTADÍSTICAS -->
@@ -693,6 +733,100 @@
   </div>
 
 
+
+  <!-- MODAL: RESPONDER OFERTA -->
+  <div id="offer-reply-modal" class="modal-overlay hidden">
+    <div class="modal-card offer-reply-card">
+      <div class="offer-reply-layout">
+        <div class="offer-reply-form">
+          <h3 class="offer-reply-title">Responder oferta</h3>
+          <div id="offer-reply-summary"></div>
+
+          <div class="offer-decisions" role="group" aria-label="Respuesta">
+            <button type="button" class="offer-decision offer-status-accepted" data-offer-decision="accepted">✅ Aceptar</button>
+            <button type="button" class="offer-decision offer-status-countered" data-offer-decision="countered">🔄 Contraofertar</button>
+            <button type="button" class="offer-decision offer-status-rejected" data-offer-decision="rejected">❌ Rechazar</button>
+          </div>
+
+          <label id="offer-counter-wrap" class="offer-reply-field hidden">
+            <span>Contraoferta por unidad (€)</span>
+            <input type="number" id="offer-counter-price" class="form-control-input" min="1" step="1">
+            <small id="offer-counter-info" class="offers-dim"></small>
+          </label>
+
+          <label class="offer-reply-field">
+            <span>Mensaje personal (opcional, aparece en el correo)</span>
+            <textarea id="offer-reply-note" class="form-control-input" rows="4" maxlength="2000" placeholder="Ej.: Puedo entregarlo en mano en Barcelona esta semana."></textarea>
+          </label>
+
+          <div id="offer-reply-alert" class="alert-box error hidden"></div>
+
+          <div class="offer-reply-actions">
+            <button type="button" id="offer-reply-cancel" class="btn-ghost">Cancelar</button>
+            <button type="button" id="offer-reply-save" class="btn-ghost" title="Cambia el estado sin enviar correo">Guardar sin enviar</button>
+            <button type="button" id="offer-reply-send" class="btn-primary">✉️ Enviar email</button>
+          </div>
+        </div>
+
+        <div class="offer-reply-preview">
+          <div class="offer-preview-meta">
+            <div><span class="offers-label">Para</span><span id="offer-preview-to"></span></div>
+            <div><span class="offers-label">Asunto</span><strong id="offer-preview-subject"></strong></div>
+          </div>
+          <iframe id="offer-preview-frame" title="Vista previa del correo" sandbox=""></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE RESERVA -->
+  <div id="reservation-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-body-padding">
+        <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--accent); margin: 0;">📌 Reservar producto</h3>
+        <p id="reservation-item-name" class="modal-subtitle-text mt-1" style="font-size: 0.85rem;"></p>
+        <div id="reservation-alert" class="alert-box error hidden" style="margin-top: 0.8rem; margin-bottom: 0;"></div>
+
+        <div class="mt-4">
+          <label class="block text-label mb-1.5 font-bold" for="reservation-contact-search">Contacto</label>
+          <input type="text" id="reservation-contact-search" class="modal-input" placeholder="Buscar por nombre, teléfono o email..." autocomplete="off">
+          <div id="reservation-contact-list" class="reservation-contact-list"></div>
+          <button type="button" id="reservation-new-contact-toggle" class="btn-text">+ Nuevo contacto</button>
+
+          <div id="reservation-new-contact" class="reservation-new-contact hidden">
+            <input type="text" id="reservation-new-name" class="modal-input" placeholder="Nombre *" autocomplete="off">
+            <div id="reservation-new-phone-wrap">
+              <input type="tel" id="reservation-new-phone" class="modal-input" placeholder="Teléfono" autocomplete="off">
+            </div>
+            <div id="reservation-new-email-wrap">
+              <input type="email" id="reservation-new-email" class="modal-input" placeholder="Email" autocomplete="off">
+            </div>
+            <div id="reservation-new-notice" class="reservation-dim"></div>
+            <button type="button" id="reservation-new-save" class="btn-ghost">Guardar contacto</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mt-4">
+          <div>
+            <label class="block text-label mb-1.5 font-bold" for="reservation-units">Unidades</label>
+            <input type="number" id="reservation-units" class="modal-input" min="1" step="1" value="1">
+          </div>
+          <div>
+            <label class="block text-label mb-1.5 font-bold" for="reservation-price">Precio acordado por unidad (€)</label>
+            <input type="number" id="reservation-price" class="modal-input" min="0" step="0.01">
+          </div>
+        </div>
+
+        <div id="reservation-summary" class="reservation-summary"></div>
+
+        <div class="modal-actions-row mt-6" style="display: flex; justify-content: flex-end; gap: 0.8rem;">
+          <button id="reservation-cancel" class="btn-ghost">Cancelar</button>
+          <button id="reservation-confirm" class="btn-primary" disabled>Reservar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL DE VENTA RÁPIDA -->
   <div id="sell-modal" class="modal-overlay hidden">
     <div class="modal-box" style="max-width: 380px;">
@@ -720,7 +854,9 @@
     </div>
   </div>
 
-  <script src="dashboard.js?v=19"></script>
+  <script src="dashboard-reservations.js?v=2"></script>
+  <script src="dashboard.js?v=21"></script>
+  <script src="dashboard-offers.js?v=1"></script>
   <script>
     // Hamburger menu toggle for mobile
     document.addEventListener('DOMContentLoaded', function() {

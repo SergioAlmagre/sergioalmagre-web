@@ -1,3 +1,5 @@
+import { readInventoryPage } from "../_notion.js";
+
 function normalizeString(str) {
   return str
     .toLowerCase()
@@ -191,6 +193,7 @@ export async function onRequestGet(context) {
           vendido,
           noVender,
           pageCantidad,
+          reservedUnits: readInventoryPage(page).reservedUnits,
           lastEdited: page.last_edited_time,
           naturaleza,
         };
@@ -214,6 +217,7 @@ export async function onRequestGet(context) {
       } else {
         const group = groupedMap[groupKey];
         group.cantidad += item.pageCantidad > 0 ? item.pageCantidad : 1;
+        group.reservedUnits += item.reservedUnits;
         
         if (new Date(item.lastEdited) > new Date(group.lastEdited)) {
           group.lastEdited = item.lastEdited;
@@ -228,7 +232,10 @@ export async function onRequestGet(context) {
       }
     }
 
-    const items = Object.values(groupedMap);
+    const items = Object.values(groupedMap).map((item) => ({
+      ...item,
+      reserved: item.reservedUnits > 0 && item.reservedUnits >= item.cantidad,
+    }));
 
     const response = new Response(
       JSON.stringify({ items }),

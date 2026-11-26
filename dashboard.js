@@ -480,6 +480,7 @@ async function fetchNotionItems() {
   errorBox.classList.add("hidden");
 
   try {
+    const reservationsRequest = loadReservations();
     const response = await fetch("/api/notion/items");
     if (!response.ok) {
       if (response.status === 401) {
@@ -492,6 +493,7 @@ async function fetchNotionItems() {
     const data = await response.json();
     items = data.items || [];
     notionSchema = data.schema || {};
+    await reservationsRequest;
 
     // Restore saved filters and render them now that we have the schema!
     loadFiltersFromStorage();
@@ -1194,7 +1196,7 @@ function updateSelectAllCheckboxState() {
   
   // Update selected count stat
   const selectedCount = Object.keys(selectedItemIds).filter(id => selectedItemIds[id] && items.some(it => it.id === id)).length;
-  const selectedUnits = items.filter(it => !!selectedItemIds[it.id]).reduce((acc, it) => acc + (it.cantidad || 1), 0);
+  const selectedUnits = items.filter(it => !!selectedItemIds[it.id]).reduce((acc, it) => acc + (it.cantidad ?? 1), 0);
   statSelectedCount.textContent = `${selectedCount} (${selectedUnits} ud)`;
 }
 
@@ -1274,6 +1276,7 @@ function renderItemsList() {
             <span>Modificado: ${dateStr}</span>
             <span>•</span>
             ${readyBadge}
+            ${renderReservationBadge(item)}
           </div>
           <div class="dash-card-metrics" style="margin-top: 0.2rem;">
             <span>Compra: <strong>${cost} €</strong></span>
@@ -1282,7 +1285,7 @@ function renderItemsList() {
             <span>|</span>
             <span>Retail: <strong>${enrichedData.retailPrice || 0} €</strong></span>
             <span>|</span>
-            <span>Stock: <strong style="color:var(--accent); background:rgba(167,139,250,0.1); padding:1px 6px; border-radius:4px; border:1px solid rgba(167,139,250,0.1);">${item.cantidad || 1}</strong></span>
+            <span>Stock: <strong style="color:var(--accent); background:rgba(167,139,250,0.1); padding:1px 6px; border-radius:4px; border:1px solid rgba(167,139,250,0.1);">${item.cantidad ?? 1}</strong></span>
             ${item.unidadesVendidas > 0 ? `<span>|</span><span style="font-size:0.75rem; color:#10b981;">✓ ${item.unidadesVendidas} vendidas</span>` : ""}
             ${discountHtml ? `<span>|</span>${discountHtml}` : ""}
             ${profitHtml ? `<span>|</span>${profitHtml}` : ""}
@@ -1316,6 +1319,9 @@ function renderItemsList() {
                 ${isAnalyzing ? "..." : `<svg style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:3px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Analizar`}
               </button>
             ` : ""}
+            <button class="btn-ghost btn-reserve" data-action="reserve" ${getReservableUnits(item) === 0 ? 'disabled title="No quedan filas libres para reservar"' : 'title="Reservar a un contacto"'}>
+              📌 Reservar
+            </button>
             <button class="btn-ghost" style="font-size:0.7rem; padding:0.4rem 0.7rem; border-radius:6px; color:#10b981; border-color:rgba(16,185,129,0.4);" data-action="sell-unit" title="Registrar venta de 1 unidad">
               🛒 Vender
             </button>
@@ -1336,6 +1342,8 @@ function renderItemsList() {
           </div>
         </div>
       </div>
+
+      ${renderReservationList(item)}
 
       <!-- EDITABLE EXPANDED FORM -->
       ${isExpanded ? `
@@ -1507,6 +1515,8 @@ function renderItemsList() {
       });
     }
 
+    bindReservationActions(card, item);
+
     // Form expanded hooks
     if (isExpanded) {
       const formAnalyze = card.querySelector('[data-action="form-analyze"]');
@@ -1636,6 +1646,12 @@ async function handleToggleNoVender(item, isNoVender) {
 
 // Checkbox action: Sold toggle with modal confirm
 function handleVendidoChange(item, isChecked) {
+  if (isChecked && getReservedUnits(item) > 0) {
+    showToast("Hay reservas activas. Conviértelas en venta o cancélalas primero.", "error");
+    renderItemsList();
+    return;
+  }
+
   if (isChecked) {
     const defaultCost = item.enriched.purchasePrice || 0;
     const defaultSale = item.enriched.secondHandPrice || 0;
@@ -2087,7 +2103,7 @@ function openConfigModal(item) {
     .filter(col => {
       // Skip Cantidad/Stock/Unidades (already shown at top)
       const norm = col.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-      return norm !== "cantidad" && norm !== "stock" && norm !== "unidades";
+      return norm !== "cantidad" && norm !== "stock" && norm !== "unidades" && !isReservationColumn(col);
     })
     .sort((a, b) => {
       const pa = columnPriority(a);
@@ -2608,7 +2624,7 @@ function calculateStats() {
   const activeItems = statsFilteredItems; // independent stats filters apply here!
   
   const totalModels = activeItems.length;
-  const totalUnits = activeItems.reduce((acc, it) => acc + (it.cantidad || 1), 0);
+  const totalUnits = activeItems.reduce((acc, it) => acc + (it.cantidad ?? 1), 0);
 
   // Real sales data from Notion columns "Unidades Vendidas" & "Total Ingresado"
   const totalSoldUnits = activeItems.reduce((acc, it) => acc + (it.unidadesVendidas || 0), 0);
@@ -2623,7 +2639,7 @@ function calculateStats() {
     const cost = item.enriched.purchasePrice || 0;
     const price = item.enriched.secondHandPrice || 0;
     const retail = item.enriched.retailPrice || 0;
-    const qty = item.cantidad || 1;
+    const qty = item.cantidad ?? 1;
     const vendidas = item.unidadesVendidas || 0;
     
     // Inversión sobre stock ACTUAL (unidades pendientes de vender)
@@ -2646,7 +2662,7 @@ function calculateStats() {
   });
 
   // Potential Revenue (stock restante)
-  const totalRevenue = activeItems.reduce((acc, it) => acc + ((it.enriched.secondHandPrice || 0) * (it.cantidad || 1)), 0);
+  const totalRevenue = activeItems.reduce((acc, it) => acc + ((it.enriched.secondHandPrice || 0) * (it.cantidad ?? 1)), 0);
 
   // Inversión recuperada: coste por unidad × unidades ya vendidas (estimado)
   const totalRecoveredCost = activeItems.reduce((acc, it) => {
@@ -2756,7 +2772,7 @@ function drawStatsChart(categoryStats) {
     return;
   }
   
-  const totalRevenueAll = statsFilteredItems.reduce((acc, it) => acc + ((it.enriched.secondHandPrice || 0) * (it.cantidad || 1)), 0);
+  const totalRevenueAll = statsFilteredItems.reduce((acc, it) => acc + ((it.enriched.secondHandPrice || 0) * (it.cantidad ?? 1)), 0);
   const maxVal = Math.max(...cats.map(c => c.revenue), 100);
   const paddingLeft = 110;
   const paddingRight = 60;
@@ -2972,7 +2988,7 @@ function openSellModal(item) {
     const cost = item.enriched.purchasePrice || 0;
     const costTotal = units * cost;
     const profit = total - costTotal;
-    const stockAfter = (item.cantidad || 1) - units;
+    const stockAfter = (item.cantidad ?? 1) - units;
 
     sellModalSummary.innerHTML = `
       <strong style="color:var(--text);">Resumen de la venta:</strong><br>
@@ -3015,9 +3031,19 @@ if (_sellModalConfirmBtn) {
     const pricePerUnit = parseFloat(sellPriceInput.value) || item.enriched.secondHandPrice || 0;
     const totalIncome = units * pricePerUnit;
 
-    const stockAfter = (item.cantidad || 1) - units;
+    const stockAfter = (item.cantidad ?? 1) - units;
+    const reservedUnits = getReservedUnits(item);
+    // Esta venta escribe lo mismo en todas las filas y rompería el stock de las reservadas
+    if (reservedUnits > 0 && (item.itemIds || []).length > 1) {
+      showToast("Este producto ocupa varias filas y tiene reservas. Conviértelas en venta o cancélalas antes de vender.", "error");
+      return;
+    }
+    if (reservedUnits > 0 && stockAfter >= 0 && stockAfter < reservedUnits) {
+      showToast(`Hay ${reservedUnits} ud reservadas. Solo puedes vender ${getAvailableUnits(item)} sin tocar las reservas.`, "error");
+      return;
+    }
     if (stockAfter < 0) {
-      showToast(`Stock insuficiente. Tienes ${item.cantidad || 1} unidades.`, "error");
+      showToast(`Stock insuficiente. Tienes ${item.cantidad ?? 1} unidades.`, "error");
       return;
     }
 

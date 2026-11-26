@@ -52,7 +52,7 @@
     rel="stylesheet" />
 
   <link rel="stylesheet" href="style.css?v=17" />
-  <link rel="stylesheet" href="preowned.css?v=3" />
+  <link rel="stylesheet" href="preowned.css?v=5" />
   <link id="theme-favicon" rel="icon" type="image/svg+xml" sizes="512x512" href="/assets/brand/favicon.svg?v=2" />
   <script src="/theme.js?v=5"></script>
 </head>
@@ -166,6 +166,7 @@
               <span class="modal-price" id="modal-secondhand-price">-- €</span>
               <span class="modal-retail-price line-through" id="modal-retail-price">-- €</span>
               <span class="modal-dto-badge" id="modal-dto-badge">--% DTO</span>
+              <span class="modal-reserved-badge hidden" id="modal-reserved-badge">Reserved</span>
             </div>
 
             <h2 class="modal-title" id="modal-title">Product title</h2>
@@ -191,6 +192,12 @@
               </svg>
               <span data-i18n="store.contactEmail">Contact by Email</span>
             </a>
+            <button type="button" id="modal-offer-btn" class="btn-ghost modal-contact-btn modal-offer-btn">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+              <span data-i18n="store.makeOffer">Make an offer</span>
+            </button>
             <button type="button" id="modal-share-btn" class="btn-ghost modal-contact-btn modal-share-btn">
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16" aria-hidden="true">
                 <circle cx="18" cy="5" r="3" stroke-width="2" />
@@ -207,14 +214,73 @@
     </div>
   </div>
 
+
+  <!-- MODAL DE OFERTA -->
+  <div id="offer-modal" class="modal-overlay offer-modal hidden" role="dialog" aria-modal="true" aria-labelledby="offer-title">
+    <div class="modal-card offer-card">
+      <button class="modal-close" id="offer-close" type="button" data-i18n-aria-label="store.closeModal" aria-label="Close">&times;</button>
+      <div class="offer-body">
+        <h3 id="offer-title" class="offer-title" data-i18n="store.offerTitle">Make an offer</h3>
+        <p class="offer-item" id="offer-item-name"></p>
+        <p class="offer-listed" id="offer-listed"></p>
+
+        <form id="offer-form" novalidate>
+          <p class="offer-intro" data-i18n="store.offerIntro">Tell me how much you would pay and I will reply by email.</p>
+          <div class="offer-grid">
+            <label class="offer-field">
+              <span data-i18n="store.offerPrice">Your offer per unit (€)</span>
+              <input type="number" id="offer-price" name="price" min="1" step="1" required inputmode="decimal">
+            </label>
+            <label class="offer-field" id="offer-units-wrap">
+              <span data-i18n="store.offerUnits">Units</span>
+              <input type="number" id="offer-units" name="units" min="1" step="1" value="1" required>
+            </label>
+          </div>
+          <p class="offer-summary" id="offer-summary" aria-live="polite"></p>
+          <label class="offer-field">
+            <span data-i18n="store.offerName">Name</span>
+            <input type="text" id="offer-name" name="name" minlength="2" maxlength="80" required autocomplete="name">
+          </label>
+          <div class="offer-grid">
+            <label class="offer-field">
+              <span data-i18n="store.offerEmail">Email</span>
+              <input type="email" name="email" maxlength="254" required autocomplete="email">
+            </label>
+            <label class="offer-field">
+              <span data-i18n="store.offerPhone">Phone (optional)</span>
+              <input type="tel" name="phone" maxlength="25" autocomplete="tel">
+            </label>
+          </div>
+          <label class="offer-field">
+            <span data-i18n="store.offerMessage">Message (optional)</span>
+            <textarea name="message" rows="3" maxlength="1000"></textarea>
+          </label>
+          <label class="offer-honeypot" aria-hidden="true">Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+          <label class="offer-consent">
+            <input type="checkbox" name="consent" required>
+            <span data-i18n="store.offerConsent">I agree that my data will be used only to reply to this offer.</span>
+          </label>
+          <p class="offer-error hidden" id="offer-status" role="alert"></p>
+          <button type="submit" class="btn-primary offer-submit" id="offer-submit" data-i18n="store.offerSubmit">Send offer</button>
+        </form>
+
+        <div class="offer-done hidden" id="offer-done">
+          <p id="offer-done-text"></p>
+          <button type="button" class="btn-ghost" id="offer-done-close" data-i18n="store.offerClose">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer class="footer-simple"
     style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 2rem 1.5rem;">
     <p style="margin: 0; font-size: 0.75rem; color: var(--text-dim);">© 2026 Sergio Almagre · <a href="/login"
         class="admin-link" style="text-decoration: underline;">Administrator Access</a></p>
   </footer>
 
-  <script src="i18n.js?v=6"></script>
-  <script src="preowned.js?v=8"></script>
+  <script src="i18n.js?v=8"></script>
+  <script src="preowned.js?v=10"></script>
+  <script src="preowned-offer.js?v=1"></script>
   <script src="main.js?v=11"></script>
 </body>
 

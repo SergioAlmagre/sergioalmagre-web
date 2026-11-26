@@ -1,4 +1,5 @@
 import { verifySessionToken, getCookie, SESSION_COOKIE_NAME } from "../_auth.js";
+import { readInventoryPage } from "../_notion.js";
 
 function normalizeString(str) {
   return str
@@ -337,8 +338,12 @@ export async function onRequestGet(context) {
           }
         }
 
+        const row = readInventoryPage(page);
+
         return {
           id: page.id,
+          // Unidades que aún admiten una reserva: solo cuentan las filas sin reserva activa
+          reservable: row.reservation.active ? 0 : row.stock,
           title: originalTitle.trim(),
           lastEdited: page.last_edited_time,
           enriched: {
@@ -376,19 +381,24 @@ export async function onRequestGet(context) {
         .replace(/[\u0300-\u036f]/g, "");
 
       const rawCant = item.rawProperties["Cantidad"] ?? item.rawProperties["cantidad"] ?? item.rawProperties["Stock"] ?? item.rawProperties["stock"] ?? item.rawProperties["Unidades"] ?? item.rawProperties["unidades"];
-      const itemCant = (rawCant !== null && rawCant !== undefined && !isNaN(Number(rawCant)) && Number(rawCant) > 0) ? Number(rawCant) : 1;
+      const hasCant = rawCant !== null && rawCant !== undefined && rawCant !== "" && !isNaN(Number(rawCant));
+      // Una fila vendida con 0 unidades está agotada; en el resto de casos sin stock válido se cuenta 1
+      const isSoldOut = hasCant && Number(rawCant) === 0 && item.enriched.vendido;
+      const itemCant = isSoldOut ? 0 : (hasCant && Number(rawCant) > 0 ? Number(rawCant) : 1);
 
       if (!groupedMap[groupKey]) {
         groupedMap[groupKey] = {
           ...item,
           itemIds: [item.id],
           cantidad: itemCant,
+          unidadesReservables: item.reservable,
           unidadesVendidas: item.enriched.unidadesVendidas || 0,
           totalIngresado: item.enriched.totalIngresado || 0,
         };
       } else {
         const group = groupedMap[groupKey];
         group.cantidad = (group.cantidad || 0) + itemCant;
+        group.unidadesReservables += item.reservable;
         group.unidadesVendidas = (group.unidadesVendidas || 0) + (item.enriched.unidadesVendidas || 0);
         group.totalIngresado = (group.totalIngresado || 0) + (item.enriched.totalIngresado || 0);
         group.itemIds.push(item.id);

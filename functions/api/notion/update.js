@@ -1,4 +1,5 @@
 import { verifySessionToken, getCookie, SESSION_COOKIE_NAME } from "../_auth.js";
+import { isReservationColumn } from "../_notion.js";
 
 function normalizeString(str) {
   return str
@@ -36,6 +37,12 @@ export async function onRequestPost(context) {
     const { itemId, itemIds, title, retailPrice, secondHandPrice, purchasePrice, description, imageUrl, publicar, vendido, noVender, rawProperties, archived, isCreate, itemTitle, cantidad, unidadesVendidas, totalIngresado } = payload;
 
     const idsToUpdate = Array.isArray(itemIds) ? itemIds : [itemId].filter(Boolean);
+
+    // Las reservas son de cada fila y solo se gestionan desde /api/notion/reservations.
+    // Aquí se aplicarían a todas las filas del grupo y se duplicarían.
+    for (const key of Object.keys(rawProperties || {})) {
+      if (isReservationColumn(key)) delete rawProperties[key];
+    }
 
     if (!isCreate && idsToUpdate.length === 0) {
       return new Response(
